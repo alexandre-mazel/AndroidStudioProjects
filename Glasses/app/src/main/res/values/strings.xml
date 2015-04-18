@@ -12,5 +12,7 @@
     <string name="text_view_age_bottom">Young</string>
 
     <string name="text_view_acidity">Acidity</string>
+    <string name="sliders_text_title">La couleur du vin varie en fonction de son\nâge et de son taux en sucre.</string>
+
 
 </resources>
