@@ -1,5 +1,6 @@
 package com.electronoos.glasses;
 
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -25,6 +26,7 @@ public class MyActivity extends ActionBarActivity {
         Log.v("MyActivity", "onCreate: begin");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        getWindow().getDecorView().setBackgroundColor(Color.WHITE);
         seekBar_age_ = (SeekBar) findViewById(R.id.seek_bar_age);
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
         MyOnSeekBarChangeListener myOnSeekBarChangeListener = new MyOnSeekBarChangeListener();
