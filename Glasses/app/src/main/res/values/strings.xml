@@ -6,4 +6,11 @@
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Envoye</string>
     <string name="title_activity_display_message">My Message</string>
+    <string name="text_view_age">Age</string>
+    <string name="seek_bar_age">Age2</string>
+    <string name="text_view_age_top">Old</string>
+    <string name="text_view_age_bottom">Young</string>
+
+    <string name="text_view_acidity">Acidity</string>
+
 </resources>

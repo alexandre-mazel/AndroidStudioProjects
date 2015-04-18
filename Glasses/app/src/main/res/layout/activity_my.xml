@@ -4,19 +4,78 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <EditText android:id="@+id/edit_message"
-        android:layout_weight="1"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/edit_message" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <!-- android:layout_weight="1" -->
+        <!--
+        <EditText android:id="@+id/edit_message"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_message" />
+        -->
+        <!-- android:layout_weight="1" -->
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_send"
-        android:onClick="sendMessage"
-        />
+        <!--
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_send"
+            android:onClick="sendMessage"
+            />
+        -->
+
+        <TextView android:id="@+id/text_view_age"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/text_view_age"
+            android:textSize="40dp"
+            />
+
+        <TextView android:id="@+id/text_view_age_top"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/text_view_age_top"
+            />
+
+        <SeekBar android:id="@+id/seek_bar_age"
+            android:layout_height="0dp"
+            android:layout_width="30dp"
+            android:rotation="270"
+            android:text="@string/seek_bar_age"
+            android:onClick="seek_age_changed"
+            android:layout_weight="20"
+            />
+
+        <TextView android:id="@+id/text_view_age_bottom"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/text_view_age_bottom"
+            />
+
+        <TextView android:id="@+id/text_view_progress_age"
+            android:layout_height="20dp"
+            android:layout_width="40dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/text_view_acidity"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/text_view_acidity"
+            android:textSize="40dp"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>
