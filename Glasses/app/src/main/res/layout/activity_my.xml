@@ -80,7 +80,7 @@
                 android:onClick="seek_age_changed"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:thumb="@drawable/seek_thumb"
+                android:thumb="@drawable/seekbar_thumb"
                 android:progressDrawable="@drawable/seekbar_progress"
                 />
 
