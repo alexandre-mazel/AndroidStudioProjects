@@ -6,8 +6,8 @@
                 android:height="40dp"
                 android:width="40dp" />
 
-            <solid android:color="#80338b9d" />
-            <stroke android:width="10dp" android:color="#FF00ff" />
+            <solid android:color="#0000" />
+            <stroke android:width="5dp" android:color="#B0338b9d" />
 
         </shape>
     </item>

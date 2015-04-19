@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import ch.serverbox.android.usbcontroller.UsbController;
+import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
 
 
 public class MyActivity extends ActionBarActivity {
@@ -20,6 +22,11 @@ public class MyActivity extends ActionBarActivity {
 
     private SeekBar seekBar_age_;
     public TextView textView_age_;
+
+    private static final int VID = 0x2341;
+    private static final int PID = 0x0001;//I believe it is 0x0000 for the Arduino Megas
+    private static UsbController usbController_;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,12 @@ public class MyActivity extends ActionBarActivity {
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
         MyOnSeekBarChangeListener myOnSeekBarChangeListener = new MyOnSeekBarChangeListener();
         seekBar_age_.setOnSeekBarChangeListener( myOnSeekBarChangeListener );
-        myOnSeekBarChangeListener.setTextViewProgress( textView_age_ );
+
+        if(usbController_ == null){
+            usbController_ = new UsbController(this, mConnectionHandler, VID, PID);
+        }
+        Log.v("MyActivity", "onCreate: usb controller: " + (usbController_ == null) );
+        myOnSeekBarChangeListener.setTextViewProgress( textView_age_, usbController_ );
     }
 
 
@@ -83,5 +95,23 @@ public class MyActivity extends ActionBarActivity {
         Log.v("MyActivity", "seek_age_changed: " + Integer.toString(progress) );
     }
 
+    private final IUsbConnectionHandler mConnectionHandler = new IUsbConnectionHandler() {
+        @Override
+        public void onUsbStopped() {
+            Log.e("USB","Usb stopped!");
+        }
 
+        @Override
+        public void onErrorLooperRunningAlready() {
+            Log.e("USB","Looper already running!");
+        }
+
+        @Override
+        public void onDeviceNotFound() {
+            if(usbController_ != null){
+                usbController_.stop();
+                usbController_ = null;
+            }
+        }
+    };
 }

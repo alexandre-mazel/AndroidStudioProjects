@@ -3,6 +3,7 @@ package com.electronoos.glasses;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import ch.serverbox.android.usbcontroller.UsbController;
 
 /**
  * Created by a on 18/04/15.
@@ -11,10 +12,12 @@ import android.widget.TextView;
 public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
 
     int nPprogress = 0;
-    TextView textViewProgress;
+    TextView textViewProgress_;
+    UsbController usbController_;
 
-    public void setTextViewProgress( TextView t ){
-        textViewProgress = t;
+    public void setTextViewProgress( TextView t, UsbController u ){
+        textViewProgress_ = t;
+        usbController_ = u;
     }
 
 
@@ -23,8 +26,14 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
         Log.v("MyActivity", "seek_age_changed: in");
         Log.v("MyActivity", "seek_age_changed: " + Integer.toString(progresValue) );
         nPprogress = progresValue;
-        textViewProgress.setText(Integer.toString(progresValue));
+        textViewProgress_.setText(Integer.toString(progresValue));
 //        Toast.makeText(getApplicationContext(), "Changing seekbar's progress", Toast.LENGTH_SHORT).show();
+
+        if(fromUser){
+            if(usbController_ != null){
+                usbController_.send((byte)(nPprogress&0xFF));
+            }
+        }
     }
 
     @Override
