@@ -129,13 +129,19 @@
                 android:textSize="40dp"
                 />
 
-            <TextView
+            <TextView android:id="@+id/text_view_usb_status"
                 android:layout_height="120dp"
                 android:layout_width="wrap_content"
                 android:text=""
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="40dp"
+                android:textSize="10dp"
+                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_refresh_usb"
+                android:onClick="refresh_usb"
                 />
             <ImageView
                 android:id="@+id/imageView1"
@@ -144,6 +150,7 @@
                 android:src="@drawable/logo_cdl_white"
                 android:layout_gravity="center"
                 />
+
 
         </LinearLayout>
 

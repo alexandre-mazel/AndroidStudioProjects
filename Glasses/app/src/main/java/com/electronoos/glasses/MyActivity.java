@@ -23,8 +23,10 @@ public class MyActivity extends ActionBarActivity {
     private SeekBar seekBar_age_;
     public TextView textView_age_;
 
+    public TextView textView_usb_debug_;
+
     private static final int VID = 0x2341;
-    private static final int PID = 0x0001;//I believe it is 0x0000 for the Arduino Megas
+    private static final int PID = 0x0042;//I believe it is 0x0000 for the Arduino Megas // 0X0001 for uno // 0x0042 for MEgA 2560 R3
     private static UsbController usbController_;
 
 
@@ -36,13 +38,18 @@ public class MyActivity extends ActionBarActivity {
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
         seekBar_age_ = (SeekBar) findViewById(R.id.seek_bar_age);
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
+        textView_usb_debug_ = (TextView) findViewById(R.id.text_view_usb_status);
         MyOnSeekBarChangeListener myOnSeekBarChangeListener = new MyOnSeekBarChangeListener();
         seekBar_age_.setOnSeekBarChangeListener( myOnSeekBarChangeListener );
 
         if(usbController_ == null){
-            usbController_ = new UsbController(this, mConnectionHandler, VID, PID);
+            usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_);
         }
-        Log.v("MyActivity", "onCreate: usb controller: " + (usbController_ == null) );
+        Log.v("MyActivity", "onCreate: usb controller: " + (usbController_ != null) );
+        //textView_age_.setWidth(800);
+        //textView_age_.setTextSize(8);
+        textView_usb_debug_.setText( textView_usb_debug_.getText() + "\n usb : " + (usbController_ != null) );
+
         myOnSeekBarChangeListener.setTextViewProgress( textView_age_, usbController_ );
     }
 
@@ -86,6 +93,14 @@ public class MyActivity extends ActionBarActivity {
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
         */
+    }
+
+
+    /** Called when the user clicks the Send button */
+    public void refresh_usb(View view) {
+        // Do something in response to button
+        Log.v("MyActivity", "refresh_usb: begin");
+        usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_);
     }
 
     public void seek_age_changed(SeekBar seekBar, int progress, boolean fromUser) {

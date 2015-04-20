@@ -35,6 +35,7 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
+import android.widget.TextView;
 
 /**
  * (c) Neuxs-Computing GmbH Switzerland
@@ -45,6 +46,7 @@ public class UsbController {
 
 	private final Context mApplicationContext;
 	private final UsbManager mUsbManager;
+    private final TextView textView_usb_debug_;
 	private final ch.serverbox.android.usbcontroller.IUsbConnectionHandler mConnectionHandler;
 	private final int VID;
 	private final int PID;
@@ -56,13 +58,14 @@ public class UsbController {
 	 * @param parentActivity
 	 */
 	public UsbController(Activity parentActivity,
-			IUsbConnectionHandler connectionHandler, int vid, int pid) {
+			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug) {
 		mApplicationContext = parentActivity.getApplicationContext();
 		mConnectionHandler = connectionHandler;
 		mUsbManager = (UsbManager) mApplicationContext
 				.getSystemService(Context.USB_SERVICE);
 		VID = vid;
 		PID = pid;
+        textView_usb_debug_ = textView_usb_debug;
 		init();
 	}
 
@@ -117,6 +120,7 @@ public class UsbController {
 
 	public void send(byte data) {
 		mData = data;
+        textView_usb_debug_.setText( "sending: " + Integer.toString(data) );
 		synchronized (sSendLock) {
 			sSendLock.notify();
 		}
@@ -124,24 +128,33 @@ public class UsbController {
 
 	private void enumerate(IPermissionListener listener) {
 		l("enumerating");
+        textView_usb_debug_.setText( "enumerating..." );
 		HashMap<String, UsbDevice> devlist = mUsbManager.getDeviceList();
 		Iterator<UsbDevice> deviter = devlist.values().iterator();
+        String infoDeviceLog = "usb devices: ";
 		while (deviter.hasNext()) {
 			UsbDevice d = deviter.next();
-			l("Found device: "
-					+ String.format("%04X:%04X", d.getVendorId(),
-							d.getProductId()));
+            String infoDevice = "Found device: " + String.format("%04X:%04X", d.getVendorId(),d.getProductId());
+			l( infoDevice );
+            infoDeviceLog += infoDevice + "\n";
 			if (d.getVendorId() == VID && d.getProductId() == PID) {
 				l("Device under: " + d.getDeviceName());
+                infoDeviceLog += "recognized...\n";
 				if (!mUsbManager.hasPermission(d))
+                {
 					listener.onPermissionDenied(d);
-				else{
+                    infoDeviceLog += "permission denied...\n";
+                }
+				else
+                {
+                    infoDeviceLog += "selected...\n";
 					startHandler(d);
 					return;
 				}
 				break;
 			}
 		}
+        textView_usb_debug_.setText( infoDeviceLog );
 		l("no more devices found");
 		mConnectionHandler.onDeviceNotFound();
 	}
