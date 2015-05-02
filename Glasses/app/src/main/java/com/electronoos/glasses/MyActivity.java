@@ -3,6 +3,7 @@ package com.electronoos.glasses;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,6 +14,11 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 import ch.serverbox.android.usbcontroller.UsbController;
 import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
 
@@ -20,43 +26,52 @@ import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
 public class MyActivity extends ActionBarActivity {
     public final static String EXTRA_MESSAGE = "com.electronoos.glasses.MESSAGE";
 
+    public final static String strClassName = "MyActivity";
+
+
     private SeekBar seekBar_age_;
     public TextView textView_age_;
 
     public TextView textView_usb_debug_;
+    public TextView textView_log_debug_;
+
 
     private static final int VID = 0x2341;
     private static final int PID = 0x0042;//I believe it is 0x0000 for the Arduino Megas // 0X0001 for uno // 0x0042 for MEgA 2560 R3
     private static UsbController usbController_;
 
+    private static com.electronoos.utils.Debug debug;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v("MyActivity", "onCreate: begin");
+        Log.v( "MyActivity", "onCreate: begin");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
         seekBar_age_ = (SeekBar) findViewById(R.id.seek_bar_age);
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
         textView_usb_debug_ = (TextView) findViewById(R.id.text_view_usb_status);
+        textView_log_debug_ = (TextView) findViewById(R.id.text_view_debug_log);
         MyOnSeekBarChangeListener myOnSeekBarChangeListener = new MyOnSeekBarChangeListener();
         seekBar_age_.setOnSeekBarChangeListener( myOnSeekBarChangeListener );
 
         if(usbController_ == null){
-            usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_);
+            usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, textView_log_debug_);
         }
-        Log.v("MyActivity", "onCreate: usb controller: " + (usbController_ != null) );
+        l("onCreate: usb controller: " + (usbController_ != null));
         //textView_age_.setWidth(800);
         //textView_age_.setTextSize(8);
+        debug.setLogTextView( textView_log_debug_ );
         textView_usb_debug_.setText( textView_usb_debug_.getText() + "\n usb : " + (usbController_ != null) );
 
-        myOnSeekBarChangeListener.setTextViewProgress( textView_age_, usbController_ );
+        myOnSeekBarChangeListener.setWidget(textView_age_, usbController_, debug);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.v("MyActivity", "onCreateOptionsMenu: begin");
+        l("onCreateOptionsMenu: begin");
 
         /*
         // Inflate the menu; this adds items to the action bar if it is present. (settings...)
@@ -68,7 +83,7 @@ public class MyActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.v("MyActivity", "onOptionsItemSelected: begin");
+        l("onOptionsItemSelected: begin");
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -85,7 +100,7 @@ public class MyActivity extends ActionBarActivity {
     /** Called when the user clicks the Send button */
     public void sendMessage(View view) {
         // Do something in response to button
-        Log.v("MyActivity", "sendMessage: begin");
+        l("sendMessage: begin");
         /*
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         EditText editText = (EditText) findViewById(R.id.edit_message);
@@ -99,26 +114,26 @@ public class MyActivity extends ActionBarActivity {
     /** Called when the user clicks the Send button */
     public void refresh_usb(View view) {
         // Do something in response to button
-        Log.v("MyActivity", "refresh_usb: begin");
-        usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_);
+        l( "refresh_usb: begin");
+        usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, textView_log_debug_);
     }
 
     public void seek_age_changed(SeekBar seekBar, int progress, boolean fromUser) {
         // Do something in response to seekbar change
         // never called !!!
-        Log.v("MyActivity", "seek_age_changed: in");
-        Log.v("MyActivity", "seek_age_changed: " + Integer.toString(progress) );
+        l("seek_age_changed: in - not used!\n");
+        l("seek_age_changed: " + Integer.toString(progress));
     }
 
     private final IUsbConnectionHandler mConnectionHandler = new IUsbConnectionHandler() {
         @Override
         public void onUsbStopped() {
-            Log.e("USB","Usb stopped!");
+            e("Usb stopped!");
         }
 
         @Override
         public void onErrorLooperRunningAlready() {
-            Log.e("USB","Looper already running!");
+            e( "Looper already running!");
         }
 
         @Override
@@ -129,4 +144,3 @@ public class MyActivity extends ActionBarActivity {
             }
         }
     };
-}

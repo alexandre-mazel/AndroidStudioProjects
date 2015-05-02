@@ -19,6 +19,9 @@
  */
 package ch.serverbox.android.usbcontroller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -34,6 +37,8 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -46,7 +51,8 @@ public class UsbController {
 
 	private final Context mApplicationContext;
 	private final UsbManager mUsbManager;
-    private final TextView textView_usb_debug_;
+    private final TextView textView_usb_debug_; // not owned
+    private final TextView textView_debug_log_; // not owned
 	private final ch.serverbox.android.usbcontroller.IUsbConnectionHandler mConnectionHandler;
 	private final int VID;
 	private final int PID;
@@ -58,7 +64,7 @@ public class UsbController {
 	 * @param parentActivity
 	 */
 	public UsbController(Activity parentActivity,
-			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug) {
+			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug,TextView textView_debug_log) {
 		mApplicationContext = parentActivity.getApplicationContext();
 		mConnectionHandler = connectionHandler;
 		mUsbManager = (UsbManager) mApplicationContext
@@ -66,6 +72,7 @@ public class UsbController {
 		VID = vid;
 		PID = pid;
         textView_usb_debug_ = textView_usb_debug;
+        textView_debug_log_ = textView_debug_log;
 		init();
 	}
 
@@ -108,14 +115,18 @@ public class UsbController {
 	private UsbRunnable mLoop;
 	private Thread mUsbThread;
 
-	private void startHandler(UsbDevice d) {
-		if (mLoop != null) {
+	private void startHandler(UsbDevice d)
+    {
+		if (mLoop != null)
+        {
+            e("lopper running already");
 			mConnectionHandler.onErrorLooperRunningAlready();
 			return;
 		}
 		mLoop = new UsbRunnable(d);
 		mUsbThread = new Thread(mLoop);
 		mUsbThread.start();
+        l("stread started");
 	}
 
 	public void send(byte data) {
@@ -140,10 +151,12 @@ public class UsbController {
 			if (d.getVendorId() == VID && d.getProductId() == PID) {
 				l("Device under: " + d.getDeviceName());
                 infoDeviceLog += "recognized...\n";
+                //SystemClock.sleep(1000);
 				if (!mUsbManager.hasPermission(d))
                 {
 					listener.onPermissionDenied(d);
                     infoDeviceLog += "permission denied...\n";
+                    l("permission denied\n");
                 }
 				else
                 {
@@ -154,6 +167,7 @@ public class UsbController {
 				break;
 			}
 		}
+        infoDeviceLog += "ended...\n";
         textView_usb_debug_.setText( infoDeviceLog );
 		l("no more devices found");
 		mConnectionHandler.onDeviceNotFound();
@@ -168,20 +182,25 @@ public class UsbController {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
+            l("onReceive: enter");
 			mApplicationContext.unregisterReceiver(this);
 			if (intent.getAction().equals(ACTION_USB_PERMISSION)) {
 				if (!intent.getBooleanExtra(
-						UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+						UsbManager.EXTRA_PERMISSION_GRANTED, false))
+                {
+                    l("onReceive: perm denied");
 					mPermissionListener.onPermissionDenied((UsbDevice) intent
 							.getParcelableExtra(UsbManager.EXTRA_DEVICE));
 				} else {
-					l("Permission granted");
+					l("onReceive: Permission granted");
 					UsbDevice dev = (UsbDevice) intent
 							.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 					if (dev != null) {
 						if (dev.getVendorId() == VID
-								&& dev.getProductId() == PID) {
-							startHandler(dev);// has new thread
+								&& dev.getProductId() == PID)
+                        {
+                            l("onReceive: start new thread");
+                            startHandler(dev);// has new thread
 						}
 					} else {
 						e("device not present!");
@@ -266,11 +285,44 @@ public class UsbController {
 
 	public final static String TAG = "USBController";
 
-	private void l(Object msg) {
+	private void l(Object msg)
+    {
 		Log.d(TAG, ">==< " + msg.toString() + " >==<");
+        printToLog( TAG + ": " + msg );
 	}
 
-	private void e(Object msg) {
+	private void e(Object msg)
+    {
 		Log.e(TAG, ">==< " + msg.toString() + " >==<");
+        printToLog( TAG + ": ERR: " + msg.toString());
 	}
+
+    private void printToLog( Object msg )
+    {
+        SimpleDateFormat s = new SimpleDateFormat("hh:mm:ss");
+        String timestamp = s.format(new Date());
+        String strNew = timestamp + ": " + TAG + ": " + msg.toString();
+
+
+        String strCurrentLogs = textView_debug_log_.getText().toString();
+        String lines[] = strCurrentLogs.split("\\r?\\n"); // System.getProperty("line.separator")
+        ArrayList<String> listLine = new ArrayList<String>();
+
+        int nBegin = 0;
+        // copy all lines (but not the first one, sometimes)
+        if( lines.length > 10 )
+        {
+            nBegin = 1;
+        }
+        for (int i = nBegin; i < lines.length; ++i)
+        {
+            listLine.add( lines[i] );
+        }
+        listLine.add(strNew);
+
+        String newFullLogs = TextUtils.join("\n", listLine);
+
+
+        textView_debug_log_.setText( newFullLogs );
+    }
 }

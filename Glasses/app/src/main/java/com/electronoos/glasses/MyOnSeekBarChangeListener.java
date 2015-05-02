@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import ch.serverbox.android.usbcontroller.UsbController;
+import android.support.v7.app.ActionBarActivity;
 
 /**
  * Created by a on 18/04/15.
@@ -14,17 +15,19 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
     int nPprogress = 0;
     TextView textViewProgress_;
     UsbController usbController_;
+    ActionBarActivity currentActivity_;
 
-    public void setTextViewProgress( TextView t, UsbController u ){
+    public void setWidget( TextView t, UsbController u, ActionBarActivity activity ){
         textViewProgress_ = t;
         usbController_ = u;
+        currentActivity_ = activity;
     }
 
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
-        Log.v("MyActivity", "seek_age_changed: in");
-        Log.v("MyActivity", "seek_age_changed: " + Integer.toString(progresValue) );
+        currentActivity_.l( "ChangeListener: seek_age_changed: in");
+        currentActivity_.l( "ChangeListener: seek_age_changed: " + Integer.toString(progresValue) );
         nPprogress = progresValue;
         textViewProgress_.setText(Integer.toString(progresValue));
 //        Toast.makeText(getApplicationContext(), "Changing seekbar's progress", Toast.LENGTH_SHORT).show();
