@@ -274,9 +274,10 @@ public class UsbController {
 					}
 				}
                 logger_.l( strClassName, "data: " + Byte.toString(( mData )));
+                // mData n'est pas bien mis a jour par le caller du synchronized, bizarre non ? alors on le remet ici!
                 int nAge = myActivity_.getAge();
                 logger_.l( strClassName, "age: " + Integer.toString(( nAge )));
-                mData = (byte)((nAge*2)&0xFF);
+                mData = (byte)(nAge&0xFF);
 				conn.bulkTransfer(epOUT, new byte[]{mData}, 1, 0);
 	
 				if (mStop) {
