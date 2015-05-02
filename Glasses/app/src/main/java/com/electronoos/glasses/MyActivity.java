@@ -61,7 +61,7 @@ public class MyActivity extends ActionBarActivity {
         seekBar_age_.setOnSeekBarChangeListener(myOnSeekBarChangeListener);
 
         if (usbController_ == null) {
-            usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_);
+            usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_, this);
         }
         logger_.l( strClassName, "onCreate: usb controller: " + (usbController_ != null));
         //textView_age_.setWidth(800);
@@ -122,7 +122,7 @@ public class MyActivity extends ActionBarActivity {
     public void refresh_usb(View view) {
         // Do something in response to button
         logger_.l( strClassName, "refresh_usb: begin");
-        usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_);
+        usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_, this);
     }
 
     public void seek_age_changed(SeekBar seekBar, int progress, boolean fromUser) {
@@ -151,5 +151,10 @@ public class MyActivity extends ActionBarActivity {
             }
         }
     };
+
+    public int getAge()
+    {
+        return seekBar_age_.getProgress();
+    }
 
 }

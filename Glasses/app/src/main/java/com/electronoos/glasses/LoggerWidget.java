@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class LoggerWidget {
     private TextView textView_log_ = null;
-    private int nNbrLineMax_ = 10;
+    private int nNbrLineMax_ = 12;
 
     public LoggerWidget()
     {
@@ -75,9 +75,11 @@ public class LoggerWidget {
         {
             listLine.add( lines[i] );
         }
-        listLine.add(strNew);
+        //listLine.add(strNew);
 
         String newFullLogs = TextUtils.join("\n", listLine);
+
+        newFullLogs += "\n" + strNew;
 
 
         textView_log_.setText( newFullLogs );

@@ -41,6 +41,8 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.electronoos.glasses.MyActivity;
 import com.electronoos.utils.LoggerWidget;
 
 /**
@@ -59,6 +61,7 @@ public class UsbController {
 	private final int PID;
 	protected static final String ACTION_USB_PERMISSION = "ch.serverbox.android.USB";
     private final static String strClassName = "USBController";
+    private final MyActivity myActivity_;
 
 
 
@@ -68,7 +71,7 @@ public class UsbController {
 	 * @param parentActivity
 	 */
 	public UsbController(Activity parentActivity,
-			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug, LoggerWidget logger) {
+			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug, LoggerWidget logger, MyActivity myActivity) {
 		mApplicationContext = parentActivity.getApplicationContext();
 		mConnectionHandler = connectionHandler;
 		mUsbManager = (UsbManager) mApplicationContext
@@ -77,6 +80,7 @@ public class UsbController {
 		PID = pid;
         textView_usb_debug_ = textView_usb_debug;
         logger_ = logger;
+        myActivity_ = myActivity;
 		init();
 	}
 
@@ -123,19 +127,21 @@ public class UsbController {
     {
 		if (mLoop != null)
         {
-            logger_.e( strClassName, "lopper running already");
+            logger_.e(strClassName, "lopper running already");
 			mConnectionHandler.onErrorLooperRunningAlready();
 			return;
 		}
 		mLoop = new UsbRunnable(d);
 		mUsbThread = new Thread(mLoop);
 		mUsbThread.start();
-        logger_.l( strClassName, "stread started");
+        logger_.l(strClassName, "stread started");
 	}
 
-	public void send(byte data) {
+	public void send(byte data){
 		mData = data;
-        textView_usb_debug_.setText( "sending: " + Integer.toString(data) );
+        short dataForPrint = (short) (data & 0xFF); // convert to signed short interpreting byte as unsigned (constant are int by default)
+        textView_usb_debug_.setText( "sending: " + Short.toString(dataForPrint) );
+        logger_.l( strClassName, "sending: " + Short.toString(dataForPrint) );
 		synchronized (sSendLock) {
 			sSendLock.notify();
 		}
@@ -150,17 +156,17 @@ public class UsbController {
 		while (deviter.hasNext()) {
 			UsbDevice d = deviter.next();
             String infoDevice = "Found device: " + String.format("%04X:%04X", d.getVendorId(),d.getProductId());
-            logger_.l( strClassName, infoDevice );
+            logger_.l(strClassName, infoDevice);
             infoDeviceLog += infoDevice + "\n";
 			if (d.getVendorId() == VID && d.getProductId() == PID) {
-                logger_.l( strClassName, "Device under: " + d.getDeviceName());
+                logger_.l(strClassName, "Device under: " + d.getDeviceName());
                 infoDeviceLog += "recognized...\n";
                 //SystemClock.sleep(1000);
 				if (!mUsbManager.hasPermission(d))
                 {
 					listener.onPermissionDenied(d);
                     infoDeviceLog += "permission denied...\n";
-                    logger_.l( strClassName, "permission denied\n");
+                    logger_.l(strClassName, "permission denied\n");
                 }
 				else
                 {
@@ -173,7 +179,7 @@ public class UsbController {
 		}
         infoDeviceLog += "ended...\n";
         textView_usb_debug_.setText( infoDeviceLog );
-        logger_.l( strClassName, "no more devices found");
+        logger_.l(strClassName, "no more devices found");
 		mConnectionHandler.onDeviceNotFound();
 	}
 
@@ -186,24 +192,24 @@ public class UsbController {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-            logger_.l( strClassName, "onReceive: enter");
+            logger_.l(strClassName, "onReceive: enter");
 			mApplicationContext.unregisterReceiver(this);
 			if (intent.getAction().equals(ACTION_USB_PERMISSION)) {
 				if (!intent.getBooleanExtra(
 						UsbManager.EXTRA_PERMISSION_GRANTED, false))
                 {
-                    logger_.l( strClassName, "onReceive: perm denied");
+                    logger_.l(strClassName, "onReceive: perm denied");
 					mPermissionListener.onPermissionDenied((UsbDevice) intent
 							.getParcelableExtra(UsbManager.EXTRA_DEVICE));
 				} else {
-                    logger_.l( strClassName, "onReceive: Permission granted");
+                    logger_.l(strClassName, "onReceive: Permission granted");
 					UsbDevice dev = (UsbDevice) intent
 							.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 					if (dev != null) {
 						if (dev.getVendorId() == VID
 								&& dev.getProductId() == PID)
                         {
-                            logger_.l( strClassName, "onReceive: start new thread");
+                            logger_.l(strClassName, "onReceive: start new thread");
                             startHandler(dev);// has new thread
 						}
 					} else {
@@ -219,7 +225,7 @@ public class UsbController {
 	private static final Object[] sSendLock = new Object[]{};//learned this trick from some google example :)
 	//basically an empty array is lighter than an  actual new Object()...
 	private boolean mStop = false;
-	private byte mData = 0x00;
+	private byte mData = 0x05;
 
 	private class UsbRunnable implements Runnable {
 		private final UsbDevice mDevice;
@@ -255,16 +261,23 @@ public class UsbController {
 			for (;;) {// this is the main loop for transferring
 				synchronized (sSendLock) {//ok there should be a OUT queue, no guarantee that the byte is sent actually
 					try {
+                        logger_.l( strClassName, "avant wait");
 						sSendLock.wait();
+                        logger_.l(strClassName, "apres wait");
 					} catch (InterruptedException e) {
 						if (mStop) {
 							mConnectionHandler.onUsbStopped();
 							return;
 						}
+                        logger_.l( strClassName, "interrupted!!!");
 						e.printStackTrace();
 					}
 				}
-				conn.bulkTransfer(epOUT, new byte[] { mData }, 1, 0);
+                logger_.l( strClassName, "data: " + Byte.toString(( mData )));
+                int nAge = myActivity_.getAge();
+                logger_.l( strClassName, "age: " + Integer.toString(( nAge )));
+                mData = (byte)((nAge*2)&0xFF);
+				conn.bulkTransfer(epOUT, new byte[]{mData}, 1, 0);
 	
 				if (mStop) {
 					mConnectionHandler.onUsbStopped();
@@ -279,7 +292,7 @@ public class UsbController {
 			new IPermissionListener() {
 				@Override
 				public void onPermissionDenied(UsbDevice d) {
-                    logger_.l( strClassName, "Permission denied on " + d.getDeviceId() );
+                    logger_.l(strClassName, "Permission denied on " + d.getDeviceId());
 				}
 			});
 
