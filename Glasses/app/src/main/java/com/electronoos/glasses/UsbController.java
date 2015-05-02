@@ -41,6 +41,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
+import com.electronoos.utils.LoggerWidget;
 
 /**
  * (c) Neuxs-Computing GmbH Switzerland
@@ -52,19 +53,22 @@ public class UsbController {
 	private final Context mApplicationContext;
 	private final UsbManager mUsbManager;
     private final TextView textView_usb_debug_; // not owned
-    private final TextView textView_debug_log_; // not owned
+    private final LoggerWidget logger_; // not owned
 	private final ch.serverbox.android.usbcontroller.IUsbConnectionHandler mConnectionHandler;
 	private final int VID;
 	private final int PID;
 	protected static final String ACTION_USB_PERMISSION = "ch.serverbox.android.USB";
+    private final static String strClassName = "USBController";
 
-	/**
+
+
+    /**
 	 * Activity is needed for onResult
 	 * 
 	 * @param parentActivity
 	 */
 	public UsbController(Activity parentActivity,
-			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug,TextView textView_debug_log) {
+			IUsbConnectionHandler connectionHandler, int vid, int pid, TextView textView_usb_debug, LoggerWidget logger) {
 		mApplicationContext = parentActivity.getApplicationContext();
 		mConnectionHandler = connectionHandler;
 		mUsbManager = (UsbManager) mApplicationContext
@@ -72,7 +76,7 @@ public class UsbController {
 		VID = vid;
 		PID = pid;
         textView_usb_debug_ = textView_usb_debug;
-        textView_debug_log_ = textView_debug_log;
+        logger_ = logger;
 		init();
 	}
 
@@ -101,7 +105,7 @@ public class UsbController {
 			if(mUsbThread != null)
 				mUsbThread.join();
 		} catch (InterruptedException e) {
-			e(e);
+            logger_.e( strClassName, e.toString());
 		}
 		mStop = false;
 		mLoop = null;
@@ -119,14 +123,14 @@ public class UsbController {
     {
 		if (mLoop != null)
         {
-            e("lopper running already");
+            logger_.e( strClassName, "lopper running already");
 			mConnectionHandler.onErrorLooperRunningAlready();
 			return;
 		}
 		mLoop = new UsbRunnable(d);
 		mUsbThread = new Thread(mLoop);
 		mUsbThread.start();
-        l("stread started");
+        logger_.l( strClassName, "stread started");
 	}
 
 	public void send(byte data) {
@@ -138,7 +142,7 @@ public class UsbController {
 	}
 
 	private void enumerate(IPermissionListener listener) {
-		l("enumerating");
+		logger_.l(strClassName, "enumerating");
         textView_usb_debug_.setText( "enumerating..." );
 		HashMap<String, UsbDevice> devlist = mUsbManager.getDeviceList();
 		Iterator<UsbDevice> deviter = devlist.values().iterator();
@@ -146,17 +150,17 @@ public class UsbController {
 		while (deviter.hasNext()) {
 			UsbDevice d = deviter.next();
             String infoDevice = "Found device: " + String.format("%04X:%04X", d.getVendorId(),d.getProductId());
-			l( infoDevice );
+            logger_.l( strClassName, infoDevice );
             infoDeviceLog += infoDevice + "\n";
 			if (d.getVendorId() == VID && d.getProductId() == PID) {
-				l("Device under: " + d.getDeviceName());
+                logger_.l( strClassName, "Device under: " + d.getDeviceName());
                 infoDeviceLog += "recognized...\n";
                 //SystemClock.sleep(1000);
 				if (!mUsbManager.hasPermission(d))
                 {
 					listener.onPermissionDenied(d);
                     infoDeviceLog += "permission denied...\n";
-                    l("permission denied\n");
+                    logger_.l( strClassName, "permission denied\n");
                 }
 				else
                 {
@@ -169,7 +173,7 @@ public class UsbController {
 		}
         infoDeviceLog += "ended...\n";
         textView_usb_debug_.setText( infoDeviceLog );
-		l("no more devices found");
+        logger_.l( strClassName, "no more devices found");
 		mConnectionHandler.onDeviceNotFound();
 	}
 
@@ -182,28 +186,28 @@ public class UsbController {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-            l("onReceive: enter");
+            logger_.l( strClassName, "onReceive: enter");
 			mApplicationContext.unregisterReceiver(this);
 			if (intent.getAction().equals(ACTION_USB_PERMISSION)) {
 				if (!intent.getBooleanExtra(
 						UsbManager.EXTRA_PERMISSION_GRANTED, false))
                 {
-                    l("onReceive: perm denied");
+                    logger_.l( strClassName, "onReceive: perm denied");
 					mPermissionListener.onPermissionDenied((UsbDevice) intent
 							.getParcelableExtra(UsbManager.EXTRA_DEVICE));
 				} else {
-					l("onReceive: Permission granted");
+                    logger_.l( strClassName, "onReceive: Permission granted");
 					UsbDevice dev = (UsbDevice) intent
 							.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 					if (dev != null) {
 						if (dev.getVendorId() == VID
 								&& dev.getProductId() == PID)
                         {
-                            l("onReceive: start new thread");
+                            logger_.l( strClassName, "onReceive: start new thread");
                             startHandler(dev);// has new thread
 						}
 					} else {
-						e("device not present!");
+                        logger_.e( strClassName, "device not present!");
 					}
 				}
 			}
@@ -275,54 +279,11 @@ public class UsbController {
 			new IPermissionListener() {
 				@Override
 				public void onPermissionDenied(UsbDevice d) {
-					l("Permission denied on " + d.getDeviceId());
+                    logger_.l( strClassName, "Permission denied on " + d.getDeviceId() );
 				}
 			});
 
 	private static interface IPermissionListener {
 		void onPermissionDenied(UsbDevice d);
 	}
-
-	public final static String TAG = "USBController";
-
-	private void l(Object msg)
-    {
-		Log.d(TAG, ">==< " + msg.toString() + " >==<");
-        printToLog( TAG + ": " + msg );
-	}
-
-	private void e(Object msg)
-    {
-		Log.e(TAG, ">==< " + msg.toString() + " >==<");
-        printToLog( TAG + ": ERR: " + msg.toString());
-	}
-
-    private void printToLog( Object msg )
-    {
-        SimpleDateFormat s = new SimpleDateFormat("hh:mm:ss");
-        String timestamp = s.format(new Date());
-        String strNew = timestamp + ": " + TAG + ": " + msg.toString();
-
-
-        String strCurrentLogs = textView_debug_log_.getText().toString();
-        String lines[] = strCurrentLogs.split("\\r?\\n"); // System.getProperty("line.separator")
-        ArrayList<String> listLine = new ArrayList<String>();
-
-        int nBegin = 0;
-        // copy all lines (but not the first one, sometimes)
-        if( lines.length > 10 )
-        {
-            nBegin = 1;
-        }
-        for (int i = nBegin; i < lines.length; ++i)
-        {
-            listLine.add( lines[i] );
-        }
-        listLine.add(strNew);
-
-        String newFullLogs = TextUtils.join("\n", listLine);
-
-
-        textView_debug_log_.setText( newFullLogs );
-    }
 }
