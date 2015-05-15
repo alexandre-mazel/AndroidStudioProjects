@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class LoggerWidget {
     private TextView textView_log_ = null;
-    private int nNbrLineMax_ = 12;
+    private int nNbrLineMax_ = 15;
 
     public LoggerWidget()
     {
@@ -30,35 +30,36 @@ public class LoggerWidget {
         textView_log_ = tv;
     }
 
-    public void l( Object msg, String strCallerClassName )
+    public void l( String strCallerClassName, Object msg )
     {
         Log.v( strCallerClassName, msg.toString() );
-        printToLog( "INF: " + msg.toString(), strCallerClassName );
+        printToLog( "INF: " + strCallerClassName + ": " + msg.toString() );
     }
 
-    public void w( Object msg, String strCallerClassName )
+    public void w( String strCallerClassName, Object msg )
     {
         Log.w( strCallerClassName, msg.toString() );
-        printToLog( "WRN: " + msg.toString(), strCallerClassName );
+        printToLog( "WRN: " + strCallerClassName + ": " + msg.toString() );
     }
 
-    public void e( Object msg, String strCallerClassName )
+    public void e( String strCallerClassName, Object msg )
     {
         Log.e( strCallerClassName, msg.toString() );
-        printToLog( "ERR: " + msg.toString(), strCallerClassName );
+        printToLog( "ERR: " + strCallerClassName + ": " + msg.toString() );
     }
 
-    private void printToLog( String msg, String strCallerClassName )
+    private void printToLog( String msg )
     {
         if( textView_log_ == null )
         {
-            Log.e( "LoggerWidget", "Can't output log: widget not attached. Log: " + strCallerClassName + ": " + msg );
+            Log.e( "LoggerWidget", "Can't output log: widget not attached. Log: " + msg );
             return;
         }
         // append new log to current log outputted
         SimpleDateFormat s = new SimpleDateFormat("hh:mm:ss");
         String timestamp = s.format(new Date());
-        String strNew = timestamp + ": " + strCallerClassName + ": " + msg.toString();
+        String strNewLog = timestamp + ": " + msg.toString();
+        Log.v("debug", "GLASSES_LOG: " + strNewLog + "\n" );
 
 
         String strCurrentLogs = textView_log_.getText().toString();
@@ -67,7 +68,7 @@ public class LoggerWidget {
 
         int nBegin = 0;
         // copy all lines (but not the first one, sometimes)
-        if( lines.length > nNbrLineMax_ )
+        if( lines.length >= nNbrLineMax_ )
         {
             nBegin = 1;
         }
@@ -79,9 +80,21 @@ public class LoggerWidget {
 
         String newFullLogs = TextUtils.join("\n", listLine);
 
-        newFullLogs += "\n" + strNew;
+        newFullLogs += "\n" + strNewLog;
 
-
-        textView_log_.setText( newFullLogs );
+/*
+        try {
+            textView_log_.setText(newFullLogs);
+        }
+        catch(CalledFromWrongThreadException e)
+        {
+            Log.e("EXCEPTION (catched)", "GLASSES_LOG: " + e.toString() + "\n" );
+        }
+*/
+        runOnUiThread(new Runnable() {
+            public void run(){
+                textView_log_.update();
+            }
+        });
     }
 }

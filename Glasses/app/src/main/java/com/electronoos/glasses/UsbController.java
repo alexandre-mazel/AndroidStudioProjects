@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.Semaphore;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -62,6 +63,8 @@ public class UsbController {
 	protected static final String ACTION_USB_PERMISSION = "ch.serverbox.android.USB";
     private final static String strClassName = "USBController";
     private final MyActivity myActivity_;
+
+    private final Semaphore mutex_ = new Semaphore(1, true);
 
 
 
@@ -134,7 +137,8 @@ public class UsbController {
 		mLoop = new UsbRunnable(d);
 		mUsbThread = new Thread(mLoop);
 		mUsbThread.start();
-        logger_.l(strClassName, "stread started");
+        logger_.l(strClassName, "thread started");
+        textView_usb_debug_.setText( "connected..." );
 	}
 
 	public void send(byte data){
@@ -145,6 +149,7 @@ public class UsbController {
 		synchronized (sSendLock) {
 			sSendLock.notify();
 		}
+        logger_.l( strClassName, "method-send: end" );
 	}
 
 	private void enumerate(IPermissionListener listener) {
@@ -273,13 +278,22 @@ public class UsbController {
 						e.printStackTrace();
 					}
 				}
+                try {
+                    mutex_.acquire();
+                }
+                catch (InterruptedException e) {
+                    logger_.l( strClassName, "aqcuire interrupted" );
+                    return;
+                }
                 logger_.l( strClassName, "data: " + Byte.toString(( mData )));
                 // mData n'est pas bien mis a jour par le caller du synchronized, bizarre non ? alors on le remet ici!
                 int nAge = myActivity_.getAge();
                 logger_.l( strClassName, "age: " + Integer.toString(( nAge )));
                 mData = (byte)(nAge&0xFF);
-				conn.bulkTransfer(epOUT, new byte[]{mData}, 1, 0);
-	
+				conn.bulkTransfer(epOUT, new byte[]{0,mData,0,127}, 4, 0);
+                logger_.l( strClassName, "bulkTransfer: end" );
+
+                mutex_.release();
 				if (mStop) {
 					mConnectionHandler.onUsbStopped();
 					return;

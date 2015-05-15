@@ -1,5 +1,6 @@
 package com.electronoos.glasses;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -27,7 +28,8 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
-        logger_.l( strClassName, "seek_age_changed: in\n");
+
+        logger_.l( strClassName, "seek_age_changed: in");
         logger_.l( strClassName, "seek_age_changed: " + Integer.toString(progresValue) );
         logger_.l( strClassName, "from user: " + Boolean.toString(fromUser) );
         nPprogress = progresValue;
@@ -37,9 +39,10 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
         if(fromUser || true ){
             if(usbController_ != null){
                 logger_.l( strClassName, "sending!" );
-                usbController_.send((byte)((nPprogress*2)&0xFF));
+                usbController_.send((byte)((nPprogress)&0xFF));
             }
         }
+
     }
 
     @Override

@@ -57,6 +57,7 @@ public class MyActivity extends ActionBarActivity {
         textView_log_debug_ = (TextView) findViewById(R.id.text_view_debug_log);
         logger_ = new LoggerWidget();
         logger_.attachWidget(textView_log_debug_);
+        logger_.l( strClassName, "LOGGER BEGIN GLASSES" );
         MyOnSeekBarChangeListener myOnSeekBarChangeListener = new MyOnSeekBarChangeListener();
         seekBar_age_.setOnSeekBarChangeListener(myOnSeekBarChangeListener);
 
