@@ -7,6 +7,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.lang.Runnable;
 
 /**
  * Created by a on 02/05/15.
@@ -14,6 +15,7 @@ import java.util.Date;
 public class LoggerWidget {
     private TextView textView_log_ = null;
     private int nNbrLineMax_ = 15;
+    private String strCurrentLogStack_; // current log printed in the ui widget
 
     public LoggerWidget()
     {
@@ -28,6 +30,11 @@ public class LoggerWidget {
     public void attachWidget( TextView tv ) {
         Log.v("LoggerWidget", "attaching a text view...");
         textView_log_ = tv;
+    }
+
+    public void refreshWidget()
+    {
+        textView_log_.setText(strCurrentLogStack_);
     }
 
     public void l( String strCallerClassName, Object msg )
@@ -81,20 +88,33 @@ public class LoggerWidget {
         String newFullLogs = TextUtils.join("\n", listLine);
 
         newFullLogs += "\n" + strNewLog;
+        strCurrentLogStack_ = newFullLogs;
 
-/*
+
         try {
-            textView_log_.setText(newFullLogs);
+    //        textView_log_.setText(newFullLogs);
         }
-        catch(CalledFromWrongThreadException e)
+        //catch(CalledFromWrongThreadException e)
+        catch(RuntimeException e)
         {
             Log.e("EXCEPTION (catched)", "GLASSES_LOG: " + e.toString() + "\n" );
         }
-*/
+
+/*
+        // runOnUiThread is an activity method, but here we're not in an activity, so bim!
+        //Context context = getApplicationContext();
+
         runOnUiThread(new Runnable() {
             public void run(){
-                textView_log_.update();
+                refreshWidget();
             }
         });
+*/
+
     }
+/*
+    protected void onPostExecute(Void result) {
+        Log.l( "debug", "dans le on PostExecute du logger !!!");
+    }
+*/
 }
