@@ -4,7 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="edit_message">Enter a message</string>
-    <string name="button_send">Envoye</string>
+    <string name="button_send">Send</string>
     <string name="button_refresh_usb">Refresh usb</string>
     <string name="title_activity_display_message">My Message</string>
     <string name="text_view_age">Age</string>
@@ -12,12 +12,12 @@
     <string name="text_view_age_top">Old</string>
     <string name="text_view_age_bottom">Young</string>
 
-    <string name="text_view_acidity">Acidité</string>
-    <string name="text_view_acidity_top">Sucrée</string>
-    <string name="text_view_acidity_bottom">Acide</string>
+    <string name="text_view_acidity">Acidity</string>
+    <string name="text_view_acidity_top">Sweet</string>
+    <string name="text_view_acidity_bottom">Acid</string>
 
-    <string name="sliders_text_title">La couleur du vin varie en fonction de son\nâge et de son taux en sucre</string>
-    <string name="sliders_text_desc">Faites varier\nl\'âge et l\'acidité\nde votre vin</string>
+    <string name="sliders_text_title">The wine color change with stuffs and so...</string>
+    <string name="sliders_text_desc">swipe sliders to see colors</string>
 
 
 </resources>
