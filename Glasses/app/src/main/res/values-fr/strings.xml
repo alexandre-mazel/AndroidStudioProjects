@@ -1,9 +1,9 @@
 <resources>
-    <string name="text_view_age_top">Vieu</string>
+    <string name="text_view_age_top">Vieux</string>
     <string name="text_view_age_bottom">Jeune</string>
 
     <string name="text_view_acidity">Acidité</string>
-    <string name="text_view_acidity_top">Sucrée</string>
+    <string name="text_view_acidity_top">Sucré</string>
     <string name="text_view_acidity_bottom">Acide</string>
 
     <string name="sliders_text_title">La couleur du vin varie en fonction de son\nâge et de son taux en sucre</string>

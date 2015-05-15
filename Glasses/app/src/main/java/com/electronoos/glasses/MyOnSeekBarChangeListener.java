@@ -29,8 +29,8 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
     @Override
     public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
 
-        logger_.l( strClassName, "seek_age_changed: in");
-        logger_.l( strClassName, "seek_age_changed: " + Integer.toString(progresValue) );
+        logger_.l( strClassName, "seek_changed: in");
+        logger_.l( strClassName, "seek_changed: " + Integer.toString(progresValue) );
         logger_.l( strClassName, "from user: " + Boolean.toString(fromUser) );
         nPprogress = progresValue;
         textViewProgress_.setText(Integer.toString(progresValue));
@@ -39,7 +39,7 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
         if(fromUser || true ){
             if(usbController_ != null){
                 logger_.l( strClassName, "sending!" );
-                usbController_.send((byte)((nPprogress)&0xFF));
+                usbController_.send((byte)((nPprogress)&0xFF)); // the value is not used!
             }
         }
 

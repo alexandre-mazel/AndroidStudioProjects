@@ -1,9 +1,12 @@
 package com.electronoos.glasses;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import ch.serverbox.android.usbcontroller.UsbController;
 import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
@@ -33,6 +37,9 @@ public class MyActivity extends ActionBarActivity {
 
     private SeekBar seekBar_age_;
     public TextView textView_age_;
+
+    private SeekBar seekBar_acidity_;
+    public TextView textView_acidity_;
 
     public TextView textView_usb_debug_;
     public TextView textView_log_debug_;
@@ -51,15 +58,26 @@ public class MyActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+
         seekBar_age_ = (SeekBar) findViewById(R.id.seek_bar_age);
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
+
+        seekBar_acidity_ = (SeekBar) findViewById(R.id.seek_bar_acidity);
+        textView_acidity_ = (TextView) findViewById(R.id.text_view_progress_acidity);
+
         textView_usb_debug_ = (TextView) findViewById(R.id.text_view_usb_status);
         textView_log_debug_ = (TextView) findViewById(R.id.text_view_debug_log);
+
         logger_ = new LoggerWidget();
         logger_.attachWidget(textView_log_debug_);
         logger_.l( strClassName, "LOGGER BEGIN GLASSES" );
-        MyOnSeekBarChangeListener myOnSeekBarChangeListener = new MyOnSeekBarChangeListener();
-        seekBar_age_.setOnSeekBarChangeListener(myOnSeekBarChangeListener);
+
+        MyOnSeekBarChangeListener myOnSeekBarChangeListener_age = new MyOnSeekBarChangeListener();
+        seekBar_age_.setOnSeekBarChangeListener(myOnSeekBarChangeListener_age);
+
+        MyOnSeekBarChangeListener myOnSeekBarChangeListener_acidity = new MyOnSeekBarChangeListener();
+        seekBar_acidity_.setOnSeekBarChangeListener(myOnSeekBarChangeListener_acidity);
+
 
         if (usbController_ == null) {
             usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_, this);
@@ -69,7 +87,8 @@ public class MyActivity extends ActionBarActivity {
         //textView_age_.setTextSize(8);
         textView_usb_debug_.setText(textView_usb_debug_.getText() + "\n usb : " + (usbController_ != null));
 
-        myOnSeekBarChangeListener.setWidget(textView_age_, usbController_, logger_);
+        myOnSeekBarChangeListener_age.setWidget(textView_age_, usbController_, logger_);
+        myOnSeekBarChangeListener_acidity.setWidget(textView_acidity_, usbController_, logger_);
     }
 
 
@@ -117,12 +136,64 @@ public class MyActivity extends ActionBarActivity {
     }
 
 
+
+    /*change language at Run-time*/
+//use method like that:
+//setLocale("en");
+
+    public String getLocale()
+    {
+        // print current locale:
+        String strCurrentLocal = getResources().getConfiguration().locale.toString();
+        logger_.l( strClassName, "current locale: '" + strCurrentLocal + "'" );
+        return strCurrentLocal;
+    }
+
+    public void setLocale(String lang) {
+        logger_.l( strClassName, "Setting Locale to: '" + lang + "'" );
+        Locale myLocale = new Locale(lang);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+
+        // Intent refresh = new Intent(this, AndroidLocalize.class);
+        // startActivity(refresh);
+
+        // this.recreate(); // nice but flash a bit
+
+        // manual update:
+        ((TextView) findViewById(R.id.sliders_text_title)).setText(R.string.sliders_text_title);
+        ((TextView) findViewById(R.id.sliders_text_desc)).setText(R.string.sliders_text_desc);
+
+        ((TextView) findViewById(R.id.text_view_age)).setText(R.string.text_view_age);
+        ((TextView) findViewById(R.id.text_view_age_top)).setText(R.string.text_view_age_top);
+        ((TextView) findViewById(R.id.text_view_age_bottom)).setText(R.string.text_view_age_bottom);
+
+        ((TextView) findViewById(R.id.text_view_acidity)).setText(R.string.text_view_acidity);
+        ((TextView) findViewById(R.id.text_view_acidity_top)).setText(R.string.text_view_acidity_top);
+        ((TextView) findViewById(R.id.text_view_acidity_bottom)).setText(R.string.text_view_acidity_bottom);
+
+    }
+
+
+
     /**
      * Called when the user clicks the Send button
      */
     public void refresh_usb(View view) {
         // Do something in response to button
         logger_.l( strClassName, "refresh_usb: begin");
+        if( true )
+        {
+            if( getLocale().equals( "en" )) {
+                setLocale("fr_FR");
+            }
+            else {
+                setLocale("en");
+            }
+        }
         usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_, this);
     }
 
@@ -156,6 +227,10 @@ public class MyActivity extends ActionBarActivity {
     public int getAge()
     {
         return seekBar_age_.getProgress();
+    }
+    public int getAcidity()
+    {
+        return seekBar_acidity_.getProgress();
     }
 
 }

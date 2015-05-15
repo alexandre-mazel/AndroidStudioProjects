@@ -8,11 +8,12 @@
     <string name="button_refresh_usb">Refresh usb</string>
     <string name="title_activity_display_message">My Message</string>
     <string name="text_view_age">Age</string>
-    <string name="seek_bar_age">Age2</string>
+    <string name="seek_bar_age">Age2 - not used</string>
     <string name="text_view_age_top">Old</string>
     <string name="text_view_age_bottom">Young</string>
 
     <string name="text_view_acidity">Acidity</string>
+    <string name="seek_bar_acidity">Acidy2 - not used</string>
     <string name="text_view_acidity_top">Sweet</string>
     <string name="text_view_acidity_bottom">Acid</string>
 

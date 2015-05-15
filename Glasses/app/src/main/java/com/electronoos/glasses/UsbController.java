@@ -288,9 +288,12 @@ public class UsbController {
                 logger_.l( strClassName, "data: " + Byte.toString(( mData )));
                 // mData n'est pas bien mis a jour par le caller du synchronized, bizarre non ? alors on le remet ici!
                 int nAge = myActivity_.getAge();
+                int nAcidity = myActivity_.getAcidity();
                 logger_.l( strClassName, "age: " + Integer.toString(( nAge )));
-                mData = (byte)(nAge&0xFF);
-				conn.bulkTransfer(epOUT, new byte[]{0,mData,0,127}, 4, 0);
+                logger_.l( strClassName, "acidity: " + Integer.toString(( nAcidity )));
+                byte nDataRed = (byte)(nAge&0xFF);
+                byte nDataBlue = (byte)(nAcidity&0xFF);
+				conn.bulkTransfer(epOUT, new byte[]{nDataBlue,0,nDataRed,127}, 4, 0);
                 logger_.l( strClassName, "bulkTransfer: end" );
 
                 mutex_.release();
