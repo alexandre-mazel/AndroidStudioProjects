@@ -20,5 +20,9 @@
     <string name="sliders_text_title">The wine color change with stuffs and so...</string>
     <string name="sliders_text_desc">swipe sliders to see colors</string>
 
+    <string name="title_activity_my_shortcuts">MyShortcuts</string>
+    <string name="button_en">english</string>
+    <string name="button_fr">french</string>
+
 
 </resources>

@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.util.Log;
 import android.content.Intent;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -29,7 +31,7 @@ import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
 import com.electronoos.utils.LoggerWidget;
 
 
-public class MyActivity extends ActionBarActivity {
+public class MyActivity extends MyShortcuts {
     public final static String EXTRA_MESSAGE = "com.electronoos.glasses.MESSAGE";
 
     public final static String strClassName = "MyActivity";
@@ -56,7 +58,11 @@ public class MyActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("MyActivity", "onCreate: begin");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my);
+        //setContentView(R.layout.activity_my); // for menu
+
+        LayoutInflater inflater = getLayoutInflater();
+        inflater.inflate(R.layout.activity_my, (ViewGroup) findViewById(R.id.container));
+
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
 
         seekBar_age_ = (SeekBar) findViewById(R.id.seek_bar_age);

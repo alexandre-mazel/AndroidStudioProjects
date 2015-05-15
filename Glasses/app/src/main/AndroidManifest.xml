@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.electronoos.glasses" >
 
-   <!-- <uses-sdk android:minSdkVersion="7"  android:targetSdkVersion="18" /> -->
-
+    <!-- <uses-sdk android:minSdkVersion="7"  android:targetSdkVersion="18" /> -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,18 +10,17 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MyActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden"
-            >
-<!--            android:background="@drawable/logo_cdl_white" -->
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
+
+            <!-- android:background="@drawable/logo_cdl_white" -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".DisplayMessageActivity"
@@ -32,7 +30,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.electronoos.glasses.MyActivity" />
         </activity>
-
+        <activity
+            android:name=".MyShortcuts"
+            android:label="@string/title_activity_my_shortcuts" >
+        </activity>
     </application>
 
 </manifest>
