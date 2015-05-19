@@ -1,229 +1,242 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     >
-
-    <TextView android:id="@+id/sliders_text_title"
-        android:layout_height="0dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <include layout="@layout/language_button" />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_weight="20"
-        android:text="@string/sliders_text_title"
-        android:gravity="center"
-        android:textSize="40dp"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="80"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         >
 
+        <TextView android:id="@+id/sliders_text_title"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_weight="20"
+            android:text="@string/sliders_text_title"
+            android:gravity="center"
+            android:textSize="40dp"
+            />
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="80"
+            android:orientation="horizontal"
             android:layout_gravity="center"
-            android:gravity="center"
-
             >
 
-            <!--
-            <EditText android:id="@+id/edit_message"
-                android:layout_weight="1"
+
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="@string/edit_message" />
-            -->
-            <!-- android:layout_weight="1" -->
-
-            <!--
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/button_send"
-                android:onClick="sendMessage"
-                />
-            -->
-
-            <!--
-            android:paddingBottom="100dp"
-            -->
-
-            <TextView android:id="@+id/text_view_age"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/text_view_age"
-                android:layout_gravity="center"
-                android:textSize="40dp"
-                />
-
-            <TextView android:id="@+id/text_view_age_top"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/text_view_age_top"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="25dp"
 
-                />
+                >
 
-            <VerticalSeekBar android:id="@+id/seek_bar_age"
-                android:layout_height="0dp"
-                android:layout_width="wrap_content"
-                android:layout_weight="100"
-                android:text="@string/seek_bar_age"
-                android:onClick="seek_age_changed"
+                <!--
+                <EditText android:id="@+id/edit_message"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_message" />
+                -->
+                <!-- android:layout_weight="1" -->
+
+                <!--
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_send"
+                    android:onClick="sendMessage"
+                    />
+                -->
+
+                <!--
+                android:paddingBottom="100dp"
+                -->
+
+                <TextView android:id="@+id/text_view_age"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/text_view_age"
+                    android:layout_gravity="center"
+                    android:textSize="40dp"
+                    />
+
+                <TextView android:id="@+id/text_view_age_top"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/text_view_age_top"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="25dp"
+
+                    />
+
+                <VerticalSeekBar android:id="@+id/seek_bar_age"
+                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="100"
+                    android:text="@string/seek_bar_age"
+                    android:onClick="seek_age_changed"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:progressDrawable="@drawable/seekbar_progress"
+                    />
+
+
+                <TextView android:id="@+id/text_view_age_bottom"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/text_view_age_bottom"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="25dp"
+                    />
+
+                <TextView android:id="@+id/text_view_progress_age"
+                    android:layout_height="20dp"
+                    android:layout_width="40dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                >
+
+                <TextView
+                    android:layout_height="120dp"
+                    android:layout_width="wrap_content"
+                    android:text=""
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="40dp"
+                    />
+
+                <TextView android:id="@+id/sliders_text_desc"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/sliders_text_desc"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="40dp"
+                    />
+
+                <TextView android:id="@+id/text_view_usb_status"
+                    android:layout_height="20dp"
+                    android:layout_width="wrap_content"
+                    android:text="(usb status)"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="10dp"
+                    />
+                <TextView android:id="@+id/text_view_debug_log"
+                    android:layout_height="200dp"
+                    android:layout_width="wrap_content"
+                    android:text="(debug log)"
+                    android:layout_gravity="center"
+                    android:gravity="left"
+                    android:textSize="10dp"
+                    />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_refresh_usb"
+                    android:onClick="refresh_usb"
+                    />
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/logo_cdl_white"
+                    android:layout_gravity="center"
+                    />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:thumb="@drawable/seekbar_thumb"
-                android:progressDrawable="@drawable/seekbar_progress"
-                />
+
+                >
+
+                <TextView android:id="@+id/text_view_acidity"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/text_view_acidity"
+                    android:layout_gravity="center"
+                    android:textSize="40dp"
+                    />
+
+                <TextView android:id="@+id/text_view_acidity_top"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/text_view_acidity_top"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="25dp"
+
+                    />
+
+                <VerticalSeekBar android:id="@+id/seek_bar_acidity"
+                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="100"
+                    android:text="@string/seek_bar_acidity"
+                    android:onClick="seek_age_changed"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:progressDrawable="@drawable/seekbar_progress"
+                    />
 
 
-            <TextView android:id="@+id/text_view_age_bottom"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/text_view_age_bottom"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="25dp"
-                />
+                <TextView android:id="@+id/text_view_acidity_bottom"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/text_view_acidity_bottom"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="25dp"
+                    />
 
-            <TextView android:id="@+id/text_view_progress_age"
-                android:layout_height="20dp"
-                android:layout_width="40dp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                />
+                <TextView android:id="@+id/text_view_progress_acidity"
+                    android:layout_height="20dp"
+                    android:layout_width="40dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    />
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            >
-
-            <TextView
-                android:layout_height="120dp"
-                android:layout_width="wrap_content"
-                android:text=""
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="40dp"
-                />
-
-            <TextView android:id="@+id/sliders_text_desc"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/sliders_text_desc"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="40dp"
-                />
-
-            <TextView android:id="@+id/text_view_usb_status"
-                android:layout_height="20dp"
-                android:layout_width="wrap_content"
-                android:text="(usb status)"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="10dp"
-                />
-            <TextView android:id="@+id/text_view_debug_log"
-                android:layout_height="200dp"
-                android:layout_width="wrap_content"
-                android:text="(debug log)"
-                android:layout_gravity="center"
-                android:gravity="left"
-                android:textSize="10dp"
-                />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/button_refresh_usb"
-                android:onClick="refresh_usb"
-                />
-            <ImageView
-                android:id="@+id/imageView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/logo_cdl_white"
-                android:layout_gravity="center"
-                />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:gravity="center"
-
-            >
-
-            <TextView android:id="@+id/text_view_acidity"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/text_view_acidity"
-                android:layout_gravity="center"
-                android:textSize="40dp"
-                />
-
-            <TextView android:id="@+id/text_view_acidity_top"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/text_view_acidity_top"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="25dp"
-
-                />
-
-            <VerticalSeekBar android:id="@+id/seek_bar_acidity"
-                android:layout_height="0dp"
-                android:layout_width="wrap_content"
-                android:layout_weight="100"
-                android:text="@string/seek_bar_acidity"
-                android:onClick="seek_age_changed"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:thumb="@drawable/seekbar_thumb"
-                android:progressDrawable="@drawable/seekbar_progress"
-                />
-
-
-            <TextView android:id="@+id/text_view_acidity_bottom"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/text_view_acidity_bottom"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="25dp"
-                />
-
-            <TextView android:id="@+id/text_view_progress_acidity"
-                android:layout_height="20dp"
-                android:layout_width="40dp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                />
 
         </LinearLayout>
 
 
     </LinearLayout>
-
-
 </LinearLayout>
