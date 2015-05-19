@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/flag_us"
-        android:background="@android:color/transparent"
+        android:background="?android:selectableItemBackground"
         android:onClick="set_lang_en"
         />
 
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/flag_es"
-        android:background="@android:color/transparent"
+        android:background="@null"
         />
 
 </merge>
