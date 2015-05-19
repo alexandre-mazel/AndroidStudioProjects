@@ -204,6 +204,19 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
         usbController_ = new UsbController(this, mConnectionHandler, VID, PID, textView_usb_debug_, logger_, this);
     }
 
+    public void set_lang_en(View view) {
+        // Do something in response to button
+        logger_.l( strClassName, "set_lang_en: begin");
+        setLocale("en");
+    }
+
+    public void set_lang_fr(View view) {
+        // Do something in response to button
+        logger_.l( strClassName, "set_lang_fr: begin");
+        setLocale("fr");
+    }
+
+
     public void seek_age_changed(SeekBar seekBar, int progress, boolean fromUser) {
         // Do something in response to seekbar change
         // never called !!!
