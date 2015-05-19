@@ -31,7 +31,7 @@ import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
 import com.electronoos.utils.LoggerWidget;
 
 
-public class MyActivity extends MyShortcuts {
+public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
     public final static String EXTRA_MESSAGE = "com.electronoos.glasses.MESSAGE";
 
     public final static String strClassName = "MyActivity";
@@ -58,10 +58,11 @@ public class MyActivity extends MyShortcuts {
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("MyActivity", "onCreate: begin");
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_my); // for menu
+        setContentView(R.layout.activity_my);
 
-        LayoutInflater inflater = getLayoutInflater();
-        inflater.inflate(R.layout.activity_my, (ViewGroup) findViewById(R.id.container));
+        // essai pour inflater, mais ca fonctionne pas trop
+        //LayoutInflater inflater = getLayoutInflater();
+        //inflater.inflate(R.layout.activity_my, (ViewGroup) findViewById(R.id.container));
 
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
 

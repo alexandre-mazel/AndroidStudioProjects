@@ -2,9 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    >
 
     <LinearLayout
+        android:id="@+id/shortcuts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -25,11 +27,35 @@
 
     </LinearLayout>
 
+    <!--
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="600dp"
+        android:layout_height="400dp"
+        android:layout_below="@+id/shortcuts"
+        >
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="blablabal"
+            android:onClick="to_lang_fr"
+            />
+
+    </RelativeLayout>
+    -->
+
     <LinearLayout
         android:id="@+id/container"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="600dp"
+        android:layout_height="400dp"
+        android:orientation="vertical"
         >
-    </LinearLayout>
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="blablabal"
+            android:onClick="to_lang_fr"
+            />
 
+    </LinearLayout>
 </LinearLayout>

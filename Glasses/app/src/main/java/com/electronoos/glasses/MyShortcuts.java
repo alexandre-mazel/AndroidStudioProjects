@@ -16,6 +16,7 @@ public class MyShortcuts extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_shortcuts);
+        Log.v( strClassName, "OnCreate-end");
     }
 
 
