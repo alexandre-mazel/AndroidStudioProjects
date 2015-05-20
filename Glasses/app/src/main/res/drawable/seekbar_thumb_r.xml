@@ -1,0 +1,16 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <shape android:shape="oval">
+            <size
+                android:height="40dp"
+                android:width="40dp" />
+
+            <solid android:color="#0000" />
+            <stroke android:width="5dp" android:color="#B0338b9d" />
+
+        </shape>
+    </item>
+    <!--<item android:drawable="@drawable/scrubber_control_normal_holo"/>-->
+
+</layer-list>
