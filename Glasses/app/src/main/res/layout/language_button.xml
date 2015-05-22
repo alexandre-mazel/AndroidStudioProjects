@@ -1,4 +1,9 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -7,7 +12,11 @@
         android:background="@android:color/transparent"
         android:onClick="set_lang_fr"
     />
-
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,19 +24,32 @@
         android:background="?android:selectableItemBackground"
         android:onClick="set_lang_en"
         />
-
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/flag_de"
         android:background="@android:color/transparent"
         />
-
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/flag_es"
         android:background="@null"
         />
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
 
 </merge>

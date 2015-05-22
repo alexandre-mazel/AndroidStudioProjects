@@ -7,6 +7,7 @@
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_marginLeft="20dp"
         >
         <include layout="@layout/language_button" />
     </LinearLayout>
@@ -92,8 +93,8 @@
                     android:onClick="seek_age_changed"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:thumb="@drawable/seekbar_thumb"
-                    android:progressDrawable="@drawable/seekbar_progress"
+                    android:thumb="@drawable/seekbar_thumb_l"
+                    android:progressDrawable="@drawable/seekbar_progress_l"
                     />
 
 
@@ -211,8 +212,8 @@
                     android:onClick="seek_age_changed"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:thumb="@drawable/seekbar_thumb"
-                    android:progressDrawable="@drawable/seekbar_progress"
+                    android:thumb="@drawable/seekbar_thumb_r"
+                    android:progressDrawable="@drawable/seekbar_progress_r"
                     />
 
 
