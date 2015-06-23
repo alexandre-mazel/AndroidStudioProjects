@@ -138,13 +138,15 @@ public class UsbController {
 		mUsbThread = new Thread(mLoop);
 		mUsbThread.start();
         logger_.l(strClassName, "thread started");
-        textView_usb_debug_.setText( "connected..." );
+        if( textView_usb_debug_ != null )
+            textView_usb_debug_.setText( "connected..." );
 	}
 
 	public void send(byte data){
 		mData = data;
         short dataForPrint = (short) (data & 0xFF); // convert to signed short interpreting byte as unsigned (constant are int by default)
-        textView_usb_debug_.setText( "sending: " + Short.toString(dataForPrint) );
+        if( textView_usb_debug_ != null )
+            textView_usb_debug_.setText( "sending: " + Short.toString(dataForPrint) );
         logger_.l( strClassName, "sending: " + Short.toString(dataForPrint) );
 		synchronized (sSendLock) {
 			sSendLock.notify();
@@ -154,7 +156,7 @@ public class UsbController {
 
 	private void enumerate(IPermissionListener listener) {
 		logger_.l(strClassName, "enumerating");
-        textView_usb_debug_.setText( "enumerating..." );
+        if( textView_usb_debug_ != null ) textView_usb_debug_.setText( "enumerating..." );
 		HashMap<String, UsbDevice> devlist = mUsbManager.getDeviceList();
 		Iterator<UsbDevice> deviter = devlist.values().iterator();
         String infoDeviceLog = "usb devices: ";
@@ -163,7 +165,7 @@ public class UsbController {
             String infoDevice = "Found device: " + String.format("%04X:%04X", d.getVendorId(),d.getProductId());
             logger_.l(strClassName, infoDevice);
             infoDeviceLog += infoDevice + "\n";
-			if (d.getVendorId() == VID && d.getProductId() == PID) {
+			if (d.getVendorId() == VID /*&& d.getProductId() == PID*/) { // any product!
                 logger_.l(strClassName, "Device under: " + d.getDeviceName());
                 infoDeviceLog += "recognized...\n";
                 //SystemClock.sleep(1000);
@@ -183,7 +185,7 @@ public class UsbController {
 			}
 		}
         infoDeviceLog += "ended...\n";
-        textView_usb_debug_.setText( infoDeviceLog );
+        if( textView_usb_debug_ != null ) textView_usb_debug_.setText( infoDeviceLog );
         logger_.l(strClassName, "no more devices found");
 		mConnectionHandler.onDeviceNotFound();
 	}

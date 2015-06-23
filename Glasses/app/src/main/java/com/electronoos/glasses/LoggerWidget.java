@@ -34,7 +34,8 @@ public class LoggerWidget {
 
     public void refreshWidget()
     {
-        textView_log_.setText(strCurrentLogStack_);
+        if( textView_log_ != null )
+            textView_log_.setText(strCurrentLogStack_);
     }
 
     public void l( String strCallerClassName, Object msg )
@@ -59,7 +60,7 @@ public class LoggerWidget {
     {
         if( textView_log_ == null )
         {
-            Log.e( "LoggerWidget", "Can't output log: widget not attached. Log: " + msg );
+            //Log.e( "LoggerWidget", "Can't output log: widget not attached. Log: " + msg );
             return;
         }
         // append new log to current log outputted
@@ -68,6 +69,9 @@ public class LoggerWidget {
         String strNewLog = timestamp + ": " + msg.toString();
         Log.v("debug", "GLASSES_LOG: " + strNewLog + "\n" );
 
+
+        if( textView_log_ == null )
+            return; // no need to print in the log!
 
         String strCurrentLogs = textView_log_.getText().toString();
         String lines[] = strCurrentLogs.split("\\r?\\n"); // System.getProperty("line.separator")
@@ -92,7 +96,7 @@ public class LoggerWidget {
 
 
         try {
-    //        textView_log_.setText(newFullLogs);
+    //        textView_log_.setText(newFullLogs); // fait crasher quand pas dans le bon thread
         }
         //catch(CalledFromWrongThreadException e)
         catch(RuntimeException e)

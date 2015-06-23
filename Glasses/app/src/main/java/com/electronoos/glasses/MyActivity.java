@@ -3,6 +3,7 @@ package com.electronoos.glasses;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.VerticalSeekBar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +59,18 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("MyActivity", "onCreate: begin");
+        Log.v("MyActivity", "onCreate: serial: '" + Build.SERIAL + "'");
+        boolean bTablet2 = false;
+        if( Build.SERIAL.equals("e3525331077a953b") )
+        {
+            // tablet 2
+            Log.v("MyActivity", "onCreate: this is tablet 2 !!!");
+            bTablet2 = true;
+        }
+        else
+        {
+            // tablet 1
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
@@ -68,12 +82,18 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
 
         seekBar_age_ = (SeekBar) findViewById(R.id.seek_bar_age);
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
+        if( bTablet2 ) seekBar_age_.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_progress_2_l));
+
+
 
         seekBar_acidity_ = (SeekBar) findViewById(R.id.seek_bar_acidity);
         textView_acidity_ = (TextView) findViewById(R.id.text_view_progress_acidity);
+        if( bTablet2 ) seekBar_acidity_.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_progress_2_r));
 
-        textView_usb_debug_ = (TextView) findViewById(R.id.text_view_usb_status);
-        textView_log_debug_ = (TextView) findViewById(R.id.text_view_debug_log);
+        //textView_usb_debug_ = (TextView) findViewById(R.id.text_view_usb_status);
+        //textView_log_debug_ = (TextView) findViewById(R.id.text_view_debug_log);
+        textView_usb_debug_ = null;
+        textView_log_debug_ = null;
 
         logger_ = new LoggerWidget();
         logger_.attachWidget(textView_log_debug_);
@@ -81,6 +101,7 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
 
         MyOnSeekBarChangeListener myOnSeekBarChangeListener_age = new MyOnSeekBarChangeListener();
         seekBar_age_.setOnSeekBarChangeListener(myOnSeekBarChangeListener_age);
+        //seekBar_age_.changeColor();
 
         MyOnSeekBarChangeListener myOnSeekBarChangeListener_acidity = new MyOnSeekBarChangeListener();
         seekBar_acidity_.setOnSeekBarChangeListener(myOnSeekBarChangeListener_acidity);
@@ -92,10 +113,12 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
         logger_.l( strClassName, "onCreate: usb controller: " + (usbController_ != null));
         //textView_age_.setWidth(800);
         //textView_age_.setTextSize(8);
-        textView_usb_debug_.setText(textView_usb_debug_.getText() + "\n usb : " + (usbController_ != null));
+        if( textView_usb_debug_ != null )
+            textView_usb_debug_.setText(textView_usb_debug_.getText() + "\n usb : " + (usbController_ != null));
 
         myOnSeekBarChangeListener_age.setWidget(textView_age_, usbController_, logger_);
         myOnSeekBarChangeListener_acidity.setWidget(textView_acidity_, usbController_, logger_);
+
     }
 
 

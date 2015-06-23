@@ -2,6 +2,11 @@ package android.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -59,5 +64,13 @@ public class VerticalSeekBar_Reverse extends SeekBar {
         }
         return true;
     }
-    
+
+/*
+    public void changeColor(int a) {
+        int h = getHeight();
+        ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h, Color.parseColor("#330000FF"), Color.parseColor("#110000FF"), Shader.TileMode.REPEAT));
+        //this.setBackgroundDrawable(mDrawable);
+    }
+*/
 }
