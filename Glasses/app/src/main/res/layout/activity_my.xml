@@ -141,6 +141,13 @@
                     android:gravity="center"
                     android:textSize="40dp"
                     />
+                <ImageView
+                    android:id="@+id/aoc_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="1"></ImageView>
 <!--
                 <TextView android:id="@+id/text_view_usb_status"
                     android:layout_height="20dp"

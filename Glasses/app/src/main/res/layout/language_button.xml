@@ -51,5 +51,17 @@
         android:layout_height="1dp"
         android:layout_weight="1" >
     </View>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/aoc"
+        android:background="@android:color/transparent"
+        android:onClick="change_aoc"
+        />
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
 
 </merge>
