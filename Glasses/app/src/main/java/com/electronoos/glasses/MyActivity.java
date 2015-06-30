@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -126,6 +127,9 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
         myOnSeekBarChangeListener_age.setWidget(textView_age_, usbController_, logger_);
         myOnSeekBarChangeListener_acidity.setWidget(textView_acidity_, usbController_, logger_);
 
+        // Various initialisation
+        //((TextView) findViewById(R.id.sliders_text_desc)).setText(""); // prevent img to be hidden
+
     }
 
 
@@ -202,7 +206,8 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
 
         // manual update:
         ((TextView) findViewById(R.id.sliders_text_title)).setText(R.string.sliders_text_title);
-        ((TextView) findViewById(R.id.sliders_text_desc)).setText(R.string.sliders_text_desc);
+        // ((TextView) findViewById(R.id.sliders_text_desc)).setText(R.string.sliders_text_desc);
+        //((TextView) findViewById(R.id.sliders_text_desc)).setText("");
 
         ((TextView) findViewById(R.id.text_view_age)).setText(R.string.text_view_age);
         ((TextView) findViewById(R.id.text_view_age_top)).setText(R.string.text_view_age_top);
@@ -247,13 +252,35 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
     }
 
     public void change_aoc(View view) {
-        // Do something in response to button
+        // let user choose an image
+
         logger_.l( strClassName, "change_aoc: begin");
-        Intent i = new Intent(
+
+        Intent intent = new Intent(
                 Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-        startActivityForResult(i, RESULT_LOAD_IMAGE);
+        Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/aocs/");
+        logger_.l( strClassName, "change_aoc: uris:" + uri.toString() );
+        intent.setDataAndType(uri, "image/jpg");
+
+        startActivityForResult(intent, RESULT_LOAD_IMAGE);
+
+
+/*
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()
+                + "/aocs/");
+        logger_.l( strClassName, "change_aoc: uris:" + uri.toString() );
+        intent.setDataAndType(uri, "image/jpg");
+        startActivity(Intent.createChooser(intent, "Open folder"));
+*/
+/*
+        Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/aocs/");
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(selectedUri, "image/jpg");
+        startActivity(intent);
+*/
         logger_.l( strClassName, "change_aoc: end");
     }
 
@@ -307,13 +334,21 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
             cursor.moveToFirst();
 
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
+            String strPicturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            logger_.l( strClassName, "onActivityResult: picture_selected: " + picturePath );
+            logger_.l( strClassName, "onActivityResult: picture_selected: " + strPicturePath );
 
             ImageView imageView = (ImageView) findViewById(R.id.aoc_view);
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+            imageView.setImageBitmap(BitmapFactory.decodeFile(strPicturePath));
+
+            // get aoc name
+            //String strAocDesc = Path(picturePath).getFileName().toString();
+            String strAocDesc = strPicturePath.substring(strPicturePath.lastIndexOf("/")+1);
+            strAocDesc = strAocDesc.substring(0, strAocDesc.lastIndexOf("."));
+            strAocDesc = strAocDesc.replace( "_", " ");
+            logger_.l( strClassName, "onActivityResult: strAocDesc: " + strAocDesc );
+            ((TextView) findViewById(R.id.text_aoc_desc)).setText(strAocDesc);
 
             logger_.l( strClassName, "onActivityResult: end"  );
 
