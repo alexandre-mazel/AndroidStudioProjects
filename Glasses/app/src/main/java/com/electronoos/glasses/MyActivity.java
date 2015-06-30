@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -31,6 +32,8 @@ import android.widget.VerticalSeekBar;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Locale;
 
 import ch.serverbox.android.usbcontroller.UsbController;
@@ -63,6 +66,9 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
 
     private static LoggerWidget logger_; // owned
 
+    //private String strAocName_;
+    private byte aaColorTable_[][]; // aoc name => [color_young, color_old, color_sweet, color_acid]
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +98,14 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
         textView_age_ = (TextView) findViewById(R.id.text_view_progress_age);
         if( bTablet2 ) seekBar_age_.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_progress_2_l));
 
+        // try to change stuff on the fly
+        /*
+        Drawable dd = getResources().getDrawable(R.drawable.seekbar_progress_2_l);
+        seekBar_age_.setProgressDrawable( dd );
+        String s = dd.toString();
+        Log.v("MyActivity", "onCreate: dd: " + s );
+        Log.v("MyActivity", "onCreate: dd: " + dd.getAlpha() );
+        */
 
 
         seekBar_acidity_ = (SeekBar) findViewById(R.id.seek_bar_acidity);
@@ -129,6 +143,7 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
 
         // Various initialisation
         //((TextView) findViewById(R.id.sliders_text_desc)).setText(""); // prevent img to be hidden
+        loadColorTable( "" );
 
     }
 
@@ -347,14 +362,72 @@ public class MyActivity extends ActionBarActivity /*MyShortcuts*/ {
             String strAocDesc = strPicturePath.substring(strPicturePath.lastIndexOf("/")+1);
             strAocDesc = strAocDesc.substring(0, strAocDesc.lastIndexOf("."));
             strAocDesc = strAocDesc.replace( "_", " ");
-            logger_.l( strClassName, "onActivityResult: strAocDesc: " + strAocDesc );
+            logger_.l(strClassName, "onActivityResult: strAocDesc: " + strAocDesc);
             ((TextView) findViewById(R.id.text_aoc_desc)).setText(strAocDesc);
+            //strAocName_ = strAocDesc;
+            loadColorTable(strAocDesc);
 
-            logger_.l( strClassName, "onActivityResult: end"  );
+            logger_.l(strClassName, "onActivityResult: end");
 
         }
 
 
+    }
+
+    private byte getColorComp( int nIdx, int p1,int p2 )
+    {
+        // return the value for a color composante
+        byte nVal = (byte)( ( (100-p1) * aaColorTable_[0][nIdx] + (p1) * aaColorTable_[1][nIdx] + (100-p2) * aaColorTable_[2][nIdx] + (p2) * aaColorTable_[3][nIdx] ) / 400 ); // 400: 2*2*100 (mean+range to 0..126+ set to 100
+
+        logger_.l(strClassName, "getColorComp: idx: " + nIdx + ", p1: " + p1 + ", p2: " + p2 + ",value: " + Integer.toHexString(nVal) );
+TODO: est ce que c'est la bonne valeur qu'on a (tester avec les extremes...)
+        return nVal;
+    }
+
+    public byte[] getColorToSendToLeds()
+    {
+        // value will go from 0 to 126. 127 is the message stopper
+        byte nR, nG, nB;
+        byte nStopper = 127;
+
+        int nAge = seekBar_age_.getProgress();
+        int nAcid = seekBar_acidity_.getProgress();
+        nB = getColorComp( 0, nAge, nAcid );
+        nG = getColorComp( 1, nAge, nAcid );
+        nR = getColorComp( 2, nAge, nAcid );
+
+        return new byte[]{nB, nG, nR, nStopper};
+    }
+
+    private void loadColorTable( String strAocName )
+    {
+        Dictionary<String, int[]> dAocColor = new Hashtable<String, int[]>();
+        dAocColor.put( "bordeaux", new int[]{0xf9b3b8, 0Xf56709, 0xf9b3b8, 0x801150} );
+
+        int aColorTable[] = dAocColor.get(strAocName.toLowerCase());
+        if( aColorTable == null )
+        {
+            logger_.w(strClassName, "loadColorTable: strAocName key is not in the dictionnary, key: " + strAocName );
+            aColorTable = dAocColor.get(dAocColor.keys().nextElement()); // if not found, return first one
+        }
+
+        // convert to byte
+        aaColorTable_ = new byte[4][3];
+        for( int i = 0; i < 4; ++i)
+        {
+            aaColorTable_[i][0] = (byte)(aColorTable[i] & 0xFF);
+            aaColorTable_[i][1] = (byte)((aColorTable[i] & 0xFF00)>>8);
+            aaColorTable_[i][2] = (byte)((aColorTable[i] & 0xFF0000)>>16);
+            for( int j = 0; j < 3; ++j)
+            {
+                if( aaColorTable_[i][j] >= (byte)254)
+                {
+                    aaColorTable_[i][j] = (byte)253; // we don't want the the half becomes greater than 126
+                }
+            }
+        }
+
+        logger_.l(strClassName, "loadColorTable: byte array: " + aaColorTable_.toString() );
     }
 
 }

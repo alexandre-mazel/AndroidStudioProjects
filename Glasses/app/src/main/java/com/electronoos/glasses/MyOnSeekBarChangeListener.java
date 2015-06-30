@@ -1,5 +1,9 @@
 package com.electronoos.glasses;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.SeekBar;
@@ -24,11 +28,24 @@ public class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListene
         usbController_ = u;
         logger_ = logger;
     }
-
-
+/*
+    public void setProgressBarColor(int newColor){
+        LayerDrawable ld = (LayerDrawable) this.getProgressDrawable();
+        ClipDrawable d1 = (ClipDrawable) ld.findDrawableByLayerId(android.R.id.progressshape);
+        d1.setColorFilter(newColor, PorterDuff.Mode.SRC_IN);
+    }
+*/
     @Override
     public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
 
+        // change color on the fly
+/*
+        if(progresValue <= 50){
+            seekBar.setProgressBarColor(Color.rgb(255 - (255 / 100 * (100 - progresValue * 2)), 255, 0));
+        }else{
+            seekBar.setProgressBarColor(Color.rgb( 255, 255 - (255/100 * (progresValue - 50)*2), 0));
+        }
+*/
         logger_.l( strClassName, "seek_changed: in");
         logger_.l( strClassName, "seek_changed: " + Integer.toString(progresValue) );
         logger_.l( strClassName, "from user: " + Boolean.toString(fromUser) );

@@ -14,8 +14,8 @@
 
     <string name="text_view_acidity">Acidity</string>
     <string name="seek_bar_acidity">Acidy2 - not used</string>
-    <string name="text_view_acidity_top">Sweet</string>
-    <string name="text_view_acidity_bottom">Acid</string>
+    <string name="text_view_acidity_top">Acid</string>
+    <string name="text_view_acidity_bottom">Sweet</string>
 
     <string name="sliders_text_title">The wine color change with stuffs and so...</string>
     <string name="sliders_text_desc">swipe sliders to see colors</string>

@@ -293,9 +293,10 @@ public class UsbController {
                 int nAcidity = myActivity_.getAcidity();
                 logger_.l( strClassName, "age: " + Integer.toString(( nAge )));
                 logger_.l( strClassName, "acidity: " + Integer.toString(( nAcidity )));
-                byte nDataRed = (byte)(nAge&0xFF);
-                byte nDataBlue = (byte)(nAcidity&0xFF);
-				conn.bulkTransfer(epOUT, new byte[]{nDataBlue,0,nDataRed,127}, 4, 0);
+                byte anColor[] = myActivity_.getColorToSendToLeds();
+//                byte nDataRed = (byte)(nAge&0xFF);
+//                byte nDataBlue = (byte)(nAcidity&0xFF);
+				conn.bulkTransfer(epOUT, anColor, 4, 0);
                 logger_.l( strClassName, "bulkTransfer: end" );
 
                 mutex_.release();
