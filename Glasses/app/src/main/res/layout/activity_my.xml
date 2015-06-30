@@ -164,12 +164,12 @@
                 -->
                 <ImageView
                     android:id="@+id/aoc_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="320dp"
+                    android:layout_height="320dp"
                     android:src="@drawable/aoc"
                     android:background="@android:color/transparent"
                     android:onClick="change_aoc"
-                    android:layout_gravity="top"
+                    android:layout_gravity="center_horizontal"
                     android:gravity="top"
 
                     />
@@ -205,23 +205,22 @@
                     android:onClick="refresh_usb"
                     />
 -->
-<!--
+<!-- filler -->
                 <TextView
                     android:layout_height="120dp"
                     android:layout_width="wrap_content"
                     android:text=""
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:textSize="40dp"
                     />
--->
+
                 <ImageView
                     android:id="@+id/imageView1"
                     android:layout_width="140dp"
                     android:layout_height="140dp"
                     android:src="@drawable/logo_cdl_white"
                     android:layout_gravity="center"
-                    android:gravity="bottom"
+                    android:gravity="center"
                     />
 
 
