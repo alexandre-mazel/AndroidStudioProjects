@@ -13,8 +13,8 @@
 
     <ImageView
         android:id="@+id/aoc_view"
-        android:layout_width="320dp"
-        android:layout_height="320dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:src="@drawable/cdl_logo"
         android:background="@android:color/transparent"
         android:onClick="change_aoc"
@@ -25,6 +25,7 @@
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
+
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
