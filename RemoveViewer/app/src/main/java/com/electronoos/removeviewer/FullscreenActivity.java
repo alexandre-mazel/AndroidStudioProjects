@@ -127,7 +127,12 @@ public class FullscreenActivity extends Activity {
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
         Log.e( "RemoteViewer: onCreate", "before downloading...");
-        new DownloadFileFromURL().execute("http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif", this);
+        //new DownloadFileFromURL().execute("http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif");
+        DownloadFileFromURL dffu = new DownloadFileFromURL();
+        dffu.setParent( this );
+        //String strSrc ="http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif";
+        String strSrc ="http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
+        dffu.execute( strSrc );
     }
 
     @Override
@@ -188,7 +193,7 @@ public class FullscreenActivity extends Activity {
  * */
 class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
-    private Activity parentActivity_; // parent that launch this request
+    private FullscreenActivity parentActivity_; // parent that launch this request
     private String strImage_; // destination filename
 
     /**
@@ -204,9 +209,8 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
      * Downloading file in background thread
      * */
     @Override
-    protected String doInBackground(String f_url,Activity activity) {
+    protected String doInBackground(String... f_url) {
         int count;
-        parentActivity_ = activity;
         try {
             Log.e( "RemoteViewer: doInBackground", "beginning");
             URL url = new URL(f_url[0]);
@@ -223,7 +227,7 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
             // Output stream
             strImage_ = Environment.getExternalStorageDirectory().toString() + "/test.jpg";
-            OutputStream output = new FileOutputStream(strImage);
+            OutputStream output = new FileOutputStream(strImage_);
 
             byte data[] = new byte[1024];
 
@@ -270,8 +274,12 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
         // dismiss the dialog after the file was downloaded
         //dismissDialog(progress_bar_type);
         Log.e( "RemoteViewer: ", "finito!");
-        parentActivity_.showImage( strImage );
+        parentActivity_.showImage( strImage_ );
 
     }
 
+    public void setParent( FullscreenActivity activity )
+    {
+        parentActivity_ = activity;
+    }
 }
