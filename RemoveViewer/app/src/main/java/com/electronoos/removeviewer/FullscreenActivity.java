@@ -1,6 +1,7 @@
 package com.electronoos.removeviewer;
 
 import com.electronoos.removeviewer.util.SystemUiHider;
+import com.electronoos.WebTools;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Timer;
 
 
 /**
@@ -131,8 +134,21 @@ public class FullscreenActivity extends Activity {
         DownloadFileFromURL dffu = new DownloadFileFromURL();
         dffu.setParent( this );
         //String strSrc ="http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif";
-        String strSrc ="http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
+        String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
         dffu.execute( strSrc );
+
+        //new Timer().schedule({this.updateDirectory()}, 1);
+        int interval = 1000; // 1 Second
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                Toast.makeText(FullscreenActivity.this, "upgrading stuffs", Toast.LENGTH_SHORT).show();
+                FullscreenActivity.this.updateDirectory();
+            }
+        };
+
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
     }
 
     @Override
@@ -185,6 +201,16 @@ public class FullscreenActivity extends Activity {
         ImageView imageView = (ImageView) findViewById(R.id.aoc_view);
         imageView.setImageBitmap(BitmapFactory.decodeFile(strPicturePath));
     }
+
+    public void updateDirectory()
+    {
+        Toast.makeText(FullscreenActivity.this, "updating directory", Toast.LENGTH_SHORT).show();
+        //String strRemotePath = "http://candilinge.factorycity.com/img_ochateau";
+        String strRemotePath = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
+        Log.v( "RemoteViewer", "updateDirectory: " + strRemotePath );
+        String strIndex = WebTools.getWebFile(strRemotePath);
+        Log.v( "RemoteViewer", "strIndex: " + strIndex );
+    }
 }
 
 
@@ -214,12 +240,12 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
         try {
             Log.e( "RemoteViewer: doInBackground", "beginning");
             URL url = new URL(f_url[0]);
-            URLConnection conection = url.openConnection();
-            conection.connect();
+            URLConnection connection = url.openConnection();
+            connection.connect();
 
             // this will be useful so that you can show a tipical 0-100%
             // progress bar
-            int lenghtOfFile = conection.getContentLength();
+            int lenghtOfFile = connection.getContentLength();
 
             // download the file
             InputStream input = new BufferedInputStream(url.openStream(),
@@ -274,7 +300,7 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
         // dismiss the dialog after the file was downloaded
         //dismissDialog(progress_bar_type);
         Log.e( "RemoteViewer: ", "finito!");
-        parentActivity_.showImage( strImage_ );
+        parentActivity_.showImage(strImage_);
 
     }
 
@@ -283,3 +309,4 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
         parentActivity_ = activity;
     }
 }
+
