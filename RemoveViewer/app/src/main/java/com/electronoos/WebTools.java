@@ -27,7 +27,7 @@ public final class WebTools {
             Log.e("getWebFile", "beginning");
             URL url = new URL(strRemoteAddress);
             Log.e("getWebFile", "2");
-            URLConnection connection = url.openConnection();
+            URLConnection connection = url.openConnection(); // Network on main thread exception !
             Log.e("getWebFile", "3");
             connection.connect();
             Log.e("getWebFile", "4");
@@ -60,7 +60,7 @@ public final class WebTools {
 
         } catch (Exception e) {
             Log.e( "getWebFile", "petite erreur" );
-            Log.e( "getWebFile: error: ", e.getMessage() );
+            Log.e( "getWebFile: error: ", "error: " + (String)e.getMessage() + ", cause: " + e.toString() );
         }
 
         return strContents;
