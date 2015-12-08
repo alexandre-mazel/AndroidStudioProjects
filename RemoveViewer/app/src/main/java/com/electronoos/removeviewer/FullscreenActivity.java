@@ -131,12 +131,21 @@ public class FullscreenActivity extends Activity {
 
         Log.e( "RemoteViewer: onCreate", "before downloading...");
         //new DownloadFileFromURL().execute("http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif");
+        /*
         DownloadFileFromURL dffu = new DownloadFileFromURL();
         dffu.setParent( this );
         //String strSrc ="http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif";
         String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
         dffu.execute( strSrc );
+        */
+        Toast.makeText(this, "updating folders...", Toast.LENGTH_SHORT).show();
+        DownloadDirectoryFromURL ddfu = new DownloadDirectoryFromURL();
+        ddfu.setParent( this );
+        //String strSrc = "http://candilinge.factorycity.com/img/";
+        String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/";
+        ddfu.execute( strSrc );
 
+        /*
         //new Timer().schedule({this.updateDirectory()}, 1);
         int interval = 1000; // 1 Second
         Handler handler = new Handler();
@@ -149,6 +158,7 @@ public class FullscreenActivity extends Activity {
 
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
         handler.postDelayed(runnable, interval);
+        */
     }
 
     @Override
@@ -279,6 +289,68 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
         } catch (Exception e) {
             Log.e("RemoteViewer: error: while downloading: ", e.getMessage());
         }
+
+        return null;
+    }
+
+    /**
+     * Updating progress bar
+     * */
+    protected void onProgressUpdate(String... progress) {
+        // setting progress percentage
+        //pDialog.setProgress(Integer.parseInt(progress[0]));
+        Log.e( "RemoteViewer: ", progress[0]);
+    }
+
+    /**
+     * After completing background task Dismiss the progress dialog
+     * **/
+    @Override
+    protected void onPostExecute(String file_url) {
+        // dismiss the dialog after the file was downloaded
+        //dismissDialog(progress_bar_type);
+        Log.e( "RemoteViewer: ", "finito!");
+        parentActivity_.showImage(strImage_);
+
+    }
+
+    public void setParent( FullscreenActivity activity )
+    {
+        parentActivity_ = activity;
+    }
+}
+
+
+/**
+ * Background Async Task to download file
+ * */
+class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
+
+    private FullscreenActivity parentActivity_; // parent that launch this request
+    private String strImage_; // destination filename
+
+    /**
+     * Before starting background thread Show Progress Bar Dialog
+     * */
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        // showDialog(progress_bar_type);
+    }
+
+    /**
+     * Downloading a full directory in background thread
+     *
+     * f_url: directory path
+     * */
+    @Override
+    protected String doInBackground(String... f_url) {
+        //String strRemotePath = "http://candilinge.factorycity.com/img_ochateau";
+        String strRemotePath = f_url[0];
+        Log.v( "RemoteViewer", "updateDirectory: " + strRemotePath );
+        String strIndex = WebTools.getWebFile(strRemotePath);
+        Log.v( "RemoteViewer", "strIndex: " + strIndex );
+        String[] listFile = WebTools.findFilesInIndexes( strIndex );
 
         return null;
     }

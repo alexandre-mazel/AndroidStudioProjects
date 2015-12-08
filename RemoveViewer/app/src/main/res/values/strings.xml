@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name"></string>
+    <string name="app_name">rv</string>
 
     <string name="dummy_button"> </string>
     <string name="dummy_content">Electronoos\nRemote\nViewer</string>
