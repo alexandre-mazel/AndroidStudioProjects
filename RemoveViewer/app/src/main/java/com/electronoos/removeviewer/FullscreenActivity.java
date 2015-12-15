@@ -342,6 +342,8 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
      * Downloading a full directory in background thread
      *
      * f_url: directory path
+     *
+
      * */
     @Override
     protected String doInBackground(String... f_url) {
@@ -351,6 +353,12 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
         String strIndex = WebTools.getWebFile(strRemotePath);
         Log.v( "RemoteViewer", "strIndex: " + strIndex );
         String[] listFile = WebTools.findFilesInIndexes( strIndex );
+
+        for (String strFile: listFile){
+            Log.v( "RemoteViewer", "loading: " + strFile );
+            String strDest = Environment.getExternalStorageDirectory().toString() + strFile;
+            WebTools.saveWebFile(strRemotePath+strFile, strDest );
+        }
 
         return null;
     }
