@@ -151,12 +151,6 @@ public class FullscreenActivity extends Activity {
         String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
         dffu.execute( strSrc );
         */
-        Toast.makeText(this, "updating folders...", Toast.LENGTH_SHORT).show();
-        DownloadDirectoryFromURL ddfu = new DownloadDirectoryFromURL();
-        ddfu.setParent( this );
-        //String strSrc = "http://candilinge.factorycity.com/img/";
-        String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/";
-        ddfu.execute( strSrc );
 
         //new Timer().schedule(this.showRandomImage(), 1000);
 
@@ -175,6 +169,7 @@ public class FullscreenActivity extends Activity {
         handler.postDelayed(runnable, interval);
         */
 
+        webUpdate();
         postRedraw();
     }
 
@@ -275,6 +270,33 @@ public class FullscreenActivity extends Activity {
             public void run() {
                 Toast.makeText(FullscreenActivity.this, "redrawing", Toast.LENGTH_SHORT).show();
                 FullscreenActivity.this.showRandomImage();
+            }
+        };
+
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
+    }
+
+    private void webUpdate()
+    {
+        Toast.makeText(this, "updating folders...", Toast.LENGTH_SHORT).show();
+        DownloadDirectoryFromURL ddfu = new DownloadDirectoryFromURL();
+        ddfu.setParent( this );
+        //String strSrc = "http://candilinge.factorycity.com/img/";
+        String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/";
+        ddfu.execute( strSrc );
+
+        int nTimeRefresh = 1000*60*60*8; // 8h
+        //nTimeRefresh = 1000 * 10; // test refresh
+        postWebUpdate( nTimeRefresh );
+    }
+    private void postWebUpdate(int interval)
+    {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                Toast.makeText(FullscreenActivity.this, "redrawing", Toast.LENGTH_SHORT).show();
+                FullscreenActivity.this.webUpdate();
             }
         };
 
