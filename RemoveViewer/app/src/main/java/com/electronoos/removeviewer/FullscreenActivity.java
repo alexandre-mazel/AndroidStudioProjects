@@ -23,7 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -61,9 +66,17 @@ public class FullscreenActivity extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
+    private ArrayList aImagesToShow_;
+    ReentrantLock lockImagesToShow_;
+    Random random_;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        aImagesToShow_ = new ArrayList();
+        lockImagesToShow_ = new ReentrantLock();
+        random_ = new Random();
 
         setContentView(R.layout.activity_fullscreen);
 
@@ -145,6 +158,8 @@ public class FullscreenActivity extends Activity {
         String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/";
         ddfu.execute( strSrc );
 
+        //new Timer().schedule(this.showRandomImage(), 1000);
+
         /*
         //new Timer().schedule({this.updateDirectory()}, 1);
         int interval = 1000; // 1 Second
@@ -159,6 +174,8 @@ public class FullscreenActivity extends Activity {
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
         handler.postDelayed(runnable, interval);
         */
+
+        postRedraw();
     }
 
     @Override
@@ -214,12 +231,55 @@ public class FullscreenActivity extends Activity {
 
     public void updateDirectory()
     {
+        /*
         Toast.makeText(FullscreenActivity.this, "updating directory", Toast.LENGTH_SHORT).show();
         //String strRemotePath = "http://candilinge.factorycity.com/img_ochateau";
         String strRemotePath = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/logo_cdl_white.png";
         Log.v( "RemoteViewer", "updateDirectory: " + strRemotePath );
         String strIndex = WebTools.getWebFile(strRemotePath);
         Log.v( "RemoteViewer", "strIndex: " + strIndex );
+        */
+    }
+
+    public void setImagesToShow(ArrayList listImg)
+    {
+        Log.v( "RemoteViewer", "setImagesToShow: in" );
+        lockImagesToShow_.lock();
+        aImagesToShow_ = listImg;
+        lockImagesToShow_.unlock();
+    }
+
+    private void showRandomImage()
+    {
+        Log.v( "RemoteViewer", "showRandomImage: in" );
+        lockImagesToShow_.lock();
+        if( aImagesToShow_.size() > 0 )
+        {
+            int nIdx = random_.nextInt(aImagesToShow_.size());
+            //nIdx = 0; // force first (debug)
+            String img = aImagesToShow_.get(nIdx).toString();
+            Log.v( "RemoteViewer", "showRandomImage: showing: " + img );
+            showImage(img);
+        }
+        lockImagesToShow_.unlock();
+        postRedraw();
+    }
+
+    private void postRedraw()
+    {
+        if( false )
+            return;
+        int interval = 5000; // 1 Second
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                Toast.makeText(FullscreenActivity.this, "redrawing", Toast.LENGTH_SHORT).show();
+                FullscreenActivity.this.showRandomImage();
+            }
+        };
+
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
     }
 }
 
@@ -327,7 +387,7 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
 class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
 
     private FullscreenActivity parentActivity_; // parent that launch this request
-    private String strImage_; // destination filename
+    private ArrayList listFiles_; // list of destination filename
 
     /**
      * Before starting background thread Show Progress Bar Dialog
@@ -347,17 +407,20 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
      * */
     @Override
     protected String doInBackground(String... f_url) {
+        listFiles_ = new ArrayList();
         //String strRemotePath = "http://candilinge.factorycity.com/img_ochateau";
         String strRemotePath = f_url[0];
         Log.v( "RemoteViewer", "updateDirectory: " + strRemotePath );
         String strIndex = WebTools.getWebFile(strRemotePath);
         Log.v( "RemoteViewer", "strIndex: " + strIndex );
         String[] listFile = WebTools.findFilesInIndexes( strIndex );
+        Log.v( "RemoteViewer", "listFile: " + listFile.toString() );
 
         for (String strFile: listFile){
             Log.v( "RemoteViewer", "loading: " + strFile );
-            String strDest = Environment.getExternalStorageDirectory().toString() + strFile;
+            String strDest = Environment.getExternalStorageDirectory().toString() + "/" + strFile;
             WebTools.saveWebFile(strRemotePath+strFile, strDest );
+            listFiles_.add( strDest );
         }
 
         return null;
@@ -380,7 +443,7 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
         // dismiss the dialog after the file was downloaded
         //dismissDialog(progress_bar_type);
         Log.e( "RemoteViewer: ", "finito!");
-        parentActivity_.showImage(strImage_);
+        parentActivity_.setImagesToShow(listFiles_);
 
     }
 

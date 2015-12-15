@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 /**
  * Created by Alma on 2015-12-01.
@@ -25,7 +26,8 @@ public final class WebTools {
         // takes an html index pages and return a list of file present in the index
         // return ["cerveau.gif", "chef.jpg"]
 
-        String[] listFiles = new String[34];
+        ArrayList listFiles = new ArrayList();
+
         Integer nNbrFile = 0;
         String strRemaining = strPage;
         while( true ) {
@@ -36,13 +38,17 @@ public final class WebTools {
             Integer nEnd = strRemaining.indexOf("\">");
             String strFilename = strRemaining.substring( 0+8, nEnd ); // 7 is the size of "a href=""
             if( strFilename.charAt(0) != '?' && strFilename.charAt(0) != '/'  ) {
-                listFiles[nNbrFile] = strFilename;
+                listFiles.add( strFilename );
                 nNbrFile += 1;
             }
             strRemaining=strRemaining.substring(nEnd);
         }
 
-        return listFiles;
+        String[] listFilesRet = new String[ listFiles.size() ];
+        for( int j = 0; j < listFiles.size(); j++ ) {
+            listFilesRet[j] = listFiles.get(j).toString();
+        }
+        return listFilesRet;
     }
 
 
@@ -52,6 +58,7 @@ public final class WebTools {
     public static String getWebFile(String strRemoteAddress) {
         String strContents = "";
         int count;
+        int total = 0;
         try {
             Log.e("getWebFile", "beginning");
             URL url = new URL(strRemoteAddress);
@@ -73,8 +80,6 @@ public final class WebTools {
 
             byte data[] = new byte[1024];
 
-            long total = 0;
-
             Log.e("getWebFile", "7");
 
             while ((count = input.read(data)) != -1) {
@@ -93,12 +98,13 @@ public final class WebTools {
             Log.e( "getWebFile: error: ", "error: " + (String)e.getMessage() + ", cause: " + e.toString() );
         }
 
-        Log.e("getWebFile", "end");
+        strContents = strContents.substring(0,total); // resize string!
+        Log.e("getWebFile", "end, document length: " + strContents.length());
         return strContents;
     } // getWebFile
 
     // download a web file and save it to dest
-    public static String saveWebFile(String strRemoteAddress, String strDestFilename ) {
+    public static void saveWebFile(String strRemoteAddress, String strDestFilename ) {
 
         int count;
         try {
