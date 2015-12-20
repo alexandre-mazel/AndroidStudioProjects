@@ -5,12 +5,16 @@ import com.electronoos.WebTools;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +33,6 @@ import java.util.Timer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
-
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -254,6 +257,7 @@ public class FullscreenActivity extends Activity {
             //nIdx = 0; // force first (debug)
             String img = aImagesToShow_.get(nIdx).toString();
             Log.v( "RemoteViewer", "showRandomImage: showing: " + img );
+            Toast.makeText(FullscreenActivity.this, "redrawing: " + img, Toast.LENGTH_SHORT).show();
             showImage(img);
         }
         lockImagesToShow_.unlock();
@@ -268,7 +272,6 @@ public class FullscreenActivity extends Activity {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                Toast.makeText(FullscreenActivity.this, "redrawing", Toast.LENGTH_SHORT).show();
                 FullscreenActivity.this.showRandomImage();
             }
         };
@@ -288,10 +291,18 @@ public class FullscreenActivity extends Activity {
 
         int nTimeRefresh = 1000*60*60*8; // 8h
         //nTimeRefresh = 1000 * 10; // test refresh
+        if( true ) {
+            // compute time until 2AM
+            Time today = new Time(Time.getCurrentTimezone());
+            today.setToNow();
+
+            nTimeRefresh = ((24-today.hour) + 2) * (60*60*1000) - (today.minute*1000*60);
+        }
         postWebUpdate( nTimeRefresh );
     }
     private void postWebUpdate(int interval)
     {
+        Log.v( "RemoteViewer", "postWebUpdate: update in: " + interval );
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {

@@ -23,4 +23,20 @@
         </activity>
     </application>
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <service android:name=".StartMyServiceAtBootReceiver" android:label="removeviewer">
+        <intent-filter>
+            <action android:name="com.electronoos.StartMyServiceAtBootReceiver" />
+        </intent-filter>
+    </service>
+
+    <receiver
+        android:name=".receiver.StartMyServiceAtBootReceiver"
+        android:label="StartMyServiceAtBootReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+    </receiver>
+
 </manifest>
