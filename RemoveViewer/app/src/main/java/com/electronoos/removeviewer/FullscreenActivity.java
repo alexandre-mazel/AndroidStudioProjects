@@ -360,7 +360,7 @@ public class FullscreenActivity extends Activity {
         ((TextView) findViewById(R.id.fullscreen_content)).setText("");
         //((TextView) findViewById(R.id.app_name)).setText("");
         setTitle("");
-        getActionBar().setIcon(R.ic_blank);
+        getActionBar().setIcon(R.mipmap.ic_blank);
     }
     private void postHideAppName(int interval)
     {
