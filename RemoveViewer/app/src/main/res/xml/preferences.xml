@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="dummy"
+        android:inputType="number"
+        android:title="dummy settings unclickable"
+        android:summary="cause the first isn't clickable...\n YOU MUST RESTART APP FOR SETTINGS TO BE UPDATED (LAZY developer)"
+        android:defaultValue="5" />
+
+    <EditTextPreference
+        android:key="refresh_time"
+        android:inputType="number"
+        android:title="@string/refresh_time_title"
+        android:summary="@string/refresh_time_summary"
+        android:defaultValue="5" />
+    <EditTextPreference
+        android:key="http_address"
+        android:inputType="textWebEmailAddress"
+        android:title="@string/http_address_title"
+        android:summary="@string/http_address_title_summary"
+        android:defaultValue="http://perso.ovh.net/~mangedisf/mangedisque/logo_test/" />
+</PreferenceScreen>
