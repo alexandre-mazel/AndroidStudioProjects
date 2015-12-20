@@ -188,6 +188,7 @@ public class FullscreenActivity extends Activity {
 
         webUpdate();
         postRedraw();
+        postHideAppName(3000);
     }
 
     @Override
@@ -258,7 +259,7 @@ public class FullscreenActivity extends Activity {
     {
         Log.v( "RemoteViewer", "onActivityResult: picture_selected: " + strPicturePath );
 
-        ImageView imageView = (ImageView) findViewById(R.id.aoc_view);
+        ImageView imageView = (ImageView) findViewById(R.id.image_view);
         imageView.setImageBitmap(BitmapFactory.decodeFile(strPicturePath));
     }
 
@@ -316,6 +317,7 @@ public class FullscreenActivity extends Activity {
         };
 
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
     }
 
     private void webUpdate()
@@ -350,11 +352,15 @@ public class FullscreenActivity extends Activity {
         };
 
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
     }
 
     private void hideAppName() {
 
         ((TextView) findViewById(R.id.fullscreen_content)).setText("");
+        //((TextView) findViewById(R.id.app_name)).setText("");
+        setTitle("");
+        getActionBar().setIcon(R.ic_blank);
     }
     private void postHideAppName(int interval)
     {
