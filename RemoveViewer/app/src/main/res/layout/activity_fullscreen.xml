@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/cdl_logo"
         android:background="@android:color/transparent"
-        android:onClick="change_aoc"
+        android:onClick="show_settings"
         android:layout_gravity="center_horizontal"
         android:gravity="top"
 

@@ -3,4 +3,11 @@
 
     <string name="dummy_button"> </string>
     <string name="dummy_content">Electronoos\nRemote\nViewer</string>
+
+    <!-- ressource strings -->
+    <string name="http_address_title">http_address</string>
+    <string name="http_address_title_summary">To change the web directory where to download images (NB: the server must be run with apache2 and auto indexes enabled)</string>
+
+    <string name="refresh_time_title">refresh time (s)</string>
+    <string name="refresh_time_summary">refresh time in seconds of each image</string>
 </resources>

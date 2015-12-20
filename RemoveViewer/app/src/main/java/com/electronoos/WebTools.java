@@ -60,52 +60,53 @@ public final class WebTools {
         int count;
         int total = 0;
         try {
-            Log.e("getWebFile", "beginning");
+            Log.d("WebTools: getWebFile", "beginning: " + strRemoteAddress);
             URL url = new URL(strRemoteAddress);
-            Log.e("getWebFile", "2");
+            Log.d("WebTools: getWebFile", "2");
             URLConnection connection = url.openConnection(); // Wrning: ne pas faire un "Network on main thread" exception !
-            Log.e("getWebFile", "3");
+            Log.d("WebTools: getWebFile", "3");
             connection.connect();
-            Log.e("getWebFile", "4");
+            Log.d("WebTools: getWebFile", "4");
 
             // this will be useful so that you can show a tipical 0-100%
             // progress bar
             //int lenghtOfFile = connection.getContentLength();
-            Log.e("getWebFile", "5");
+            Log.d("WebTools: getWebFile", "5");
 
             // download the file
             InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
-            Log.e("getWebFile", "6");
+            Log.d("WebTools: getWebFile", "6");
 
             byte data[] = new byte[1024];
 
-            Log.e("getWebFile", "7");
+            Log.d("WebTools: getWebFile", "7");
 
             while ((count = input.read(data)) != -1) {
                 total += count;
-                Log.e("getWebFile", "progression: " + total);
-                Log.e("getWebFile", "8");
+                Log.v("WebTools: getWebFile", "progression: " + total);
+                Log.d("WebTools: getWebFile", "8");
                 String converted = new String(data, "UTF-8");
                 strContents += converted;
-                Log.e("getWebFile", "9");
+                Log.d("WebTools: getWebFile", "9");
             }
 
             input.close();
 
         } catch (Exception e) {
-            Log.e( "getWebFile", "petite erreur" );
-            Log.e( "getWebFile: error: ", "error: " + (String)e.getMessage() + ", cause: " + e.toString() );
+            Log.e( "WebTools: getWebFile", "petite erreur" );
+            Log.e( "WebTools: getWebFile: error: ", "error: " + (String)e.getMessage() + ", cause: " + e.toString() );
         }
 
         strContents = strContents.substring(0,total); // resize string!
-        Log.e("getWebFile", "end, document length: " + strContents.length());
+        Log.v("WebTools: getWebFile", "end: " + strRemoteAddress + ", document length: " + strContents.length());
         return strContents;
     } // getWebFile
 
     // download a web file and save it to dest
     public static void saveWebFile(String strRemoteAddress, String strDestFilename ) {
 
+        long total = 0;
         int count;
         try {
             Log.v( "WebTools: saveWebFile", "beginning: " + strRemoteAddress + "=>" + strDestFilename);
@@ -124,8 +125,6 @@ public final class WebTools {
             OutputStream output = new FileOutputStream(strDestFilename);
 
             byte data[] = new byte[1024];
-
-            long total = 0;
 
             while ((count = input.read(data)) != -1) {
                 total += count;
@@ -147,6 +146,7 @@ public final class WebTools {
         } catch (Exception e) {
             Log.e("WebTools: saveWebFile", "while downloading: " + e.getMessage() );
         }
+        Log.v("WebTools: saveWebFile", "wrotten file: " +  strDestFilename + ", size: " + total );
     } // saveWebFile
 }
 

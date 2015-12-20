@@ -36,7 +36,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Locale;
 
-import ch.serverbox.android.usbcontroller.UsbController;
+import ch.serverbox.andchroid.usbcontroller.UsbController;
 import ch.serverbox.android.usbcontroller.IUsbConnectionHandler;
 
 import com.electronoos.utils.LoggerWidget;

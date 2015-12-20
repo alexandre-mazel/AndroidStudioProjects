@@ -8,17 +8,20 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -72,6 +75,9 @@ public class FullscreenActivity extends Activity {
     private ArrayList aImagesToShow_;
     ReentrantLock lockImagesToShow_;
     Random random_;
+
+    private Integer nRefreshTime_; // refresh time in seconds
+    private String  strImagesHttpAddress_;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +151,7 @@ public class FullscreenActivity extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-        Log.e( "RemoteViewer: onCreate", "before downloading...");
+        Log.e( "RemoteViewer: onCreate", "before settings...");
         //new DownloadFileFromURL().execute("http://perso.ovh.net/~mangedisf/mangedisque/images/bg_klee.gif");
         /*
         DownloadFileFromURL dffu = new DownloadFileFromURL();
@@ -171,6 +177,14 @@ public class FullscreenActivity extends Activity {
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
         handler.postDelayed(runnable, interval);
         */
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        strImagesHttpAddress_ = sharedPref.getString("http_address", ""); // hard-coded key: bouh
+        Log.v( "RemoteViewer", "from preferences: strImagesHttpAddress_: " + strImagesHttpAddress_ );
+        nRefreshTime_ = Integer.parseInt(sharedPref.getString("refresh_time", ""));
+        Log.v( "RemoteViewer", "from preferences: nRefreshTime_: " + nRefreshTime_ );
 
         webUpdate();
         postRedraw();
@@ -226,11 +240,23 @@ public class FullscreenActivity extends Activity {
         System.exit(0); // exit this application
     }
 
-    
+    public void show_settings(View view)
+    {
+        Log.v( "RemoteViewer", "show_settings: begin" );
+        onSettingsEdit();
+        Log.v( "RemoteViewer", "show_settings: end" );
+    }
+
+    protected void onSettingsEdit() {
+        // Display the fragment as the main content.
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new SettingsFragment())
+                .commit();
+    }
 
     public void showImage( String strPicturePath )
     {
-        Log.v( "Viewer", "onActivityResult: picture_selected: " + strPicturePath );
+        Log.v( "RemoteViewer", "onActivityResult: picture_selected: " + strPicturePath );
 
         ImageView imageView = (ImageView) findViewById(R.id.aoc_view);
         imageView.setImageBitmap(BitmapFactory.decodeFile(strPicturePath));
@@ -246,6 +272,10 @@ public class FullscreenActivity extends Activity {
         String strIndex = WebTools.getWebFile(strRemotePath);
         Log.v( "RemoteViewer", "strIndex: " + strIndex );
         */
+    }
+
+    public void informUser(String strMessage) {
+        Toast.makeText(this, strMessage, 5000).show();
     }
 
     public void setImagesToShow(ArrayList listImg)
@@ -266,7 +296,7 @@ public class FullscreenActivity extends Activity {
             //nIdx = 0; // force first (debug)
             String img = aImagesToShow_.get(nIdx).toString();
             Log.v( "RemoteViewer", "showRandomImage: showing: " + img );
-            Toast.makeText(FullscreenActivity.this, "redrawing: " + img, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(FullscreenActivity.this, "redrawing: " + img, Toast.LENGTH_SHORT).show();
             showImage(img);
         }
         lockImagesToShow_.unlock();
@@ -277,7 +307,7 @@ public class FullscreenActivity extends Activity {
     {
         if( false )
             return;
-        int interval = 5000; // 1 Second
+        int interval = nRefreshTime_*1000;
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
@@ -286,7 +316,6 @@ public class FullscreenActivity extends Activity {
         };
 
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
-        handler.postDelayed(runnable, interval);
     }
 
     private void webUpdate()
@@ -295,7 +324,7 @@ public class FullscreenActivity extends Activity {
         DownloadDirectoryFromURL ddfu = new DownloadDirectoryFromURL();
         ddfu.setParent( this );
         //String strSrc = "http://candilinge.factorycity.com/img/";
-        String strSrc = "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/";
+        String strSrc = strImagesHttpAddress_; // "http://perso.ovh.net/~mangedisf/mangedisque/logo_test/";
         ddfu.execute( strSrc );
 
         int nTimeRefresh = 1000*60*60*8; // 8h
@@ -320,6 +349,22 @@ public class FullscreenActivity extends Activity {
             }
         };
 
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+    }
+
+    private void hideAppName() {
+
+        ((TextView) findViewById(R.id.fullscreen_content)).setText("");
+    }
+    private void postHideAppName(int interval)
+    {
+        Log.v( "RemoteViewer", "postWebUpdate: update in: " + interval );
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                FullscreenActivity.this.hideAppName();
+            }
+        };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
         handler.postDelayed(runnable, interval);
     }
@@ -431,6 +476,7 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
 
     private FullscreenActivity parentActivity_; // parent that launch this request
     private ArrayList listFiles_; // list of destination filename
+    private String strError_;
 
     /**
      * Before starting background thread Show Progress Bar Dialog
@@ -450,17 +496,24 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
      * */
     @Override
     protected String doInBackground(String... f_url) {
+        strError_ = "";
         listFiles_ = new ArrayList();
         //String strRemotePath = "http://candilinge.factorycity.com/img_ochateau";
         String strRemotePath = f_url[0];
         Log.v( "RemoteViewer", "updateDirectory: " + strRemotePath );
         String strIndex = WebTools.getWebFile(strRemotePath);
+        if( strIndex.length() < 1)
+        {
+            strError_ = "Can't access to " + strRemotePath;
+        }
         Log.v( "RemoteViewer", "strIndex: " + strIndex );
         String[] listFile = WebTools.findFilesInIndexes( strIndex );
         Log.v( "RemoteViewer", "listFile: " + listFile.toString() );
 
         for (String strFile: listFile){
-            Log.v( "RemoteViewer", "loading: " + strFile );
+            if( strFile.charAt((strFile.length() - 1)) == '/') // skip subdirectory
+                continue;
+            Log.v("RemoteViewer", "loading: " + strFile);
             String strDest = Environment.getExternalStorageDirectory().toString() + "/" + strFile;
             WebTools.saveWebFile(strRemotePath+strFile, strDest );
             listFiles_.add( strDest );
@@ -487,6 +540,13 @@ class DownloadDirectoryFromURL extends AsyncTask<String, String, String> {
         //dismissDialog(progress_bar_type);
         Log.e( "RemoteViewer: ", "finito!");
         parentActivity_.setImagesToShow(listFiles_);
+        if( strError_ != "" ) {
+            parentActivity_.informUser("ERROR: " + strError_ );
+        }
+        else
+        {
+            parentActivity_.informUser("GOOD: " + listFiles_.size() + " image(s) downloaded and saved." );
+        }
 
     }
 
