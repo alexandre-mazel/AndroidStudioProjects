@@ -219,6 +219,15 @@ public class FullscreenActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    @Override
+    protected void onPause() {
+        // we want this application to be stopped when set on background
+        super.onPause();
+        System.exit(0); // exit this application
+    }
+
+    
+
     public void showImage( String strPicturePath )
     {
         Log.v( "Viewer", "onActivityResult: picture_selected: " + strPicturePath );
@@ -315,6 +324,7 @@ public class FullscreenActivity extends Activity {
         handler.postDelayed(runnable, interval);
     }
 }
+
 
 
 /**
