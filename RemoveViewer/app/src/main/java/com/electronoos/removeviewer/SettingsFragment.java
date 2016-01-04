@@ -20,5 +20,6 @@ public class SettingsFragment extends PreferenceFragment {
     public void onPause() {
         // doesn't hide the stuffs...
         super.onDestroy();
+        System.exit(0); // exit this application
     }
 }

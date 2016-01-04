@@ -78,6 +78,7 @@ public class FullscreenActivity extends Activity {
 
     private Integer nRefreshTime_; // refresh time in seconds
     private String  strImagesHttpAddress_;
+    private Boolean    bExitOnPause_;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,10 +182,13 @@ public class FullscreenActivity extends Activity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
         strImagesHttpAddress_ = sharedPref.getString("http_address", ""); // hard-coded key: bouh
         Log.v( "RemoteViewer", "from preferences: strImagesHttpAddress_: " + strImagesHttpAddress_ );
         nRefreshTime_ = Integer.parseInt(sharedPref.getString("refresh_time", ""));
         Log.v( "RemoteViewer", "from preferences: nRefreshTime_: " + nRefreshTime_ );
+        bExitOnPause_ = Boolean.valueOf(sharedPref.getBoolean("exit_on_pause", true));
+        Log.v( "RemoteViewer", "from preferences: bExitOnPause_: " + bExitOnPause_ );
 
         webUpdate();
         postRedraw();
@@ -238,7 +242,9 @@ public class FullscreenActivity extends Activity {
     protected void onPause() {
         // we want this application to be stopped when set on background
         super.onPause();
-        System.exit(0); // exit this application
+        if( bExitOnPause_ ) {
+            System.exit(0); // exit this application
+        }
     }
 
     public void show_settings(View view)

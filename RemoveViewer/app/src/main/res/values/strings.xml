@@ -10,4 +10,8 @@
 
     <string name="refresh_time_title">refresh time (s)</string>
     <string name="refresh_time_summary">refresh time in seconds of each image</string>
+
+    <string name="exit_on_pause_title">exit on pause?</string>
+    <string name="exit_on_pause_summary">Does the application must leave when losing focus (power button or...).\nWhen disabled, you could jump to settings then put the application on background, to exit the application.</string>
+
 </resources>
