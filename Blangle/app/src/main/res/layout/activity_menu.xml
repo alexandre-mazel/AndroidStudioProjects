@@ -23,12 +23,14 @@
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
+            android:layout_weight="80"
             android:orientation="vertical" >
 
             <TextView android:id="@+id/menu_desc_test" android:layout_width="match_parent"
                 android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
                 android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-                android:text="test" />
+                android:text="test1" />
+
 
         </LinearLayout>
 
@@ -37,23 +39,44 @@
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
+            android:layout_weight="80"
             android:orientation="vertical" >
+<!--
+            <TextView android:id="@+id/menu_desc_test" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
+
+                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                android:text="test2" />
+
+            <TextView android:id="@+id/menu_desc_test"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+
+                android:text="test3"
+                android:gravity="center"
+                android:textSize="40dp"
+                />
+-->
 
             <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
-                android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
                 android:textStyle="bold" android:textSize="50sp" android:gravity="center"
                 android:text="@string/menu_txt_desc" />
 
-            <RadioButton android:id="@+id/menu_radio_choice_def"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/menu_txt_choice_def"
-                android:onClick="onRadioButtonClicked"/>
-            <RadioButton android:id="@+id/menu_radio_choice_calc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/menu_txt_choice_calc"
-                android:onClick="onRadioButtonClicked"/>
+            <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <RadioButton android:id="@+id/menu_radio_choice_def"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_txt_choice_def"
+                    android:textSize="50sp"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton android:id="@+id/menu_radio_choice_calc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_txt_choice_calc"
+                    android:textSize="50sp"
+                    android:onClick="onRadioButtonClicked"/>
+            </RadioGroup>
 
         </LinearLayout>
     </LinearLayout>
