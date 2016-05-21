@@ -5,4 +5,8 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_definition">Definition</string>
+
+    <string name="menu_txt_desc">Choix du mode</string>
+    <string name="menu_txt_choice_def">Mode Definition</string>
+    <string name="menu_txt_choice_calc">Mode Calcul</string>
 </resources>

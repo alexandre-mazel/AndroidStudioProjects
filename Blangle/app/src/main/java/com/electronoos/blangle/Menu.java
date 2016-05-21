@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RadioButton;
 
 
 /**
@@ -156,5 +157,25 @@ public class Menu extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        return;
+        /*
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.menu_radio_choice_def:
+                if (checked)
+                    // Pirates are the best
+                    break;
+            case R.id.menu_radio_choice_calc:
+                if (checked)
+                    // Ninjas rule
+                    break;
+        }
+        */
     }
 }

@@ -19,7 +19,7 @@
         android:inputType="textWebEmailAddress"
         android:title="@string/http_address_title"
         android:summary="@string/http_address_title_summary"
-        android:defaultValue="http://perso.ovh.net/~mangedisf/mangedisque/logo_test/" />
+        android:defaultValue="http://ochateau.factorycity.com:12000/cdl_logo" />
     <CheckBoxPreference
         android:key="exit_on_pause"
         android:title="@string/exit_on_pause_title"
