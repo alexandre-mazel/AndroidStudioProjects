@@ -70,7 +70,7 @@
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="200dp"/>
+                android:0dp"/>
 
             <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
@@ -117,8 +117,11 @@
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
+
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"
+        >
 
         <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
             android:layout_width="match_parent" android:layout_height="wrap_content"
