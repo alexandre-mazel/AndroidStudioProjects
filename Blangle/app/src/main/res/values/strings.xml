@@ -9,4 +9,7 @@
     <string name="menu_txt_desc">Choix du mode</string>
     <string name="menu_txt_choice_def">Mode Definition</string>
     <string name="menu_txt_choice_calc">Mode Calcul</string>
+
+    <string name="button_txt_validate">Valider</string>
+    <string name="button_txt_modify">Corriger</string>
 </resources>
