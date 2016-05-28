@@ -2,5 +2,7 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="button_txt_color">#444444</color>
+    <color name="def">#92d050</color>
+    <color name="calc">#fec31f</color>
 
 </resources>

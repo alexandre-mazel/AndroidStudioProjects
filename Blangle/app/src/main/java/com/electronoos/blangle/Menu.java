@@ -178,4 +178,11 @@ public class Menu extends Activity {
         }
         */
     }
+
+    public void onChoiceDef(View view) {
+        // Kabloey
+    }
+    public void onChoiceCalc(View view) {
+        // Kabloey
+    }
 }
