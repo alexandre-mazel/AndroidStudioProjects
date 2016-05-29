@@ -7,18 +7,23 @@
     <string name="title_activity_definition">Definition</string>
 
     <string name="menu_txt_desc">Choix du mode</string>
-    <string name="menu_txt_choice_def">Référénces</string>
+    <string name="menu_txt_choice_def">Références</string>
     <string name="menu_txt_choice_calc">Détermination</string>
 
     <string name="button_txt_validate">Valider</string>
     <string name="button_txt_modify">Corriger</string>
 
-    <string name="def_title_printeuse_name">Nom de la nouvelle imprimeuse</string>
+    <string name="def_title_printeuse_name">Création d\'une nouvelle imprimeuse</string>
     <string name="def_title_reference">Mesure de la référence</string>
     <string name="def_title_dev_cyl">Développement du cylindre</string>
     <string name="def_title_long_racle">Longueur de la racle</string>
     <string name="def_title_cin_choice">Choix du mouvement</string>
-    <string name="def_title_cin_upper">Definition du monte baisse</string>
+    <string name="def_title_cin_upper">Définition du monte baisse</string>
     <string name="def_unit_mm">mm</string>
+
+    <string name="def_libelle_printeuse_name">Nom: </string>
+    <string name="def_libelle_reference1">dA: </string>
+    <string name="def_libelle_reference2">dB: </string>
+    <string name="def_libelle_reference3">dC: </string>
 
 </resources>

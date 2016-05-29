@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 
 /**
@@ -115,6 +116,11 @@ public class Menu extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        ((TextView) findViewById(R.id.fullscreen_content)).setText("");
+        //((TextView) findViewById(R.id.app_name)).setText("");
+        setTitle("");
+        getActionBar().setIcon(R.mipmap.ic_blank);
     }
 
     @Override

@@ -63,8 +63,13 @@ public class Definition extends Activity {
 
     // interface element
     private TextView mTxtTitle;
+
+    private LinearLayout mLayoutTextEdit1;
+    private TextView mLibEdit1;
     private EditText mTxtEdit1;
+
     private LinearLayout mLayoutMeasureEdit1;
+    private TextView mLibMeasure1;
     private EditText mMeasureEdit1;
 
     @Override
@@ -136,12 +141,24 @@ public class Definition extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+        // Hide stuffs
+        ((TextView) findViewById(R.id.fullscreen_content)).setText("");
+        //((TextView) findViewById(R.id.app_name)).setText("");
+        setTitle("");
+        getActionBar().setIcon(R.mipmap.ic_blank);
+
         // get interface objects
         mPt = new Printeuse();
         mTxtTitle = (TextView) findViewById(R.id.def_desc);
-        mTxtEdit1 = (EditText) findViewById(R.id.edittext_1);
-        mLayoutMeasureEdit1 = (LinearLayout) findViewById(R.id.layout_measure_1);
-        mMeasureEdit1 = (EditText) findViewById(R.id.editmeasure_1);
+
+        mLayoutTextEdit1 = (LinearLayout) findViewById(R.id.def_layout_text_1);
+        mLibEdit1 = (TextView) findViewById(R.id.def_libelle_text_1);
+        mTxtEdit1 = (EditText) findViewById(R.id.def_edit_text_1);
+
+        mLayoutMeasureEdit1 = (LinearLayout) findViewById(R.id.def_layout_measure_1);
+        mLibMeasure1 = (TextView) findViewById(R.id.def_libelle_measure_1);
+        mMeasureEdit1 = (EditText) findViewById(R.id.def_edit_measure_1);
+
         updateInterface();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
@@ -236,15 +253,20 @@ public class Definition extends Activity {
         {
             mTxtTitle.setText(R.string.def_title_printeuse_name);
             mLayoutMeasureEdit1.setVisibility(View.GONE);
+
             mTxtEdit1.setVisibility(View.VISIBLE);
-            mTxtEdit1.setText("");
+            mLibEdit1.setText( R.string.def_libelle_printeuse_name );
+            mTxtEdit1.setText("toto");
         }
         if( nStep == mPt.EDIT_STEP_REFERENCE )
         {
             mTxtTitle.setText( R.string.def_title_reference );
-            mTxtEdit1.setVisibility(View.GONE);
+            mLayoutTextEdit1.setVisibility(View.GONE);
+
             mLayoutMeasureEdit1.setVisibility(View.VISIBLE);
-            mMeasureEdit1.setText("");
+            mLibMeasure1.setText( R.string.def_libelle_reference1 );
+
+            mMeasureEdit1.setText("18");
         }
         if( nStep == mPt.EDIT_STEP_DEV_CYL )
         {
@@ -255,6 +277,7 @@ public class Definition extends Activity {
         {
             mTxtTitle.setText( R.string.def_title_long_racle );
             mMeasureEdit1.setText("");
+            mLayoutMeasureEdit1.setVisibility(View.GONE);
         }
         if( nStep == mPt.EDIT_STEP_CINEMATIC_CHOICE )
         {

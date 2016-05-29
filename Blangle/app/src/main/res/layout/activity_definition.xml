@@ -48,8 +48,10 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="32dp"
             android:layout_weight="80"
             android:background="#cccccc"
             android:orientation="vertical" >
@@ -83,33 +85,71 @@
                     android:layout_height="30dp"/>
 
             <!-- Various widget -->
-            <EditText
-                android:id="@+id/edittext_1"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:ems="20"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_text_1"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
                 android:layout_gravity="center"
-                android:text="text1"
-                android:textSize="40sp"
-                android:inputType="text" />
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_text_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="50"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_text_1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text="text1"
+                    android:textSize="40sp"
+                    android:layout_weight="50"
+
+                    android:inputType="text" /> <!-- android:textCursorDrawable="@color/input_caret" -->
+
+            </LinearLayout>
 
             <Space
                 android:layout_width="1dp"
                 android:layout_height="30dp"/>
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/layout_measure_1"
+                android:id="@+id/def_layout_measure_1"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="100dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:layout_weight="80"
-                android:background="#888888"
+                android:background="@color/input_layout"
                 android:layout_gravity="center"
                 android:orientation="horizontal" >
 
+                <TextView android:id="@+id/def_libelle_measure_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:text="" />
+
                 <EditText
-                    android:id="@+id/editmeasure_1"
+                    android:id="@+id/def_edit_measure_1"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:ems="20"
@@ -118,7 +158,7 @@
                     android:textSize="40sp"
                     android:inputType="number" />
 
-                <TextView android:id="@+id/unitmeasure_1"
+                <TextView android:id="@+id/def_unit_measure_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -133,7 +173,7 @@
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="60dp"/>
+                android:layout_height="6dp"/>
 
             <!-- Validate button -->
 
@@ -147,6 +187,7 @@
                 android:layout_weight="80"
                 android:background="#cccccc"
                 android:layout_gravity="bottom"
+                android:gravity="bottom"
                 android:orientation="vertical" >
 
                 <Button
