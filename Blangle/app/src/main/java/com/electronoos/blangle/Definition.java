@@ -146,6 +146,7 @@ public class Definition extends Activity {
         //((TextView) findViewById(R.id.app_name)).setText("");
         setTitle("");
         getActionBar().setIcon(R.mipmap.ic_blank);
+        getActionBar().hide();
 
         // get interface objects
         mPt = new Printeuse();
