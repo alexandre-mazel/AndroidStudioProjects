@@ -22,8 +22,8 @@
     <string name="def_unit_mm">mm</string>
 
     <string name="def_libelle_printeuse_name">Nom: </string>
-    <string name="def_libelle_reference1">dA: </string>
-    <string name="def_libelle_reference2">dB: </string>
-    <string name="def_libelle_reference3">dC: </string>
+    <string name="def_libelle_reference1">dA:</string>
+    <string name="def_libelle_dev_cyl1">Développement:</string>
+    <string name="def_libelle_long_racle">Longueur:</string>
 
 </resources>

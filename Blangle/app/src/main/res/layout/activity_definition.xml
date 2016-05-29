@@ -56,10 +56,11 @@
             android:background="#cccccc"
             android:orientation="vertical" >
 
-
+            <!--
             <Space
                 android:layout_width="1dp"
                 android:layout_height="30dp"/>
+             -->
 
 
             <Button
@@ -131,9 +132,10 @@
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/def_layout_measure_1"
                 android:layout_width="match_parent"
+                android:layout_margin="10dp"
                 android:layout_height="100dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:layout_weight="80"
                 android:background="@color/input_layout"
                 android:layout_gravity="center"
@@ -143,6 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_margin="5dp"
                     android:textColor="@color/input_libelle"
                     android:textStyle="normal"
                     android:textSize="40sp"
@@ -155,7 +158,7 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:ems="20"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center"
                     android:text=""
                     android:textSize="40sp"
                     android:layout_weight="33"

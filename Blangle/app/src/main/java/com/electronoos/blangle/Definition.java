@@ -272,18 +272,19 @@ public class Definition extends Activity {
         if( nStep == mPt.EDIT_STEP_DEV_CYL )
         {
             mTxtTitle.setText( R.string.def_title_dev_cyl );
+            mLibMeasure1.setText( R.string.def_libelle_dev_cyl1 );
             mMeasureEdit1.setText("");
         }
         if( nStep == mPt.EDIT_STEP_LONG_RACLE )
         {
             mTxtTitle.setText( R.string.def_title_long_racle );
+            mLibMeasure1.setText( R.string.def_libelle_long_racle );
             mMeasureEdit1.setText("");
-            mLayoutMeasureEdit1.setVisibility(View.GONE);
         }
         if( nStep == mPt.EDIT_STEP_CINEMATIC_CHOICE )
         {
             mTxtTitle.setText( R.string.def_title_cin_choice );
-            mMeasureEdit1.setText("");
+            mLayoutMeasureEdit1.setVisibility(View.GONE);
         }
         if( nStep == mPt.EDIT_STEP_CINEMATIC_UPPER )
         {
