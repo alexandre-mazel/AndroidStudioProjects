@@ -24,20 +24,21 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:layout_weight="80"
-            android:background="#30ff30"
+            android:background="#dddddd"
             android:orientation="vertical" >
-
+<!--
             <TextView android:id="@+id/menu_desc_test" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
                 android:textStyle="bold" android:textSize="50sp" android:gravity="center"
                 android:text="test1" />
+            -->
 
             <ImageButton
-                android:layout_width="200px"
-                android:layout_height="200px"
+                android:layout_width="800dp"
+                android:layout_height="800dp"
                 android:layout_gravity="center"
                 android:gravity="center_vertical"
-                android:src="@drawable/icon_appli"
+                android:src="@drawable/icon_appli2"
                 android:background="@null"
                 />
 
@@ -73,7 +74,7 @@
                 android:layout_height="180dp"/>
 
             <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
                 android:textStyle="bold" android:textSize="50sp" android:gravity="center"
                 android:text="@string/menu_txt_desc" />
 <!--
@@ -94,6 +95,11 @@
                     android:onClick="onRadioButtonClicked"/>
             </RadioGroup>
 -->
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="100dp"/>
+
             <Button
                 android:layout_height="wrap_content"
                 android:layout_width="400dp"

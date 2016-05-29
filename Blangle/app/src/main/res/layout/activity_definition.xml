@@ -3,18 +3,108 @@
     android:layout_height="match_parent" android:background="#0099cc"
     tools:context="com.electronoos.blangle.Definition">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
+
     <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
         android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-        android:text="@string/dummy_content" />
+        android:text="@string/dummy_content" android:visibility="invisible"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="horizontal" >
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="80"
+            android:background="@color/def"
+            android:orientation="vertical" >
+
+
+            <ImageButton
+                android:layout_width="800dp"
+                android:layout_height="800dp"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:src="@drawable/icon_appli2"
+                android:background="@null"
+                />
+
+        </LinearLayout>
+
+
+
+
+        <!-- RIGHTTTTTTTTTTTTTTTTT PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGE -->
+
+
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="80"
+            android:background="#cccccc"
+            android:orientation="vertical" >
+
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="30dp"/>
+
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/button_back_to_menu"
+                android:onClick="onBackToMenu" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="100dp"/>
+
+
+            <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                android:text="@string/menu_txt_desc" />
+
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="100dp"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_yes_sm"
+                    android:layout_gravity="center"
+                    />
+
+                <TextView android:id="@+id/button_txt" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/button_txt_color"
+                    android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                    android:layout_gravity="center"
+                    android:text="@string/button_txt_validate" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
+
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"
+        >
 
         <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
             android:layout_width="match_parent" android:layout_height="wrap_content"

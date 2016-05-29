@@ -4,6 +4,7 @@ import com.electronoos.blangle.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -180,8 +181,13 @@ public class Menu extends Activity {
     }
 
     public void onChoiceDef(View view) {
-        // Kabloey
+        Intent intent = new Intent(this, Definition.class);
+        //EditText editText = (EditText) findViewById(R.id.edit_message);
+        //String message = editText.getText().toString();
+        //intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
     }
+
     public void onChoiceCalc(View view) {
         // Kabloey
     }

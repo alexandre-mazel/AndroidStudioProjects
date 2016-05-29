@@ -4,6 +4,7 @@ import com.electronoos.blangle.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -188,5 +189,10 @@ public class Definition extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public void onBackToMenu(View view) {
+        Intent intent = new Intent(this, Menu.class);
+        startActivity(intent);
     }
 }
