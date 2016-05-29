@@ -50,8 +50,8 @@
             android:layout_height="match_parent"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="32dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
             android:layout_weight="80"
             android:background="#cccccc"
             android:orientation="vertical" >
@@ -67,12 +67,13 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center"
+                android:gravity="top"
                 android:background="@drawable/button_back_to_menu"
                 android:onClick="onBackToMenu" />
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="90dp"/>
+                android:layout_height="80dp"/>
 
 
             <TextView android:id="@+id/def_desc" android:layout_width="match_parent"
@@ -83,7 +84,7 @@
 
                 <Space
                     android:layout_width="1dp"
-                    android:layout_height="30dp"/>
+                    android:layout_height="10dp"/>
 
             <!-- Various widget -->
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -127,7 +128,7 @@
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="30dp"/>
+                android:layout_height="0dp"/>
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/def_layout_measure_1"
@@ -142,14 +143,14 @@
                 android:orientation="horizontal" >
 
                 <TextView android:id="@+id/def_libelle_measure_1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
                     android:textColor="@color/input_libelle"
                     android:textStyle="normal"
-                    android:textSize="40sp"
-                    android:layout_weight="33"
+                    android:textSize="38sp"
+                    android:layout_weight="55"
                     android:gravity="right"
                     android:text="" />
 
@@ -161,22 +162,118 @@
                     android:layout_gravity="center"
                     android:text=""
                     android:textSize="40sp"
-                    android:layout_weight="33"
+                    android:layout_weight="25"
                     android:gravity="right"
                     android:inputType="number" />
 
                 <TextView android:id="@+id/def_unit_measure_1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="20dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="@color/pagetitle"
                     android:textStyle="normal"
                     android:textSize="40sp"
-                    android:layout_weight="33"
+                    android:layout_weight="20"
                     android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
 
             </LinearLayout>
 
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_measure_2"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_measure_2"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="38sp"
+                    android:layout_weight="55"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_measure_2"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textSize="40sp"
+                    android:layout_weight="25"
+                    android:gravity="right"
+                    android:inputType="number" />
+
+                <TextView android:id="@+id/def_unit_measure_2"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/pagetitle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="20"
+                    android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
+
+            </LinearLayout>
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_measure_3"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_measure_3"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="38sp"
+                    android:layout_weight="55"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_measure_3"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textSize="40sp"
+                    android:layout_weight="25"
+                    android:gravity="right"
+                    android:inputType="number" />
+
+                <TextView android:id="@+id/def_unit_measure_3"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/pagetitle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="20"
+                    android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
+
+            </LinearLayout>
 
 
             <Space
@@ -208,7 +305,7 @@
 
                 <TextView android:id="@+id/button_txt" android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/button_txt_color"
-                    android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                    android:textStyle="bold" android:textSize="35sp" android:gravity="center"
                     android:layout_gravity="center"
                     android:text="@string/button_txt_validate" />
 

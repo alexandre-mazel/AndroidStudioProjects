@@ -23,7 +23,14 @@
 
     <string name="def_libelle_printeuse_name">Nom: </string>
     <string name="def_libelle_reference1">dA:</string>
+    <string name="def_libelle_reference2">dB:</string>
+    <string name="def_libelle_reference3">dC:</string>
     <string name="def_libelle_dev_cyl1">Développement:</string>
     <string name="def_libelle_long_racle">Longueur:</string>
+    <string name="def_libelle_cin_upper1">Delta1:</string>
+    <string name="def_libelle_cin_upper2">Taille Max:</string>
+    <string name="def_libelle_cin_upper3">Delta2:</string>
+
+    <string name="def_error_empty_input">ERREUR: Vous devez remplir chaque information</string>
 
 </resources>

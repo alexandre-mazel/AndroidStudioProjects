@@ -366,11 +366,11 @@ public class FullscreenActivity extends Activity {
         ((TextView) findViewById(R.id.fullscreen_content)).setText("");
         //((TextView) findViewById(R.id.app_name)).setText("");
         setTitle("");
-        getActionBar().setIcon(R.mipmap.ic_blank);
+        lBar().setIcon(R.mipmap.ic_blank);
     }
     private void postHideAppName(int interval)
     {
-        Log.v( "RemoteViewer", "postWebUpdate: update in: " + interval );
+                                            .v( "RemoteViewer", "postWebUpdate: update in: " + interval );
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {

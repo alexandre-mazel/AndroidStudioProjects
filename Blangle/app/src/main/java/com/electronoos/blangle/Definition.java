@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -69,8 +70,14 @@ public class Definition extends Activity {
     private EditText mTxtEdit1;
 
     private LinearLayout mLayoutMeasureEdit1;
+    private LinearLayout mLayoutMeasureEdit2;
+    private LinearLayout mLayoutMeasureEdit3;
     private TextView mLibMeasure1;
+    private TextView mLibMeasure2;
+    private TextView mLibMeasure3;
     private EditText mMeasureEdit1;
+    private EditText mMeasureEdit2;
+    private EditText mMeasureEdit3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +167,14 @@ public class Definition extends Activity {
         mLibMeasure1 = (TextView) findViewById(R.id.def_libelle_measure_1);
         mMeasureEdit1 = (EditText) findViewById(R.id.def_edit_measure_1);
 
+        mLayoutMeasureEdit2 = (LinearLayout) findViewById(R.id.def_layout_measure_2);
+        mLibMeasure2 = (TextView) findViewById(R.id.def_libelle_measure_2);
+        mMeasureEdit2 = (EditText) findViewById(R.id.def_edit_measure_2);
+
+        mLayoutMeasureEdit3 = (LinearLayout) findViewById(R.id.def_layout_measure_3);
+        mLibMeasure3 = (TextView) findViewById(R.id.def_libelle_measure_3);
+        mMeasureEdit3 = (EditText) findViewById(R.id.def_edit_measure_3);
+
         updateInterface();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
@@ -245,19 +260,75 @@ public class Definition extends Activity {
         updateInterface();
     }
 
+    // Return False if data aren't OK
+    protected boolean retrieveInformation()
+    {
+        int nStep = mPt.getEditStep();
+
+        if( nStep == mPt.EDIT_STEP_NAME )
+        {
+            String s = mTxtEdit1.getText().toString();
+            if( s.isEmpty() )
+            {
+                return false;
+            }
+            mPt.setName(s);
+        }
+        if( nStep == mPt.EDIT_STEP_REFERENCE )
+        {
+            //mPt.addCinematicElement( new Ci)
+            String s1 = mMeasureEdit1.getText().toString();
+            String s2 = mMeasureEdit2.getText().toString();
+            String s3 = mMeasureEdit3.getText().toString();
+            if( s1.isEmpty() || s2.isEmpty() || s3.isEmpty() )
+            {
+                return false;
+            }
+
+            mPt.setReference( Float.parseFloat(s1), Float.parseFloat(s2), Float.parseFloat(s3) );
+        }
+
+        if( nStep == mPt.EDIT_STEP_DEV_CYL )
+        {
+            //mPt.addCinematicElement( new Ci)
+            String s1 = mMeasureEdit1.getText().toString();
+            if( s1.isEmpty() )
+            {
+                return false;
+            }
+
+            mPt.setDevCyl( Float.parseFloat(s1) );
+        }
+
+
+
+        return true;
+    }
+
     protected void updateInterface()
     {
-        // update interface relatively to current printeuse state
+        // retrieve information
+        boolean bRet = retrieveInformation();
+        if( ! bRet )
+        {
+            Toast.makeText(Definition.this, R.string.def_error_empty_input, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mPt.updateEditStep();
+
+        // update interface relatively to current printeuse state
         int nStep = mPt.getEditStep();
         if( nStep == mPt.EDIT_STEP_NAME )
         {
             mTxtTitle.setText(R.string.def_title_printeuse_name);
             mLayoutMeasureEdit1.setVisibility(View.GONE);
+            mLayoutMeasureEdit2.setVisibility(View.GONE);
+            mLayoutMeasureEdit3.setVisibility(View.GONE);
 
             mTxtEdit1.setVisibility(View.VISIBLE);
             mLibEdit1.setText( R.string.def_libelle_printeuse_name );
-            mTxtEdit1.setText("toto");
+            mTxtEdit1.setText("");
         }
         if( nStep == mPt.EDIT_STEP_REFERENCE )
         {
@@ -265,12 +336,19 @@ public class Definition extends Activity {
             mLayoutTextEdit1.setVisibility(View.GONE);
 
             mLayoutMeasureEdit1.setVisibility(View.VISIBLE);
+            mLayoutMeasureEdit2.setVisibility(View.VISIBLE);
+            mLayoutMeasureEdit3.setVisibility(View.VISIBLE);
             mLibMeasure1.setText( R.string.def_libelle_reference1 );
+            mLibMeasure2.setText( R.string.def_libelle_reference2 );
+            mLibMeasure3.setText( R.string.def_libelle_reference3 );
 
-            mMeasureEdit1.setText("18");
+            mMeasureEdit1.setText("");
         }
         if( nStep == mPt.EDIT_STEP_DEV_CYL )
         {
+            mLayoutMeasureEdit2.setVisibility(View.GONE);
+            mLayoutMeasureEdit3.setVisibility(View.GONE);
+
             mTxtTitle.setText( R.string.def_title_dev_cyl );
             mLibMeasure1.setText( R.string.def_libelle_dev_cyl1 );
             mMeasureEdit1.setText("");
@@ -289,7 +367,16 @@ public class Definition extends Activity {
         if( nStep == mPt.EDIT_STEP_CINEMATIC_UPPER )
         {
             mTxtTitle.setText( R.string.def_title_cin_upper );
-            mMeasureEdit1.setText("");
+
+            mLayoutMeasureEdit1.setVisibility(View.VISIBLE);
+            mLayoutMeasureEdit2.setVisibility(View.VISIBLE);
+            mLayoutMeasureEdit3.setVisibility(View.VISIBLE);
+            mLibMeasure1.setText( R.string.def_libelle_cin_upper1 );
+            mLibMeasure2.setText( R.string.def_libelle_cin_upper2 );
+            mLibMeasure3.setText( R.string.def_libelle_cin_upper3 );
+
+            mMeasureEdit1.setText("0");
+            mMeasureEdit1.setText("0");
         }
     }
 }

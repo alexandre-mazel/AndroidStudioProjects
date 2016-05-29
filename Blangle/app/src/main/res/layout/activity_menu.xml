@@ -102,10 +102,11 @@
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="400dp"
+                android:layout_width="600dp"
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_def"
                 android:background="@color/def"
+                android:textSize="60sp"
                 android:onClick="onChoiceDef" />
             <Space
                 android:layout_width="1dp"
@@ -113,10 +114,11 @@
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="400dp"
+                android:layout_width="600dp"
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_calc"
                 android:background="@color/calc"
+                android:textSize="60sp"
                 android:onClick="onChoiceCalc" />
 <!--
                         <Space
