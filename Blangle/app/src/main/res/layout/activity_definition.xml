@@ -69,10 +69,10 @@
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="100dp"/>
+                android:layout_height="90dp"/>
 
 
-            <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
+            <TextView android:id="@+id/def_desc" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
                 android:textStyle="bold" android:textSize="50sp" android:gravity="center"
                 android:text="@string/menu_txt_desc" />
@@ -80,13 +80,81 @@
 
                 <Space
                     android:layout_width="1dp"
-                    android:layout_height="100dp"/>
+                    android:layout_height="30dp"/>
+
+            <!-- Various widget -->
+            <EditText
+                android:id="@+id/edittext_1"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:ems="20"
+                android:layout_gravity="center"
+                android:text="text1"
+                android:textSize="40sp"
+                android:inputType="text" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="30dp"/>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_measure_1"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_weight="80"
+                android:background="#888888"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <EditText
+                    android:id="@+id/editmeasure_1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:ems="20"
+                    android:layout_gravity="center_horizontal"
+                    android:text=""
+                    android:textSize="40sp"
+                    android:inputType="number" />
+
+                <TextView android:id="@+id/unitmeasure_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/pagetitle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
+
+            </LinearLayout>
+
+
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="60dp"/>
+
+            <!-- Validate button -->
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_validate"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_weight="80"
+                android:background="#cccccc"
+                android:layout_gravity="bottom"
+                android:orientation="vertical" >
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_yes_sm"
+                    android:background="@drawable/icon_yes_sm"
                     android:layout_gravity="center"
+                    android:onClick="onValidate" />
                     />
 
                 <TextView android:id="@+id/button_txt" android:layout_width="wrap_content"
@@ -94,6 +162,8 @@
                     android:textStyle="bold" android:textSize="50sp" android:gravity="center"
                     android:layout_gravity="center"
                     android:text="@string/button_txt_validate" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

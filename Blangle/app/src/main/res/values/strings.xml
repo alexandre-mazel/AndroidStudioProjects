@@ -12,4 +12,13 @@
 
     <string name="button_txt_validate">Valider</string>
     <string name="button_txt_modify">Corriger</string>
+
+    <string name="def_title_printeuse_name">Nom de la nouvelle imprimeuse</string>
+    <string name="def_title_reference">Mesure de la référence</string>
+    <string name="def_title_dev_cyl">Développement du cylindre</string>
+    <string name="def_title_long_racle">Longueur de la racle</string>
+    <string name="def_title_cin_choice">Choix du mouvement</string>
+    <string name="def_title_cin_upper">Definition du monte baisse</string>
+    <string name="def_unit_mm">mm</string>
+
 </resources>

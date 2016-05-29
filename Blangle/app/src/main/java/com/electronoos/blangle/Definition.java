@@ -8,10 +8,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Layout;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 /**
@@ -48,6 +53,19 @@ public class Definition extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
+
+    ////////////////////////////////////////////////
+    // current element
+    /////////////////////////////////////
+
+    //private CinematicElement el;
+    private Printeuse mPt; // current printeuse being defined
+
+    // interface element
+    private TextView mTxtTitle;
+    private EditText mTxtEdit1;
+    private LinearLayout mLayoutMeasureEdit1;
+    private EditText mMeasureEdit1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +135,15 @@ public class Definition extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        // get interface objects
+        mPt = new Printeuse();
+        mTxtTitle = (TextView) findViewById(R.id.def_desc);
+        mTxtEdit1 = (EditText) findViewById(R.id.edittext_1);
+        mLayoutMeasureEdit1 = (LinearLayout) findViewById(R.id.layout_measure_1);
+        mMeasureEdit1 = (EditText) findViewById(R.id.editmeasure_1);
+        updateInterface();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override
@@ -194,5 +221,50 @@ public class Definition extends Activity {
     public void onBackToMenu(View view) {
         Intent intent = new Intent(this, Menu.class);
         startActivity(intent);
+    }
+
+    public void onValidate(View view) {
+        updateInterface();
+    }
+
+    protected void updateInterface()
+    {
+        // update interface relatively to current printeuse state
+        mPt.updateEditStep();
+        int nStep = mPt.getEditStep();
+        if( nStep == mPt.EDIT_STEP_NAME )
+        {
+            mTxtTitle.setText(R.string.def_title_printeuse_name);
+            mLayoutMeasureEdit1.setVisibility(View.GONE);
+            mTxtEdit1.setVisibility(View.VISIBLE);
+            mTxtEdit1.setText("");
+        }
+        if( nStep == mPt.EDIT_STEP_REFERENCE )
+        {
+            mTxtTitle.setText( R.string.def_title_reference );
+            mTxtEdit1.setVisibility(View.GONE);
+            mLayoutMeasureEdit1.setVisibility(View.VISIBLE);
+            mMeasureEdit1.setText("");
+        }
+        if( nStep == mPt.EDIT_STEP_DEV_CYL )
+        {
+            mTxtTitle.setText( R.string.def_title_dev_cyl );
+            mMeasureEdit1.setText("");
+        }
+        if( nStep == mPt.EDIT_STEP_LONG_RACLE )
+        {
+            mTxtTitle.setText( R.string.def_title_long_racle );
+            mMeasureEdit1.setText("");
+        }
+        if( nStep == mPt.EDIT_STEP_CINEMATIC_CHOICE )
+        {
+            mTxtTitle.setText( R.string.def_title_cin_choice );
+            mMeasureEdit1.setText("");
+        }
+        if( nStep == mPt.EDIT_STEP_CINEMATIC_UPPER )
+        {
+            mTxtTitle.setText( R.string.def_title_cin_upper );
+            mMeasureEdit1.setText("");
+        }
     }
 }
