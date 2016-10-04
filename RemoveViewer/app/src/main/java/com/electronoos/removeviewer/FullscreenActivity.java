@@ -188,7 +188,7 @@ public class FullscreenActivity extends Activity {
         nRefreshTime_ = Integer.parseInt(sharedPref.getString("refresh_time", ""));
         Log.v( "RemoteViewer", "from preferences: nRefreshTime_: " + nRefreshTime_ );
         bExitOnPause_ = Boolean.valueOf(sharedPref.getBoolean("exit_on_pause", true));
-        Log.v( "RemoteViewer", "from preferences: bExitOnPause_: " + bExitOnPause_ );
+        Log.v( "RemoteViewer", ac"from preferences: bExitOnPause_: " + bExitOnPause_ );
 
         webUpdate();
         postRedraw();

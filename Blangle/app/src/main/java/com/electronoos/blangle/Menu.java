@@ -225,8 +225,11 @@ public class Menu extends Activity {
 
     private void connectBLE() {
         Log.v("DBG", "start BLE stuffs");
-        mSensorsManager = new SensorsManager();
-        mSensorsManager.init();
+        //mSensorsManager = new SensorsManager();
+        //mSensorsManager.init();
+        Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);
+        //myIntent.putExtra("key", value); //Optional parameters
+        Menu.this.startActivity(myIntent);
         Log.v("DBG", "start BLE stuffs - end");
     }
 

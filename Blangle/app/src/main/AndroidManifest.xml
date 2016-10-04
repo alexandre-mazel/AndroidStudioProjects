@@ -30,6 +30,7 @@
         </activity>
         <uses-permission android:name="android.permission.BLUETOOTH"/>
         <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+        <activity android:label="toto" android:name="DeviceScanActivity"/>
     </application>
 
 </manifest>
