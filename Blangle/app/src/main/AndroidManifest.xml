@@ -28,6 +28,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.electronoos.blangle.Menu" />
         </activity>
+        <uses-permission android:name="android.permission.BLUETOOTH"/>
+        <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     </application>
 
 </manifest>
