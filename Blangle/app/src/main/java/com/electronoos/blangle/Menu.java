@@ -55,7 +55,8 @@ public class Menu extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
-    private BluetoothAdapter mBluetoothAdapter;
+//    private BluetoothAdapter mBluetoothAdapter;
+    private SensorsManager   mSensorsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +134,7 @@ public class Menu extends Activity {
 
         ////////////////////////////////////:
         /// BLE stuffs
-        Log.v("DBG", "start BLE stuffs...");
+        Log.v("DBG", "BLE check");
 
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
@@ -141,13 +142,9 @@ public class Menu extends Activity {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         }
+        Log.v("DBG", "BLE check - end");
 
-        // Initializes Bluetooth adapter.
-        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        Log.v("DBG", "start BLE stuffs - end");
-
+        postConnectBLE(2000);
 
     }
 
@@ -224,5 +221,26 @@ public class Menu extends Activity {
 
     public void onChoiceCalc(View view) {
         // Kabloey
+    }
+
+    private void connectBLE() {
+        Log.v("DBG", "start BLE stuffs");
+        mSensorsManager = new SensorsManager();
+        mSensorsManager.init();
+        Log.v("DBG", "start BLE stuffs - end");
+    }
+
+
+
+    private void postConnectBLE(int interval)
+    {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                Menu.this.connectBLE();
+            }
+        };
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
     }
 }
