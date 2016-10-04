@@ -33,4 +33,6 @@
 
     <string name="def_error_empty_input">ERREUR: Vous devez remplir chaque information</string>
 
+    <string name="ble_not_supported">ATTENTION: this device doesn\'t support BLE!!!</string>
+
 </resources>
