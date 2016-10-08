@@ -29,7 +29,7 @@ public class SensorsManager {
                 Log.v("DBG", "Found: Device name:" + device.getName());
                 if( device.getName().indexOf("SensorTag") != -1 )
                 {
-                    Log.v("DBG", "Found !");
+                    Log.v("DBG", "Found !"); // arreter l'attente ici! TODO
                 }
             }
         };
@@ -48,7 +48,10 @@ public class SensorsManager {
         Log.v("DBG", "start lescan");
         btAdapter.startLeScan(leScanCallback);
         try {
-            Thread.sleep(1000);
+            for(int l=0; l<=10; l++){
+                Thread.sleep(1000);
+            }
+
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
