@@ -60,7 +60,11 @@ public class Menu extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v("DBG", "------------------------------");
+
         super.onCreate(savedInstanceState);
+
+        Global.setCurrentActivity( this );
 
         setContentView(R.layout.activity_menu);
 
@@ -225,11 +229,16 @@ public class Menu extends Activity {
 
     private void connectBLE() {
         Log.v("DBG", "start BLE stuffs");
-        //mSensorsManager = new SensorsManager();
-        //mSensorsManager.init();
-        Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);
-        //myIntent.putExtra("key", value); //Optional parameters
-        Menu.this.startActivity(myIntent);
+        if( true ) {
+            mSensorsManager = new SensorsManager();
+            mSensorsManager.init();
+            mSensorsManager.discover();
+        }
+        if( false ) {
+            Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);
+            //myIntent.putExtra("key", value); //Optional parameters
+            Menu.this.startActivity(myIntent);
+        }
         Log.v("DBG", "start BLE stuffs - end");
     }
 
