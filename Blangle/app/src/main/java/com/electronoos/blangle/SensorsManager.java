@@ -23,13 +23,13 @@ public class SensorsManager {
     {
         Log.v("DBG", "discover");
         BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
-                @Override
-                public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
-                    // your implementation here
-                    Log.v("DBG", "Found: Device name:" + device.getName());
-                    if( SensorTag in device.getName() )
-                    {
-                    }
+            @Override
+            public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
+                // your implementation here
+                Log.v("DBG", "Found: Device name:" + device.getName());
+                if( device.getName().indexOf("SensorTag") != -1 )
+                {
+                    Log.v("DBG", "Found !");
                 }
             }
         };
