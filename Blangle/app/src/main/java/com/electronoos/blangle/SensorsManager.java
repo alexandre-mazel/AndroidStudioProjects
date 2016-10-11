@@ -56,7 +56,7 @@ public class SensorsManager {
         Log.v("DBG", "start lescan");
         mDevice = null;
         mTimeStartDiscover = System.currentTimeMillis();
-        mAdapter.startLeScan(leScanCallback);
+        mAdapter.startLeScan(mLeScanCallback);
         /*
         try {
             for(int l=0; l<=10; l++){
@@ -95,5 +95,13 @@ public class SensorsManager {
         }
         Log.v( "DBG", "SensorManager: connecting...");
 
+        return 1;
+    }
+
+    public int update()
+    {
+        // do whatever has to be done
+        connect();
+        return 1;
     }
 }
