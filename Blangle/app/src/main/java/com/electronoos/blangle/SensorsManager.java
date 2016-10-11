@@ -57,8 +57,8 @@ public class SensorsManager {
                 }
             }
         };
+        // mManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE); // storing the manager instead of an automatic make the state to disconnect just after connection!!!
         BluetoothManager btManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE);
-        //mManager = btManager; // storing the manager make the state to disconnect just after connection!!!
 
         mAdapter = btManager.getAdapter();
 
