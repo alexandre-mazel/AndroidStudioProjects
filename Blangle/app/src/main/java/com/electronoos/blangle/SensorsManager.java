@@ -37,10 +37,15 @@ public class SensorsManager {
     private boolean mbDiscovered;
     private boolean mbConnected;
 
+    private int mnNumService;
+    private int mnNumCharact;
+
     public void init()
     {
         //DeviceScanActivity dsa = new DeviceScanActivity();
         //dsa.scanLeDevice( true );
+        mnNumService = 0;
+        mnNumCharact = 0;
     }
     public void discover()
     {
@@ -57,10 +62,10 @@ public class SensorsManager {
                 }
             }
         };
-        // mManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE); // storing the manager instead of an automatic make the state to disconnect just after connection!!!
-        BluetoothManager btManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE);
-
-        mAdapter = btManager.getAdapter();
+        mManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE); // storing the manager instead of an automatic make the state to disconnect just after connection!!!
+        mAdapter = mManager.getAdapter();
+        //BluetoothManager btManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+        //mAdapter = btManager.getAdapter();
 
         // Ensures Bluetooth is available on the device and it is enabled. If not,
         // displays a dialog requesting user permission to enable Bluetooth.
@@ -238,6 +243,7 @@ public class SensorsManager {
                                     Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: is 902" );
                                     mBluetoothGatt.setCharacteristicNotification(characteristic, true);
                                     descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                    descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                                     boolean resw = gatt.writeDescriptor(descriptor);
                                     Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write res: " + resw );
                                 }
@@ -260,17 +266,53 @@ public class SensorsManager {
         }
         else
         {
-             if( mDevice != null && ! mbConnected )
-             {
-                 connect();
+             if( mDevice != null && ! mbConnected ) {
+                 try {
+                     connect();
+                 } catch (Exception e) {
+                     Log.v("DBG", "SensorManager: EXCEPTIOPN !!!!" );
+                     e.printStackTrace();
+                 }
              }
              else
              {
                  // do we have something to do ?
                  Log.v("DBG", "SensorManager: updating..." );
                  //Log.v("DBG", "SensorManager: updating: state: " + mManager.getConnectionState(mDevice.getType()) );
+                 boolean resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(0) );
+                 resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(1) );
+                 Log.v("DBG", "SensorManager: resa2: " + resa); // 1 seul a la fois !!!
+
+                 if( false ) {
+
+                     List<BluetoothGattService> services = mBluetoothGatt.getServices();
+                     List<BluetoothGattCharacteristic> characteristics = services.get(mnNumService).getCharacteristics();
+                     Log.v("DBG", "SensorManager: up: " + mnNumService + " / " + services.size() + " - " + mnNumCharact + " / " + characteristics.size());
+
+                     if (mnNumCharact < characteristics.size()) {
+                         boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
+                         Log.v("DBG", "SensorManager: resb: " + resb);
+                     }
+
+                     mnNumCharact += 1;
+                     if (mnNumCharact >= characteristics.size()) {
+                         mnNumService += 1;
+                         mnNumCharact = 0;
+                     }
+                     if (mnNumService >= services.size()) {
+                         mnNumService = 0;
+                     }
+                 }
              }
         }
         return 1;
+    }
+
+    public void exit()
+    {
+        Log.v("DBG", "SensorManager: exiting..." );
+        mAdapter.stopLeScan(mLeScanCallback);
+        mBluetoothGatt.close();
+        mBluetoothGatt = null;
     }
 }

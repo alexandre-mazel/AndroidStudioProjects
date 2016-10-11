@@ -150,6 +150,15 @@ public class Menu extends Activity {
 
         postConnectBLE(2000);
 
+    } // onCreate
+
+    @Override
+    protected void onStop() {
+        Log.v("DBG", "------------------------------ onStop...");
+        mSensorsManager.exit();
+        mSensorsManager = null;
+
+        //super.onDestroy();
     }
 
     @Override
@@ -259,7 +268,8 @@ public class Menu extends Activity {
 
     private void refreshBLE() {
         Log.v("DBG", "refreshBLE");
-        mSensorsManager.update();
+        if( mSensorsManager != null )
+            mSensorsManager.update();
         postRefreshBLE( 1000 );
         Log.v("DBG", "refreshBLE - end");
     }
@@ -275,4 +285,6 @@ public class Menu extends Activity {
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
         handler.postDelayed(runnable, interval);
     }
+
+
 }
