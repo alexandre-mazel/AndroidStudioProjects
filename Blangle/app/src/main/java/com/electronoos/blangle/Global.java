@@ -9,7 +9,7 @@ import android.util.Log;
 public class Global {
     private static Activity gmCurrentActivity = null;
     public static Activity getCurrentActivity(){
-        Log.v("DBG", "return current activity: " + gmCurrentActivity);
+        //Log.v("DBG", "return current activity: " + gmCurrentActivity);
         return gmCurrentActivity;
     }
     public static void setCurrentActivity(Activity currentActivity){
