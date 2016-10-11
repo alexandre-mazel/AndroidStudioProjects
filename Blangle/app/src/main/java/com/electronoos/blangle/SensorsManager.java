@@ -153,7 +153,7 @@ public class SensorsManager {
                                              int status) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-                    Log.v("DBG", "SensorManager: onCharacteristicRead");
+                    Log.v("DBG", "SensorManager: onCharacteristicRead: char-uuid:" + characteristic.getUuid() );
                     //read the characteristic data
                     final byte[] data = characteristic.getValue();
                     Log.v("DBG", "SensorManager: onCharacteristicRead: " + data );
