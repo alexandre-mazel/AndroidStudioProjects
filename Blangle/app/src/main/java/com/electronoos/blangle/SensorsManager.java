@@ -39,6 +39,7 @@ public class SensorsManager {
 
     private int mnNumService;
     private int mnNumCharact;
+    private int mnNumDesc;
 
     public void init()
     {
@@ -46,6 +47,7 @@ public class SensorsManager {
         //dsa.scanLeDevice( true );
         mnNumService = 0;
         mnNumCharact = 0;
+        mnNumDesc = 0;
     }
     public void discover()
     {
@@ -150,6 +152,25 @@ public class SensorsManager {
         }
 
                  */
+            }
+
+            @Override
+            public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status)
+            {
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                    Log.v("DBG", "SensorManager: onDescriptorRead: char-uuid:" + descriptor.getUuid() );
+                    //read the characteristic data
+                    final byte[] data = descriptor.getValue();
+                    Log.v("DBG", "SensorManager: onDescriptorRead: " + data );
+
+                    if (data != null && data.length > 0) {
+                        final StringBuilder stringBuilder = new StringBuilder(data.length);
+                        for(byte byteChar : data)
+                            stringBuilder.append(String.format("%02X ", byteChar));
+                        Log.v("DBG", "SensorManager: onDescriptorRead: " + new String(data) + " | " + stringBuilder.toString() );
+                    }
+                }
             }
             @Override
             // Result of a characteristic read operation
@@ -279,28 +300,48 @@ public class SensorsManager {
                  // do we have something to do ?
                  Log.v("DBG", "SensorManager: updating..." );
                  //Log.v("DBG", "SensorManager: updating: state: " + mManager.getConnectionState(mDevice.getType()) );
-                 boolean resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(0) );
-                 resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(1) );
-                 Log.v("DBG", "SensorManager: resa2: " + resa); // 1 seul a la fois !!!
+                 //boolean resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(0) );
+                 //resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(1) );
+                 //Log.v("DBG", "SensorManager: resa2: " + resa); // 1 seul a la fois !!!
+                 //boolean resa = mBluetoothGatt.readDescriptor( mBluetoothGatt.getServices().get(0).getCharacteristics().get(0).getDescriptors().get(0) );
+                 //Log.v("DBG", "SensorManager: resa3: " + resa); // 1 seul a la fois !!!
+
+                 BluetoothGattDescriptor desc = mBluetoothGatt.getService(UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb")).getCharacteristic(UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb")).getDescriptor(UUID.fromString("00002908-0000-1000-8000-00805f9b34fb"));
+                 boolean resa = mBluetoothGatt.readDescriptor( desc );
+                 Log.v("DBG", "SensorManager: resa4: " + resa);
 
                  if( false ) {
 
                      List<BluetoothGattService> services = mBluetoothGatt.getServices();
-                     List<BluetoothGattCharacteristic> characteristics = services.get(mnNumService).getCharacteristics();
-                     Log.v("DBG", "SensorManager: up: " + mnNumService + " / " + services.size() + " - " + mnNumCharact + " / " + characteristics.size());
+                     if( services.size() > 0 ) {
+                         List<BluetoothGattCharacteristic> characteristics = services.get(mnNumService).getCharacteristics();
+                         List<BluetoothGattDescriptor> descriptors = characteristics.get(mnNumCharact).getDescriptors();
 
-                     if (mnNumCharact < characteristics.size()) {
-                         boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
-                         Log.v("DBG", "SensorManager: resb: " + resb);
-                     }
+                         Log.v("DBG", "SensorManager: up: " + mnNumService + " / " + services.size() + " - " + mnNumCharact + " / " + characteristics.size() + " - " + mnNumDesc + " / " + descriptors.size());
 
-                     mnNumCharact += 1;
-                     if (mnNumCharact >= characteristics.size()) {
-                         mnNumService += 1;
-                         mnNumCharact = 0;
-                     }
-                     if (mnNumService >= services.size()) {
-                         mnNumService = 0;
+                         /*
+                         if( mnNumCharact < characteristics.size() ) {
+                             boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
+                             Log.v("DBG", "SensorManager: resb: " + resb);
+                         }
+                         */
+                         if (mnNumDesc < descriptors.size()) {
+                             boolean resb = mBluetoothGatt.readDescriptor(descriptors.get(mnNumDesc));
+                             Log.v("DBG", "SensorManager: resb: " + resb);
+                         }
+
+                         mnNumDesc += 1;
+                         if (mnNumDesc >= descriptors.size()) {
+                             mnNumCharact += 1;
+                             mnNumDesc = 0;
+                         }
+                         if (mnNumCharact >= characteristics.size()) {
+                             mnNumService += 1;
+                             mnNumCharact = 0;
+                         }
+                         if (mnNumService >= services.size()) {
+                             mnNumService = 0;
+                         }
                      }
                  }
              }
