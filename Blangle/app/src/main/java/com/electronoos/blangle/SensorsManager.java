@@ -57,9 +57,10 @@ public class SensorsManager {
                 }
             }
         };
-        mManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothManager btManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+        //mManager = btManager; // storing the manager make the state to disconnect just after connection!!!
 
-        mAdapter = mManager.getAdapter();
+        mAdapter = btManager.getAdapter();
 
         // Ensures Bluetooth is available on the device and it is enabled. If not,
         // displays a dialog requesting user permission to enable Bluetooth.
