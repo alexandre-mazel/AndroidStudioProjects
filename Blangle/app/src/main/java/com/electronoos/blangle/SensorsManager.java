@@ -306,39 +306,50 @@ public class SensorsManager {
                  //boolean resa = mBluetoothGatt.readDescriptor( mBluetoothGatt.getServices().get(0).getCharacteristics().get(0).getDescriptors().get(0) );
                  //Log.v("DBG", "SensorManager: resa3: " + resa); // 1 seul a la fois !!!
 
-                 BluetoothGattDescriptor desc = mBluetoothGatt.getService(UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb")).getCharacteristic(UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb")).getDescriptor(UUID.fromString("00002908-0000-1000-8000-00805f9b34fb"));
-                 boolean resa = mBluetoothGatt.readDescriptor( desc );
-                 Log.v("DBG", "SensorManager: resa4: " + resa);
+                 // TODO: trouver le bon descriptor ou les passer tous en revue, cf le code ci dessous...
+                 // avant chaque desc, on pourrait aussi afficher le service/les characteristics
+                 // y a t'il
+                 //BluetoothGattDescriptor desc = mBluetoothGatt.getService(UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb")).getCharacteristic(UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb")).getDescriptor(UUID.fromString("00002908-0000-1000-8000-00805f9b34fb"));
+                 //boolean resa = mBluetoothGatt.readDescriptor( desc );
+                 //Log.v("DBG", "SensorManager: resa4: " + resa);
 
-                 if( false ) {
+                 if( true ) {
 
                      List<BluetoothGattService> services = mBluetoothGatt.getServices();
                      if( services.size() > 0 ) {
                          List<BluetoothGattCharacteristic> characteristics = services.get(mnNumService).getCharacteristics();
-                         List<BluetoothGattDescriptor> descriptors = characteristics.get(mnNumCharact).getDescriptors();
-
-                         Log.v("DBG", "SensorManager: up: " + mnNumService + " / " + services.size() + " - " + mnNumCharact + " / " + characteristics.size() + " - " + mnNumDesc + " / " + descriptors.size());
-
-                         /*
                          if( mnNumCharact < characteristics.size() ) {
-                             boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
-                             Log.v("DBG", "SensorManager: resb: " + resb);
-                         }
-                         */
-                         if (mnNumDesc < descriptors.size()) {
-                             boolean resb = mBluetoothGatt.readDescriptor(descriptors.get(mnNumDesc));
-                             Log.v("DBG", "SensorManager: resb: " + resb);
-                         }
+                             List<BluetoothGattDescriptor> descriptors = characteristics.get(mnNumCharact).getDescriptors();
+                             Log.v("DBG", "SensorManager: up: " + mnNumService + " / " + services.size() + " - " + mnNumCharact + " / " + characteristics.size() + " - " + mnNumDesc + " / " + descriptors.size());
 
-                         mnNumDesc += 1;
-                         if (mnNumDesc >= descriptors.size()) {
-                             mnNumCharact += 1;
-                             mnNumDesc = 0;
+                             /*
+                             if( mnNumCharact < characteristics.size() ) {
+                                 boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
+                                 Log.v("DBG", "SensorManager: resb: " + resb);
+                             }
+                             */
+                             if (mnNumDesc < descriptors.size()) {
+                                 boolean resb = mBluetoothGatt.readDescriptor(descriptors.get(mnNumDesc));
+                                 Log.v("DBG", "SensorManager: resb: " + resb);
+                             }
+
+                             mnNumDesc += 1;
+                             if (mnNumDesc >= descriptors.size()) {
+                                 mnNumCharact += 1;
+                                 mnNumDesc = 0;
+                             }
+                             if (mnNumCharact >= characteristics.size()) {
+                                 mnNumService += 1;
+                                 mnNumCharact = 0;
+                             }
+
                          }
-                         if (mnNumCharact >= characteristics.size()) {
+                         else
+                         {
                              mnNumService += 1;
                              mnNumCharact = 0;
                          }
+
                          if (mnNumService >= services.size()) {
                              mnNumService = 0;
                          }
