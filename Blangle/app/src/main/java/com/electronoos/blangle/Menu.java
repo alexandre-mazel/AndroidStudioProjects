@@ -233,7 +233,7 @@ public class Menu extends Activity {
             mSensorsManager = new SensorsManager();
             mSensorsManager.init();
             mSensorsManager.discover();
-            postRefreshBLE();
+            postRefreshBLE(1000);
         }
         if( false ) {
             Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);

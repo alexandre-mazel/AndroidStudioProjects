@@ -3,6 +3,7 @@ package com.electronoos.blangle;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.os.Handler;
@@ -18,8 +19,10 @@ public class SensorsManager {
     private BluetoothAdapter                    mAdapter;
     private BluetoothAdapter.LeScanCallback     mLeScanCallback;
     private BluetoothDevice                     mDevice;
+    private BluetoothGattCallback               mleGattCallback;
 
     private long mTimeStartDiscover;
+    private boolean mbScanning;
 
     public void init()
     {
@@ -29,7 +32,7 @@ public class SensorsManager {
     public void discover()
     {
         Log.v("DBG", "discover");
-        BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+        mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
             @Override
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                 // your implementation here
@@ -56,6 +59,7 @@ public class SensorsManager {
         Log.v("DBG", "start lescan");
         mDevice = null;
         mTimeStartDiscover = System.currentTimeMillis();
+        mbScanning = true;
         mAdapter.startLeScan(mLeScanCallback);
         /*
         try {
@@ -77,14 +81,16 @@ public class SensorsManager {
         Log.v("DBG", "discover - end (running in background)");
     }
 
-    public int connect()
+    private int waitConnect()
     {
         // return 1 if connected
         // 0 while scan is incomplete
         // -1 if not found
-        if( mDevice != null && System.currentTimeMillis() - mTimeStartDiscover < 5000 )
+        if( mDevice == null && System.currentTimeMillis() - mTimeStartDiscover < 5000 )
             return 0;
 
+        mbScanning = false;
+        Log.v("DBG", "stop lescan");
         mAdapter.stopLeScan(mLeScanCallback);
 
         if( mDevice == null )
@@ -98,10 +104,37 @@ public class SensorsManager {
         return 1;
     }
 
+    private void connect()
+    {
+        mleGattCallback = new BluetoothGattCallback() {
+
+            @Override
+            public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
+                // this will get called anytime you perform a read or write characteristic operation
+            }
+
+            @Override
+            public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
+                // this will get called when a device connects or disconnects
+            }
+
+            @Override
+            public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
+                // this will get called after the client initiates a 			BluetoothGatt.discoverServices() call
+            }
+    }
+
     public int update()
     {
         // do whatever has to be done
-        connect();
+
+        if( mbScanning ) {
+            waitConnect();
+        }
+        else
+        {
+         connect();
+        }
         return 1;
     }
 }
