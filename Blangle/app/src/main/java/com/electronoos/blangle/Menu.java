@@ -233,6 +233,7 @@ public class Menu extends Activity {
             mSensorsManager = new SensorsManager();
             mSensorsManager.init();
             mSensorsManager.discover();
+            postRefreshBLE();
         }
         if( false ) {
             Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);
@@ -250,6 +251,25 @@ public class Menu extends Activity {
         Runnable runnable = new Runnable(){
             public void run() {
                 Menu.this.connectBLE();
+            }
+        };
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
+    }
+
+    private void refreshBLE() {
+        Log.v("DBG", "refreshBLE");
+        mSensorsManager.update();
+        postRefreshBLE( 1000 );
+        Log.v("DBG", "refreshBLE - end");
+    }
+
+    private void postRefreshBLE(int interval)
+    {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                Menu.this.refreshBLE();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
