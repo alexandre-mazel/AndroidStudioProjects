@@ -36,6 +36,7 @@ public class SensorsManager {
     private boolean mbDiscovering;
     private boolean mbDiscovered;
     private boolean mbConnected;
+    private boolean mbNotifyAsked;
 
     private int mnNumService;
     private int mnNumCharact;
@@ -139,6 +140,7 @@ public class SensorsManager {
                 //read the characteristic data
                 byte[] data = characteristic.getValue();
                 Log.v("DBG", "SensorManager: onCharacteristicChanged: " + data );
+                logGattData(data);
                 //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
                 /*
                         // For all other profiles, writes the data formatted in HEX.
@@ -152,6 +154,26 @@ public class SensorsManager {
         }
 
                  */
+                if( true ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
+                {
+                    int flag = characteristic.getProperties();
+                    int format = -1;
+                    if ((flag & 0x01) != 0) {
+                        format = BluetoothGattCharacteristic.FORMAT_UINT16;
+                        Log.d("DBG", "Heart rate format UINT16.");
+                    } else {
+                        format = BluetoothGattCharacteristic.FORMAT_UINT8;
+                        Log.d("DBG", "Heart rate format UINT8.");
+                    }
+                    try {
+                        final int heartRate = characteristic.getIntValue(format, 1);
+                        Log.d("DBG", String.format("Received heart rate: %d", heartRate));
+                        //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+                    }
+                    catch (Exception e) {
+                        Log.v("DBG", "SensorManager: Exception: int Value?");
+                    }
+                }
             }
 
             @Override
@@ -302,6 +324,7 @@ public class SensorsManager {
                     {
                         BluetoothGattService service = gatt.getService(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"));
                         BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+                        gatt.setCharacteristicNotification(characteristic, true);
                         characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
                         boolean resw = gatt.writeCharacteristic(characteristic);
                         Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res3: " + resw); // always false
@@ -363,6 +386,7 @@ public class SensorsManager {
             }
         };
         mBluetoothGatt = mDevice.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
+        mbNotifyAsked = false;
         if( false ) {
             BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"));
             if (service == null) {
@@ -410,6 +434,36 @@ public class SensorsManager {
                  //BluetoothGattDescriptor desc = mBluetoothGatt.getService(UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb")).getCharacteristic(UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb")).getDescriptor(UUID.fromString("00002908-0000-1000-8000-00805f9b34fb"));
                  //boolean resa = mBluetoothGatt.readDescriptor( desc );
                  //Log.v("DBG", "SensorManager: resa4: " + resa);
+
+                 if( true && ! mbNotifyAsked )
+                 {
+                     BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"));
+                     if( service == null )
+                     {
+                         Log.v("DBG", "SensorManager: onServicesDiscovered: service is null" );
+                     }
+                     else
+                     {
+                         BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+                         boolean rescc = mBluetoothGatt.setCharacteristicNotification(characteristic, true);
+                         Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write rescc: " + rescc); // always false
+                         characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                         boolean resw = mBluetoothGatt.writeCharacteristic(characteristic);
+                         Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res4: " + resw); // always false
+                         boolean resc = mBluetoothGatt.readCharacteristic(characteristic);
+                         Log.v("DBG", "SensorManager: resc: " + resc);
+
+                         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
+                         descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+//                         descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                         boolean resdes = mBluetoothGatt.writeDescriptor(descriptor);
+                         Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes );
+                         if( resdes )
+                             mbNotifyAsked = true;
+
+                     }
+                 }
+
 
                  if( false ) {
 
