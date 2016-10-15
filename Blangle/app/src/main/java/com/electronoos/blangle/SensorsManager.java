@@ -47,7 +47,7 @@ public class SensorsManager {
         //dsa.scanLeDevice( true );
         mnNumService = 0;
         mnNumCharact = 0;
-        mnNumDesc = 0;
+        mnNumDesc = -1;
     }
     public void discover()
     {
@@ -57,7 +57,7 @@ public class SensorsManager {
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                 // your implementation here
                 Log.v("DBG", "Found: Device name:" + device.getName());
-                if( device.getName().indexOf("SensorTag") != -1 )
+                if( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1  )
                 {
                     Log.v("DBG", "Found !"); // arreter l'attente ici! TODO
                     mDevice = device;
@@ -172,6 +172,18 @@ public class SensorsManager {
                     }
                 }
             }
+            private void logGattData( byte[] data )
+            {
+                if (data != null && data.length > 0) {
+                    final StringBuilder stringBuilder = new StringBuilder(data.length);
+                    for (byte byteChar : data)
+                        stringBuilder.append(String.format("%02X ", byteChar));
+                    Log.v("DBG", "SensorManager: logGattData: " + new String(data) + " | " + stringBuilder.toString());
+                }
+                else
+                    Log.v("DBG", "SensorManager: logGattData: null (or empty)");
+            }
+
             @Override
             // Result of a characteristic read operation
             public void onCharacteristicRead(BluetoothGatt gatt,
@@ -179,16 +191,36 @@ public class SensorsManager {
                                              int status) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-                    Log.v("DBG", "SensorManager: onCharacteristicRead: char-uuid:" + characteristic.getUuid() );
+                    Log.v("DBG", "SensorManager: onCharacteristicRead: char-uuid:" + characteristic.getUuid());
                     //read the characteristic data
                     final byte[] data = characteristic.getValue();
-                    Log.v("DBG", "SensorManager: onCharacteristicRead: " + data );
+                    Log.v("DBG", "SensorManager: onCharacteristicRead: " + data);
 
-                    if (data != null && data.length > 0) {
-                        final StringBuilder stringBuilder = new StringBuilder(data.length);
-                        for(byte byteChar : data)
-                            stringBuilder.append(String.format("%02X ", byteChar));
-                        Log.v("DBG", "SensorManager: onCharacteristicRead: " + new String(data) + " | " + stringBuilder.toString() );
+                    //static UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString( SampleGattAttributes.HEART_RATE_MEASUREMENT);
+
+                    if( true ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
+                    {
+                        int flag = characteristic.getProperties();
+                        int format = -1;
+                        if ((flag & 0x01) != 0) {
+                            format = BluetoothGattCharacteristic.FORMAT_UINT16;
+                            Log.d("DBG", "Heart rate format UINT16.");
+                        } else {
+                            format = BluetoothGattCharacteristic.FORMAT_UINT8;
+                            Log.d("DBG", "Heart rate format UINT8.");
+                        }
+                        try {
+                            final int heartRate = characteristic.getIntValue(format, 1);
+                            Log.d("DBG", String.format("Received heart rate: %d", heartRate));
+                            //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+                        }
+                        catch (Exception e) {
+                            Log.v("DBG", "SensorManager: Exception: int Value?");
+                        }
+                    }
+                    if( true )
+                    {
+                        logGattData(data);
                     }
                 }
             }
@@ -226,6 +258,60 @@ public class SensorsManager {
                 Log.v("DBG", "SensorManager: onServicesDiscovered");
                 if( ! mbDiscovered ) {
                     mbDiscovered = true;
+
+                    if( false ) {
+                        List<BluetoothGattService> services = gatt.getServices();
+                        for (BluetoothGattService service : services) {
+                            // heartService = bluetoothGatt.getService(DeviceConstants.HEART_RATE_SERVICE);
+                            // heartCharact = heartService.getCharacteristic(DeviceConstants.HEART_RATE_MEASUREMENT);
+                            if (service.getUuid().toString().indexOf("0000180d") == 0) {
+                                // Heart Rate Service
+                                List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                                for (BluetoothGattCharacteristic characteristic : characteristics) {
+                                    if (characteristic.getUuid().toString().indexOf("00002a37") == 0) {
+                                        // Heart Rate Measurement
+                                        gatt.setCharacteristicNotification(characteristic, true);
+                                        //characteristic.setValue( BluetoothGattCharacteristic.PROPERTY_NOTIFY, true);
+                                        characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+
+//                                    descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                                        boolean resw = gatt.writeCharacteristic(characteristic);
+                                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res: " + resw);
+
+                                    }
+                                }
+                            }
+                        } // for services
+                    }
+
+                    if( false )
+                    {
+//                        BluetoothManager mBluetoothManager = mManager;
+//                        BluetoothAdapter mBluetoothAdapter = mBluetoothManager.getAdapter();
+//                        BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice(....);
+                        BluetoothGatt mBG = mDevice.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
+
+                        BluetoothGattService service = mBG.getService(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"));
+                        // service is null here
+                        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+                        characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                        boolean resw = mBG.writeCharacteristic(characteristic);
+                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
+                    }
+                    if( true )
+                    {
+                        BluetoothGattService service = gatt.getService(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"));
+                        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+                        characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                        boolean resw = gatt.writeCharacteristic(characteristic);
+                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res3: " + resw); // always false
+                    }
+
+                    if( false ) {
+                        return;
+                    }
+                    // explore
+
                     List<BluetoothGattService> services = gatt.getServices();
                     for (BluetoothGattService service : services) {
                         Log.v("DBG", "SensorManager: onServicesDiscovered: ---\n" );
@@ -240,6 +326,7 @@ public class SensorsManager {
                         {
                             Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-uuid: " + characteristic.getUuid());
                             Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-val: " + characteristic.getValue());
+                            logGattData( characteristic.getValue() );
                             //Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-fval: " + characteristic.getFloatValue(0,0) );
                             Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: " + characteristic.getProperties());
                             Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-perm: " + characteristic.getPermissions());
@@ -276,6 +363,17 @@ public class SensorsManager {
             }
         };
         mBluetoothGatt = mDevice.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
+        if( false ) {
+            BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"));
+            if (service == null) {
+                Log.v("DBG", "SensorManager: onServicesDiscovered: SERVICE IS NULL!");
+            } else {
+                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+                characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                boolean resw = mBluetoothGatt.writeCharacteristic(characteristic);
+                Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
+            }
+        }
     }
 
     public int update()
@@ -313,7 +411,7 @@ public class SensorsManager {
                  //boolean resa = mBluetoothGatt.readDescriptor( desc );
                  //Log.v("DBG", "SensorManager: resa4: " + resa);
 
-                 if( true ) {
+                 if( false ) {
 
                      List<BluetoothGattService> services = mBluetoothGatt.getServices();
                      if( services.size() > 0 ) {
@@ -328,15 +426,24 @@ public class SensorsManager {
                                  Log.v("DBG", "SensorManager: resb: " + resb);
                              }
                              */
-                             if (mnNumDesc < descriptors.size()) {
-                                 boolean resb = mBluetoothGatt.readDescriptor(descriptors.get(mnNumDesc));
-                                 Log.v("DBG", "SensorManager: resb: " + resb);
+                             if( mnNumDesc == -1 )
+                             {
+                                 // read charact
+                                 boolean resc = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
+                                 Log.v("DBG", "SensorManager: resc: " + resc);
+
+                             }
+                             else {
+                                 if (mnNumDesc < descriptors.size()) {
+                                     boolean resd = mBluetoothGatt.readDescriptor(descriptors.get(mnNumDesc));
+                                     Log.v("DBG", "SensorManager: resd: " + resd);
+                                 }
                              }
 
                              mnNumDesc += 1;
                              if (mnNumDesc >= descriptors.size()) {
                                  mnNumCharact += 1;
-                                 mnNumDesc = 0;
+                                 mnNumDesc = -1;
                              }
                              if (mnNumCharact >= characteristics.size()) {
                                  mnNumService += 1;
