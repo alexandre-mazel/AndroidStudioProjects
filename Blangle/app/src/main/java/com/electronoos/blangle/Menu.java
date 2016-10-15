@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -18,6 +19,11 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -61,6 +67,8 @@ public class Menu extends Activity {
     // interface element
     private TextView mTxtBpm;
     private int mnBpm; // used to refresh in the good thread
+    private int mnUpdateBpm;
+    private String mstrLastTxt;
 
 
     @Override
@@ -78,6 +86,8 @@ public class Menu extends Activity {
 
         mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
         mnBpm = 0;
+        mnUpdateBpm = 0;
+        mstrLastTxt = "";
 
 
         // Set up an instance of SystemUiHider to control the system UI for
@@ -164,11 +174,13 @@ public class Menu extends Activity {
 
     @Override
     protected void onStop() {
-        Log.v("DBG", "------------------------------ onStop...");
-        mSensorsManager.exit();
-        mSensorsManager = null;
+        if( false ) {
+            Log.v("DBG", "------------------------------ onStop...");
+            mSensorsManager.exit();
+            mSensorsManager = null;
 
-        //super.onDestroy();
+            //super.onDestroy();
+        }
     }
 
     @Override
@@ -305,8 +317,34 @@ public class Menu extends Activity {
     {
         //Log.v("DBG", "in txtview update !!!: " + nBpm);
         //mTxtBpm.setText(String.valueOf(nBpm));
-        mnBpm = nBpm;
+        mnBpm = nBpm; // to be refreshed later
         //postRefreshBpm( 10 ); // Can't create handler inside thread that has not called Looper.prepare()
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String currentDateandTime = sdf.format(new Date());
+        String newLine = currentDateandTime + ": " + String.valueOf(nBpm);
+        Log.v( "DBG", newLine );
+        mstrLastTxt += newLine + "\n";
+
+        mnUpdateBpm += 1;
+        if( mnUpdateBpm > 6 ) {
+            try{
+                Log.v("DBG", "updateBpm: outputting to file!!!");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File file = new File(path, "alex_hr.txt");
+
+                FileOutputStream fOut = new FileOutputStream(file, true ); // true for append
+                fOut.write(mstrLastTxt.getBytes());
+                fOut.close();
+            }
+            catch (Exception e){
+                Log.v("DBG", "updateBpm: Exception: disk error: " + e.toString());
+            }
+            mnUpdateBpm = 0;
+            mstrLastTxt = "";
+        }
+
+
     }
 
     private void refreshBpm() {
