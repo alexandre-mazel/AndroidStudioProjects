@@ -9,6 +9,9 @@
     <string name="menu_txt_desc">Choix du mode</string>
     <string name="menu_txt_choice_def">Références</string>
     <string name="menu_txt_choice_calc">Détermination</string>
+    <string name="menu_txt_choice_reconnect">Reconnect</string>
+    <string name="menu_txt_bpm">(bpm)</string>
+
 
     <string name="button_txt_validate">Valider</string>
     <string name="button_txt_modify">Corriger</string>

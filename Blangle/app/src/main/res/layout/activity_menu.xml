@@ -98,7 +98,7 @@
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="100dp"/>
+                android:layout_height="10dp"/>
 
             <Button
                 android:layout_height="wrap_content"
@@ -120,6 +120,19 @@
                 android:background="@color/calc"
                 android:textSize="60sp"
                 android:onClick="onChoiceCalc" />
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="200dp"
+                android:text="@string/menu_txt_choice_reconnect"
+                android:background="@color/calc"
+                android:textSize="40sp"
+                android:onClick="onButtonReconnect" />
+
+            <TextView android:id="@+id/menu_bpm" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="50sp" android:gravity="center"
+                android:text="@string/menu_txt_bpm" />
 <!--
                         <Space
                             android:layout_width="1dp"

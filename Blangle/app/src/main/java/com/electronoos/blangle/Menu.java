@@ -58,6 +58,11 @@ public class Menu extends Activity {
 //    private BluetoothAdapter mBluetoothAdapter;
     private SensorsManager   mSensorsManager;
 
+    // interface element
+    private TextView mTxtBpm;
+    private int mnBpm; // used to refresh in the good thread
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("DBG", "------------------------------");
@@ -70,6 +75,10 @@ public class Menu extends Activity {
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+
+        mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
+        mnBpm = 0;
+
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -149,6 +158,7 @@ public class Menu extends Activity {
         Log.v("DBG", "BLE check - end");
 
         postConnectBLE(2000);
+        postRefreshBpm( 2000 );
 
     } // onCreate
 
@@ -236,8 +246,13 @@ public class Menu extends Activity {
         // Kabloey
     }
 
+    public void onButtonReconnect(View view) {
+        postConnectBLE(10);
+    }
+
     private void connectBLE() {
         Log.v("DBG", "start BLE stuffs");
+        mTxtBpm.setText("Connecting...");
         if( true ) {
             mSensorsManager = new SensorsManager();
             mSensorsManager.init();
@@ -280,6 +295,35 @@ public class Menu extends Activity {
         Runnable runnable = new Runnable(){
             public void run() {
                 Menu.this.refreshBLE();
+            }
+        };
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
+    }
+
+    public void updateBpm(int nBpm)
+    {
+        //Log.v("DBG", "in txtview update !!!: " + nBpm);
+        //mTxtBpm.setText(String.valueOf(nBpm));
+        mnBpm = nBpm;
+        //postRefreshBpm( 10 ); // Can't create handler inside thread that has not called Looper.prepare()
+    }
+
+    private void refreshBpm() {
+        //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
+        if( mnBpm != 0 ) {
+            mTxtBpm.setText(String.valueOf(mnBpm));
+            mnBpm = 0; // could miss one from time to time
+        }
+        postRefreshBpm(500);
+    }
+
+    private void postRefreshBpm(int interval)
+    {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                Menu.this.refreshBpm();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
