@@ -6,9 +6,9 @@
 
     <string name="title_activity_definition">Definition</string>
 
-    <string name="menu_txt_desc">Choix du mode</string>
-    <string name="menu_txt_choice_def">Références</string>
-    <string name="menu_txt_choice_calc">Détermination</string>
+    <string name="menu_txt_desc">HR Tools</string>
+    <string name="menu_txt_choice_def">Night Long analyses</string>
+    <string name="menu_txt_choice_calc">Power Nap</string>
     <string name="menu_txt_choice_reconnect">Reconnect</string>
     <string name="menu_txt_bpm">(bpm)</string>
 
