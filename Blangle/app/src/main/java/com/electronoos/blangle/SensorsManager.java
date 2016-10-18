@@ -270,29 +270,37 @@ public class SensorsManager {
                 }
             }
 
-            private void addWaitingWrite(Object o)
+            private void addWaitingWrite(BluetoothGatt gatt, Object o)
             {
                 mWaitingWrite.add(o);
+                if(mWaitingWrite.size() == 1) {
+                    updateWaitingWrite(gatt); // when no write are pending, let's activate the pump
+                }
             }
 
             private void updateWaitingWrite(BluetoothGatt gatt)
             {
-                Object o = mWaitingWrite.poll();
+                Object o = mWaitingWrite.peek();
                 if( o == null ) {
                     return;
                 }
+                boolean bSuccess = false;
                 if( o instanceof BluetoothGattCharacteristic )
                 {
                     Log.v("DBG", "SensorManager: updateWaitingWrite: writing charac");
-                    boolean b = gatt.writeCharacteristic((BluetoothGattCharacteristic)o);
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: res: " + b );
+                    bSuccess = gatt.writeCharacteristic((BluetoothGattCharacteristic)o);
                 }
                 if( o instanceof BluetoothGattDescriptor )
                 {
                     Log.v("DBG", "SensorManager: updateWaitingWrite: writing desc");
-                    boolean b = gatt.writeDescriptor((BluetoothGattDescriptor)o);
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: res: " + b );
+                    bSuccess = gatt.writeDescriptor((BluetoothGattDescriptor)o);
                 }
+                Log.v("DBG", "SensorManager: updateWaitingWrite: res: " + bSuccess );
+                if( bSuccess )
+                {
+                    mWaitingWrite.poll(); // remove it !
+                }
+
             }
 
 
@@ -433,25 +441,11 @@ public class SensorsManager {
                                 gatt.setCharacteristicNotification(characteristic, true);
                                 BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
                                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                                boolean resdes = mBluetoothGatt.writeDescriptor(descriptor);
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes);
-                            }
-                            try {
-                                    Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
+                                addWaitingWrite(gatt, descriptor);
 
-                            if( true ) {
-                                BluetoothGattService service = gatt.getService(UUID.fromString("f000aa20-0451-4000-b000-000000000000"));
-                                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("f000aa22-0451-4000-b000-000000000000"));
-                                byte[] data = new byte[]{(byte) 0x01};
-                                characteristic.setValue(data);
-                                //mCharacToWrite = characteristic;
-                                addWaitingWrite(characteristic);
-                                boolean rescw = gatt.writeCharacteristic(characteristic);
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write rescw: " + rescw);
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa22-0451-4000-b000-000000000000"));
+                                characteristic.setValue(new byte[]{(byte) 0x01});
+                                addWaitingWrite(gatt, characteristic);
                             }
 
 
