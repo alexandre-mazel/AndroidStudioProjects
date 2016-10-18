@@ -69,6 +69,7 @@ public class SensorsManager {
                 if( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1  )
                 {
                     Log.v("DBG", "Found !"); // arreter l'attente ici! TODO
+                    ((Menu)Global.getCurrentActivity()).updateStatus( "Found");
                     mDevice = device;
                     mbIsSensorTag = device.getName().indexOf("SensorTag") != -1;
                 }
@@ -127,6 +128,7 @@ public class SensorsManager {
         if( mDevice == null )
         {
             Log.v( "DBG", "discover: timeout!");
+            ((Menu)Global.getCurrentActivity()).updateStatus( "timeout!");
             return -1;
 
         }
@@ -137,6 +139,7 @@ public class SensorsManager {
     private void connect()
     {
         Log.v( "DBG", "SensorManager: connecting...");
+        ((Menu)Global.getCurrentActivity()).updateStatus( "connected");
         mbConnected = true;
 
         mbDiscovering = false;
@@ -166,7 +169,8 @@ public class SensorsManager {
                         final int heartRate = characteristic.getIntValue(format, 1);
                         Log.d("DBG", String.format("Received heart rate: %d", heartRate));
                         //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
-                        Global.getCurrentActivity().updateBpm( heartRate );
+                        assert( Global.getCurrentActivity() instanceof Menu );
+                        ((Menu)Global.getCurrentActivity()).updateBpm( heartRate );
                         //Global.getCurrentActivity().
                     }
                     catch (Exception e) {
@@ -287,10 +291,14 @@ public class SensorsManager {
             }
 
             @Override
-            public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
+            public void onServicesDiscovered(final BluetoothGatt gatt, final int status)
+            {
                 // this will get called after the client initiates a BluetoothGatt.discoverServices() call
 
                 Log.v("DBG", "SensorManager: onServicesDiscovered");
+
+                ((Menu)Global.getCurrentActivity()).updateStatus( "running");
+
                 if( ! mbDiscovered ) {
                     mbDiscovered = true;
 
@@ -355,7 +363,7 @@ public class SensorsManager {
                     }
 
                     if( mbIsSensorTag ) {
-                        if( false ) {
+                        if( true ) {
                             BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Button));
                             BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Button));
                             gatt.setCharacteristicNotification(characteristic, true);

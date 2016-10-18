@@ -129,10 +129,17 @@
                 android:textSize="40sp"
                 android:onClick="onButtonReconnect" />
 
+            <TextView android:id="@+id/menu_txt_device_status" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_device_status" />
+
             <TextView android:id="@+id/menu_bpm" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
-                android:textStyle="normal" android:textSize="50sp" android:gravity="center"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
                 android:text="@string/menu_txt_bpm" />
+
+
 <!--
                         <Space
                             android:layout_width="1dp"

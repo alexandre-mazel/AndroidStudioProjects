@@ -65,9 +65,12 @@ public class Menu extends Activity {
     private SensorsManager   mSensorsManager;
 
     // interface element
+    private TextView mTxtDeviceStatus;
     private TextView mTxtBpm;
+
+    private String mstrStatus;
     private int mnBpm; // used to refresh in the good thread
-    private int mnUpdateBpm;
+    private int mnNbrUpdateBpm;
     private String mstrLastTxt;
 
 
@@ -85,8 +88,10 @@ public class Menu extends Activity {
         final View contentView = findViewById(R.id.fullscreen_content);
 
         mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
+        mTxtDeviceStatus = (TextView) findViewById(R.id.menu_txt_device_status);
+
         mnBpm = 0;
-        mnUpdateBpm = 0;
+        mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
 
 
@@ -168,7 +173,7 @@ public class Menu extends Activity {
         Log.v("DBG", "BLE check - end");
 
         postConnectBLE(2000);
-        postRefreshBpm( 2000 );
+        postRefreshInterface( 2000 );
 
     } // onCreate
 
@@ -264,7 +269,7 @@ public class Menu extends Activity {
 
     private void connectBLE() {
         Log.v("DBG", "start BLE stuffs");
-        mTxtBpm.setText("Connecting...");
+        mTxtDeviceStatus.setText("Searching...");
         if( true ) {
             mSensorsManager = new SensorsManager();
             mSensorsManager.init();
@@ -313,6 +318,10 @@ public class Menu extends Activity {
         handler.postDelayed(runnable, interval);
     }
 
+    public void updateStatus(String strStatus) {
+        mstrStatus = strStatus;
+    }
+
     public void updateBpm(int nBpm)
     {
         //Log.v("DBG", "in txtview update !!!: " + nBpm);
@@ -326,8 +335,8 @@ public class Menu extends Activity {
         Log.v( "DBG", newLine );
         mstrLastTxt += newLine + "\n";
 
-        mnUpdateBpm += 1;
-        if( mnUpdateBpm > 60 ) {
+        mnNbrUpdateBpm += 1;
+        if( mnNbrUpdateBpm > 60 ) {
             try{
                 Log.v("DBG", "updateBpm: outputting to file!!!");
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -340,28 +349,32 @@ public class Menu extends Activity {
             catch (Exception e){
                 Log.v("DBG", "updateBpm: Exception: disk error: " + e.toString());
             }
-            mnUpdateBpm = 0;
+            mnNbrUpdateBpm = 0;
             mstrLastTxt = "";
         }
 
 
     }
 
-    private void refreshBpm() {
+    private void refreshInterface() {
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
+        if( mstrStatus != null ) {
+            mTxtDeviceStatus.setText(mstrStatus);
+            mstrStatus = null; // could miss one from time to time
+        }
         if( mnBpm != 0 ) {
             mTxtBpm.setText(String.valueOf(mnBpm));
             mnBpm = 0; // could miss one from time to time
         }
-        postRefreshBpm(500);
+        postRefreshInterface(500);
     }
 
-    private void postRefreshBpm(int interval)
+    private void postRefreshInterface(int interval)
     {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                Menu.this.refreshBpm();
+                Menu.this.refreshInterface();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);

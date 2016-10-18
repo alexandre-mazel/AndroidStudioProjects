@@ -10,6 +10,8 @@
     <string name="menu_txt_choice_def">Références</string>
     <string name="menu_txt_choice_calc">Détermination</string>
     <string name="menu_txt_choice_reconnect">Reconnect</string>
+
+    <string name="menu_txt_device_status">(status)</string>
     <string name="menu_txt_bpm">(bpm)</string>
 
 
