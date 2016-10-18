@@ -1,0 +1,338 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#0099cc"
+    tools:context="com.electronoos.blangle.Definition">
+
+
+    <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
+        android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+        android:text="@string/dummy_content" android:visibility="invisible"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="horizontal" >
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="80"
+            android:background="@color/def"
+            android:orientation="vertical" >
+
+
+            <ImageButton
+                android:layout_width="800dp"
+                android:layout_height="800dp"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:src="@drawable/icon_appli2"
+                android:background="@null"
+                />
+
+        </LinearLayout>
+
+
+
+
+        <!-- RIGHTTTTTTTTTTTTTTTTT PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGE -->
+
+
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:layout_weight="80"
+            android:background="#cccccc"
+            android:orientation="vertical" >
+
+            <!--
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="30dp"/>
+             -->
+
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="top"
+                android:background="@drawable/button_back_to_menu"
+                android:onClick="onBackToMenu" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="80dp"/>
+
+
+            <TextView android:id="@+id/def_desc" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                android:text="@string/menu_txt_desc" />
+
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="10dp"/>
+
+            <!-- Various widget -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_text_1"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_text_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="50"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_text_1"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text="text1"
+                    android:textSize="40sp"
+                    android:layout_weight="50"
+
+                    android:inputType="text" /> <!-- android:textCursorDrawable="@color/input_caret" -->
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"/>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_measure_1"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_measure_1"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="38sp"
+                    android:layout_weight="55"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_measure_1"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textSize="40sp"
+                    android:layout_weight="25"
+                    android:gravity="right"
+                    android:inputType="number" />
+
+                <TextView android:id="@+id/def_unit_measure_1"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/pagetitle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="20"
+                    android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
+
+            </LinearLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_measure_2"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_measure_2"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="38sp"
+                    android:layout_weight="55"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_measure_2"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textSize="40sp"
+                    android:layout_weight="25"
+                    android:gravity="right"
+                    android:inputType="number" />
+
+                <TextView android:id="@+id/def_unit_measure_2"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/pagetitle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="20"
+                    android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
+
+            </LinearLayout>
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/def_layout_measure_3"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="100dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_weight="80"
+                android:background="@color/input_layout"
+                android:layout_gravity="center"
+                android:orientation="horizontal" >
+
+                <TextView android:id="@+id/def_libelle_measure_3"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/input_libelle"
+                    android:textStyle="normal"
+                    android:textSize="38sp"
+                    android:layout_weight="55"
+                    android:gravity="right"
+                    android:text="" />
+
+                <EditText
+                    android:id="@+id/def_edit_measure_3"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:ems="20"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textSize="40sp"
+                    android:layout_weight="25"
+                    android:gravity="right"
+                    android:inputType="number" />
+
+                <TextView android:id="@+id/def_unit_measure_3"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/pagetitle"
+                    android:textStyle="normal"
+                    android:textSize="40sp"
+                    android:layout_weight="20"
+                    android:text="@string/def_unit_mm" /> <!-- textStyle can be "bold" -->
+
+            </LinearLayout>
+
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="6dp"/>
+
+            <!-- Validate button -->
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_validate"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_weight="80"
+                android:background="#cccccc"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:orientation="vertical" >
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/icon_yes_sm"
+                    android:layout_gravity="center"
+                    android:onClick="onValidate" />
+                    />
+
+                <TextView android:id="@+id/button_txt" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/button_txt_color"
+                    android:textStyle="bold" android:textSize="35sp" android:gravity="center"
+                    android:layout_gravity="center"
+                    android:text="@string/button_txt_validate" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"
+        >
+
+        <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay" android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button android:id="@+id/dummy_button" style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="@string/dummy_button" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

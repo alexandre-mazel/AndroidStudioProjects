@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Blangle</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_definition">Definition</string>
+
+    <string name="menu_txt_desc">Choix du mode</string>
+    <string name="menu_txt_choice_def">Références</string>
+    <string name="menu_txt_choice_calc">Détermination</string>
+    <string name="menu_txt_choice_reconnect">Reconnect</string>
+    <string name="menu_txt_bpm">(bpm)</string>
+
+
+    <string name="button_txt_validate">Valider</string>
+    <string name="button_txt_modify">Corriger</string>
+
+    <string name="def_title_printeuse_name">Création d\'une nouvelle imprimeuse</string>
+    <string name="def_title_reference">Mesure de la référence</string>
+    <string name="def_title_dev_cyl">Développement du cylindre</string>
+    <string name="def_title_long_racle">Longueur de la racle</string>
+    <string name="def_title_cin_choice">Choix du mouvement</string>
+    <string name="def_title_cin_upper">Définition du monte baisse</string>
+    <string name="def_unit_mm">mm</string>
+
+    <string name="def_libelle_printeuse_name">Nom: </string>
+    <string name="def_libelle_reference1">dA:</string>
+    <string name="def_libelle_reference2">dB:</string>
+    <string name="def_libelle_reference3">dC:</string>
+    <string name="def_libelle_dev_cyl1">Développement:</string>
+    <string name="def_libelle_long_racle">Longueur:</string>
+    <string name="def_libelle_cin_upper1">Delta1:</string>
+    <string name="def_libelle_cin_upper2">Taille Max:</string>
+    <string name="def_libelle_cin_upper3">Delta2:</string>
+
+    <string name="def_error_empty_input">ERREUR: Vous devez remplir chaque information</string>
+
+    <string name="ble_not_supported">ATTENTION: this device doesn\'t support BLE!!!</string>
+    <string name="bt_please_activate_bt">PLEASE: You must activate BT !!!</string>
+
+</resources>
