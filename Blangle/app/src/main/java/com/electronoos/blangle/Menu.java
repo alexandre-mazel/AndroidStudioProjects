@@ -327,7 +327,7 @@ public class Menu extends Activity {
         mstrLastTxt += newLine + "\n";
 
         mnUpdateBpm += 1;
-        if( mnUpdateBpm > 6 ) {
+        if( mnUpdateBpm > 60 ) {
             try{
                 Log.v("DBG", "updateBpm: outputting to file!!!");
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
