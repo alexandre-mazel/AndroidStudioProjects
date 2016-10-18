@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.electronoos.blangle" >
+    package="com.electronoos.hrtools" >
 
     <application
         android:allowBackup="true"
@@ -26,7 +26,7 @@
             android:theme="@style/FullscreenTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.electronoos.blangle.Menu" />
+                android:value="com.electronoos.hrtools.Menu" />
         </activity>
         <!--<activity android:label="toto" android:name="DeviceScanActivity"/> -->
     </application>
