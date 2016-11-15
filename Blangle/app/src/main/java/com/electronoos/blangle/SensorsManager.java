@@ -36,6 +36,7 @@ import java.util.UUID;
  /home/a/tmp2/discoveredservices.txt
  /home/a/tmp2/untitled2.txt
  /home/a/tmp2/untitled3.txt
+ http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User's_Guide#Movement_Sensor
  *
  *
  */
@@ -257,7 +258,15 @@ public class SensorsManager {
                     int accX = (data[6] & 0xff) | (data[7] << 8);
                     int accY = (data[8] & 0xff) | (data[9] << 8);
                     int accZ = (data[10] & 0xff) | (data[11] << 8);
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ );
+
+                    int magX = (data[12] & 0xff) | (data[13] << 8);
+                    int magY = (data[14] & 0xff) | (data[15] << 8);
+                    int magZ = (data[16] & 0xff) | (data[17] << 8);
+                    Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ + ", mX: " + magX + ", mY: " + magY + ", mZ: " + magZ );
+
+                    //float rAngleZ = (accZ * 1.0f) / (32768/2);
+                    float rAngleZ = (accZ * 180) / 4200.0f; // 4200: empirique maximum
+                    Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
                 }
 
@@ -597,6 +606,12 @@ public class SensorsManager {
                             // IR-temperature (temperature at pointed object) & ambi
                             BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Temperature));
                             BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Temperature));
+                            if(false)
+                            {
+                                // temps test: manual read, ici ca ne fonctionne pas, car le capteur n'est pas activé
+                                addWaitingRead(gatt, characteristic);
+                                return;
+                            }
                             gatt.setCharacteristicNotification(characteristic, true);
                             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -605,6 +620,13 @@ public class SensorsManager {
                             characteristic = service.getCharacteristic(UUID.fromString("f000aa02-0451-4000-b000-000000000000")); // enable
                             characteristic.setValue(new byte[]{(byte) 0x01});
                             addWaitingWrite(gatt, characteristic);
+                            if(true)
+                            {
+                                // temps test: manual read. ici ca fonctionne car le capteur est activé
+                                characteristic = service.getCharacteristic(UUID.fromString(mstrC_Temperature));
+                                addWaitingRead(gatt, characteristic);
+                                return;
+                            }
                         }
                         if( false ) {
                             // accelero: gives inclination when static (not present in this sensortag?)
@@ -620,7 +642,7 @@ public class SensorsManager {
                             addWaitingWrite(gatt, characteristic);
                         }
                         if( true ) {
-                            // move: gives inclination when static
+                            // move: acc et gyro in one sensors
                             BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Mov));
                             if( service == null )
                             {
@@ -628,16 +650,30 @@ public class SensorsManager {
                             }
                             BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
                             gatt.setCharacteristicNotification(characteristic, true);
-                            addWaitingRead( gatt, characteristic );
 
                             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                            //descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                             addWaitingWrite(gatt, descriptor);
 
-                            characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // enable
-                            characteristic.setValue(new byte[]{(byte) 0xFF});
+                            characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
+                            characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00});
                             addWaitingWrite(gatt, characteristic);
+
+                            if( true )
+                            {
+                                // change refresh time
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa83-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
+                                characteristic.setValue(new byte[]{(byte) 0x0A}); // multiple of 10ms, 10 => 100ms
+                                addWaitingWrite(gatt, characteristic);
+                            }
+
+                            if( false )
+                            {
+                                // manual read
+                                characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
+                                addWaitingRead(gatt, characteristic);
+                            }
                         }
 
                     }
