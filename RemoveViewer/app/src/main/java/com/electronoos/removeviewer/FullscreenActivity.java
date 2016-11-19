@@ -188,7 +188,7 @@ public class FullscreenActivity extends Activity {
         nRefreshTime_ = Integer.parseInt(sharedPref.getString("refresh_time", ""));
         Log.v( "RemoteViewer", "from preferences: nRefreshTime_: " + nRefreshTime_ );
         bExitOnPause_ = Boolean.valueOf(sharedPref.getBoolean("exit_on_pause", true));
-        Log.v( "RemoteViewer", ac"from preferences: bExitOnPause_: " + bExitOnPause_ );
+        Log.v( "RemoteViewer", "from preferences: bExitOnPause_: " + bExitOnPause_ );
 
         webUpdate();
         postRedraw();
@@ -366,11 +366,11 @@ public class FullscreenActivity extends Activity {
         ((TextView) findViewById(R.id.fullscreen_content)).setText("");
         //((TextView) findViewById(R.id.app_name)).setText("");
         setTitle("");
-        lBar().setIcon(R.mipmap.ic_blank);
+        getActionBar().setIcon(R.mipmap.ic_blank);
     }
     private void postHideAppName(int interval)
     {
-                                            .v( "RemoteViewer", "postWebUpdate: update in: " + interval );
+        Log.v( "RemoteViewer", "postWebUpdate: update in: " + interval );
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
