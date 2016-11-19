@@ -13,6 +13,7 @@
 
     <string name="menu_txt_device_status">(status)</string>
     <string name="menu_txt_bpm">(bpm)</string>
+    <string name="menu_txt_angle">(angle)</string>
 
 
     <string name="button_txt_validate">Valider</string>

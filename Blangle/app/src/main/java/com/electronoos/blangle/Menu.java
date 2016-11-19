@@ -67,9 +67,12 @@ public class Menu extends Activity {
     // interface element
     private TextView mTxtDeviceStatus;
     private TextView mTxtBpm;
+    private TextView mTxtAngle;
+
 
     private String mstrStatus;
     private int mnBpm; // used to refresh in the good thread
+    private float mrAngle; // used to refresh in the good thread
     private int mnNbrUpdateBpm;
     private String mstrLastTxt;
 
@@ -88,9 +91,11 @@ public class Menu extends Activity {
         final View contentView = findViewById(R.id.fullscreen_content);
 
         mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
+        mTxtAngle = (TextView) findViewById(R.id.menu_angle);
         mTxtDeviceStatus = (TextView) findViewById(R.id.menu_txt_device_status);
 
         mnBpm = 0;
+        mrAngle = -1.f;
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
 
@@ -329,6 +334,7 @@ public class Menu extends Activity {
         mnBpm = nBpm; // to be refreshed later
         //postRefreshBpm( 10 ); // Can't create handler inside thread that has not called Looper.prepare()
 
+        // output to file
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String currentDateandTime = sdf.format(new Date());
         String newLine = currentDateandTime + ": " + String.valueOf(nBpm);
@@ -355,6 +361,11 @@ public class Menu extends Activity {
 
 
     }
+    public void updateAngle(float rAngle)
+    {
+        //mTxtBpm.setText(String.valueOf(nBpm));
+        mrAngle = rAngle; // to be refreshed later
+    }
 
     private void refreshInterface() {
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
@@ -365,6 +376,10 @@ public class Menu extends Activity {
         if( mnBpm != 0 ) {
             mTxtBpm.setText(String.valueOf(mnBpm));
             mnBpm = 0; // could miss one from time to time
+        }
+        if( mrAngle != 0 ) {
+            mTxtAngle.setText(String.valueOf(mrAngle));
+            mrAngle = 0; // could miss one from time to time
         }
         postRefreshInterface(500);
     }

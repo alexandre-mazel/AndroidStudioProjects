@@ -139,6 +139,10 @@
                 android:textStyle="normal" android:textSize="20sp" android:gravity="center"
                 android:text="@string/menu_txt_bpm" />
 
+            <TextView android:id="@+id/menu_angle" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_angle" />
 
 <!--
                         <Space

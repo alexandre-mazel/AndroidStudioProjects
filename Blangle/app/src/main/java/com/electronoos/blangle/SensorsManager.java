@@ -268,6 +268,10 @@ public class SensorsManager {
                     float rAngleZ = (accZ * 180) / 4200.0f; // 4200: empirique maximum
                     Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
+                    assert( Global.getCurrentActivity() instanceof Menu );
+                    ((Menu)Global.getCurrentActivity()).updateAngle( rAngleZ );
+
+
                 }
 
 
