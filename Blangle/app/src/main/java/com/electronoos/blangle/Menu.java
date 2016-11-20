@@ -1,5 +1,6 @@
 package com.electronoos.blangle;
 
+import com.electronoos.blangle.util.Averager;
 import com.electronoos.blangle.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -72,7 +73,8 @@ public class Menu extends Activity {
 
     private String mstrStatus;
     private int mnBpm; // used to refresh in the good thread
-    private float mrAngle; // used to refresh in the good thread
+    private double mrAngle; // used to refresh in the good thread
+    private Averager mAngleAverage;
     private int mnNbrUpdateBpm;
     private String mstrLastTxt;
 
@@ -95,7 +97,8 @@ public class Menu extends Activity {
         mTxtDeviceStatus = (TextView) findViewById(R.id.menu_txt_device_status);
 
         mnBpm = 0;
-        mrAngle = -1.f;
+        mrAngle = -1.;
+        mAngleAverage = new Averager<Double>(20);
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
 
@@ -361,10 +364,12 @@ public class Menu extends Activity {
 
 
     }
-    public void updateAngle(float rAngle)
+    public void updateAngle(double rAngle)
     {
         //mTxtBpm.setText(String.valueOf(nBpm));
-        mrAngle = rAngle; // to be refreshed later
+        //mrAngle = rAngle; // to be refreshed later
+        mAngleAverage.addValue(rAngle);
+        mrAngle = mAngleAverage.computeAverage().doubleValue();
     }
 
     private void refreshInterface() {
@@ -377,9 +382,9 @@ public class Menu extends Activity {
             mTxtBpm.setText(String.valueOf(mnBpm));
             mnBpm = 0; // could miss one from time to time
         }
-        if( mrAngle != 0 ) {
-            mTxtAngle.setText(String.valueOf(mrAngle));
-            mrAngle = 0; // could miss one from time to time
+        if( mrAngle != 0. ) {
+            mTxtAngle.setText( String.format("%.1f", mrAngle) + "°" );
+            mrAngle = 0.; // could miss one from time to time
         }
         postRefreshInterface(500);
     }

@@ -265,7 +265,8 @@ public class SensorsManager {
                     Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ + ", mX: " + magX + ", mY: " + magY + ", mZ: " + magZ );
 
                     //float rAngleZ = (accZ * 1.0f) / (32768/2);
-                    float rAngleZ = (accZ * 180) / 4200.0f; // 4200: empirique maximum
+                    double rAngleZ = (accZ * 180) / 4121.; // 4200: empiric maximum // entre -4110 et 4133
+                    //rAngleZ = accZ;
                     Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
                     assert( Global.getCurrentActivity() instanceof Menu );
