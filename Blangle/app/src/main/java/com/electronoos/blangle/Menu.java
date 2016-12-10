@@ -175,6 +175,7 @@ public class Menu extends Activity {
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Log.v("DBG", "NO BLE !!!");
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -186,14 +187,22 @@ public class Menu extends Activity {
     } // onCreate
 
     @Override
+    protected void onPause() {
+        // we want this application to be stopped when set on background
+        Log.v("DBG", "------------------------------ onPause...");
+        super.onPause();
+        onStop();
+        System.exit(0); // exit this application
+    }
+    @Override
     protected void onStop() {
-        if( false ) {
+        if( true ) {
             Log.v("DBG", "------------------------------ onStop...");
             mSensorsManager.exit();
             mSensorsManager = null;
 
-            //super.onDestroy();
         }
+        super.onStop();
     }
 
     @Override

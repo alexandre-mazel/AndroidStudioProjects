@@ -110,6 +110,9 @@ public class SensorsManager {
         };
         mManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE); // storing the manager instead of an automatic make the state to disconnect just after connection!!!
         mAdapter = mManager.getAdapter();
+
+        mAdapter.startDiscovery(); // for android 6+ Marshmallow ?
+
         //BluetoothManager btManager = (BluetoothManager)Global.getCurrentActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         //mAdapter = btManager.getAdapter();
 
@@ -121,7 +124,7 @@ public class SensorsManager {
         }
 
 
-        Log.v("DBG", "start lescan");
+        Log.v("DBG", "start lescan, callback: " + mLeScanCallback);
         mDevice = null;
         mTimeStartDiscover = System.currentTimeMillis();
         mbScanning = true;
@@ -181,7 +184,7 @@ public class SensorsManager {
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
                 // this will get called anytime you perform a read or write characteristic operation
-                Log.v("DBG", "SensorManager: onCharacteristicChanged");
+                Log.v("DBG", "SensorManager: onCharacteristicChanged - time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
                 Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
                 //read the characteristic data
                 byte[] data = characteristic.getValue();
@@ -668,8 +671,9 @@ public class SensorsManager {
                             if( true )
                             {
                                 // change refresh time
-                                characteristic = service.getCharacteristic(UUID.fromString("f000aa83-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
-                                characteristic.setValue(new byte[]{(byte) 0x0A}); // multiple of 10ms, 10 => 100ms
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa83-0451-4000-b000-000000000000"));
+                                //characteristic.setValue(new byte[]{(byte) 0x0A}); // multiple of 10ms, 10 => 100ms 0x64 => 1s
+                                characteristic.setValue(new byte[]{(byte) 0x0A}); //
                                 addWaitingWrite(gatt, characteristic);
                             }
 
@@ -882,7 +886,9 @@ public class SensorsManager {
     {
         Log.v("DBG", "SensorManager: exiting..." );
         mAdapter.stopLeScan(mLeScanCallback);
-        mBluetoothGatt.close();
-        mBluetoothGatt = null;
+        if( mBluetoothGatt != null ) {
+            mBluetoothGatt.close();
+            mBluetoothGatt = null;
+        }
     }
 }
