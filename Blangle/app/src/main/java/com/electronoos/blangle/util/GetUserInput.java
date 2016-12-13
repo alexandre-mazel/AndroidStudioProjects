@@ -228,5 +228,8 @@ public class GetUserInput extends DialogFragment
         Log.v("DBG", "askText: after wait" );
         return "toto";
     }
+
+    TODO: faire un truc qui stocke tout les mac des bluetooth a detecter, puis quand on revient dans le thread principal,
+    la fenetre ouvre un dialogue avec des questions a l'utilisateur, dans un autre dialogue, c'est en fait une autre activité!
 }
 
