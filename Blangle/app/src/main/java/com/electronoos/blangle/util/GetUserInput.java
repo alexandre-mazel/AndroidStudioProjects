@@ -1,8 +1,12 @@
 package com.electronoos.blangle.util;
 
 //import android.app.Activity;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.content.DialogInterface;
@@ -14,6 +18,7 @@ import com.electronoos.blangle.Global;
  * Created by a on 13/12/16.
  */
 
+/*
 public class GetUserInput {
     private static String gstrAnswer;
     //private static boolean gbGetAnswer;
@@ -87,7 +92,7 @@ public class GetUserInput {
 
 
 } // class
-
+*/
 
    /*
 String m_Input;
@@ -154,3 +159,52 @@ public class GetUserInput {
     }
 }
 */
+
+public class GetUserInput extends DialogFragment
+{
+    public GetUserInput()
+    {
+
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState)
+    {
+        Bundle args = getArguments();
+        String title = args.getString("title", "");
+        String message = args.getString("message", "");
+
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, null);
+                    }
+                })
+                .create();
+    }
+
+    public static String ask()
+    {
+        DialogFragment dialog = new GetUserInput();
+        Bundle args = new Bundle();
+        args.putString("title", "titre");
+        args.putString("message", "messagem");
+        dialog.setArguments(args);
+        dialog.setTargetFragment(this, YES_NO_CALL);
+        dialog.show(getFragmentManager(), "tag");
+    }
+}
+
