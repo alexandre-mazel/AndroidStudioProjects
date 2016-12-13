@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +38,7 @@ public class GetUserInput {
         alert.setTitle(strTitle);
         alert.setMessage(strQuestion);
 
-// Set an EditText view to get user input
+        // Set an EditText view to get user input
         final EditText input = new EditText(Global.getCurrentActivity());
         alert.setView(input);
 
@@ -174,14 +175,12 @@ public class GetUserInput extends DialogFragment
         String title = args.getString("title", "");
         String message = args.getString("message", "");
 
-        return new AlertDialog.Builder(getActivity())
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-                {
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
+                    public void onClick(DialogInterface dialog, int which) {
                         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
                     }
                 })
@@ -192,9 +191,21 @@ public class GetUserInput extends DialogFragment
                     {
                         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, null);
                     }
-                })
-                .create();
+                });
+
+        // Set an EditText view to get user input
+        final EditText input = new EditText(Global.getCurrentActivity());
+        alert.setView(input);
+
+        return alert.create();
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.v("DBG", "askText: on activity result");
+    }
+
 
     public static String ask(Activity activity)
     {
@@ -205,6 +216,16 @@ public class GetUserInput extends DialogFragment
         dialog.setArguments(args);
         //dialog.setTargetFragment(activity, 1); // YES_NO_CALL
         dialog.show(activity.getFragmentManager(), "tag");
+        Log.v("DBG", "askText: after show" );
+
+//        try
+//        {
+//            dialog.wait();
+//        }
+//        catch (InterruptedException e)
+//        {
+//        }
+        Log.v("DBG", "askText: after wait" );
         return "toto";
     }
 }
