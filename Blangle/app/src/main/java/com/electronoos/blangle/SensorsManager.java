@@ -108,7 +108,9 @@ public class SensorsManager {
                     mDevice = device;
                     mbIsSensorTag = device.getName().indexOf("SensorTag") != -1;
 
-                    GetUserInput.askText("New sensor detected, name it please:");
+                    //GetUserInput.askText("New sensor detected, name it please:");
+                    //GetUserInput.askUser2();
+                    ((Menu)Global.getCurrentActivity()).askUser();
                 }
             }
         };

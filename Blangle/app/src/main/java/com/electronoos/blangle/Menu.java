@@ -1,13 +1,16 @@
 package com.electronoos.blangle;
 
 import com.electronoos.blangle.util.Averager;
+import com.electronoos.blangle.util.GetUserInput;
 import com.electronoos.blangle.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -182,7 +185,7 @@ public class Menu extends Activity {
         Log.v("DBG", "BLE check - end");
 
         postConnectBLE(2000);
-        postRefreshInterface( 2000 );
+        postRefreshInterface(2000);
 
     } // onCreate
 
@@ -371,7 +374,6 @@ public class Menu extends Activity {
             mstrLastTxt = "";
         }
 
-
     }
     public void updateAngle(double rAngle)
     {
@@ -395,7 +397,9 @@ public class Menu extends Activity {
             mTxtAngle.setText( String.format("%.1f", mrAngle) + "°" );
             mrAngle = 0.; // could miss one from time to time
         }
+
         postRefreshInterface(500);
+
     }
 
     private void postRefreshInterface(int interval)
@@ -410,5 +414,22 @@ public class Menu extends Activity {
         handler.postDelayed(runnable, interval);
     }
 
+    public void askUser() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
+                if (!isFinishing()) {
+                    new AlertDialog.Builder(Global.getCurrentActivity())
+                            .setTitle("Your Alert")
+                            .setMessage("Your Message")
+                            .setCancelable(false)
+                            .show();
+                }
+                Log.v("DBG", "askText: returning: 'debugbugu'" );
+
+//                GetUserInput.askText("New sensor detected, name it please:");
+            }
+        });
+    }
 }
