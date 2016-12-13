@@ -60,31 +60,31 @@ public class GetUserInput {
         });
 
         alert.show();
-/*
-        try
-        {
-            alert.wait();
-        }
-        catch (InterruptedException e)
-        {
-        }
-*/
+
+//        try
+//        {
+//            alert.wait();
+//        }
+//        catch (InterruptedException e)
+//        {
+//        }
+
 
         // tres crado, mais j'y arrive pas sinon
-        /*
-        while( ! gbGetAnswer )
-        {
-            try
-            {
-                //Thread.sleep(1000);
-                Log.v("DBG", "...wait..." );
-            }
-            catch (InterruptedException e)
-            {
-            }
 
-        }
-        */
+//        while( ! gbGetAnswer )
+//        {
+//            try
+//            {
+//                //Thread.sleep(1000);
+//                Log.v("DBG", "...wait..." );
+//            }
+//            catch (InterruptedException e)
+//            {
+//            }
+//
+//        }
+
         Log.v("DBG", "askText: returning: '" + gstrAnswer + "'" );
         return gstrAnswer;
 
@@ -196,15 +196,16 @@ public class GetUserInput extends DialogFragment
                 .create();
     }
 
-    public static String ask()
+    public static String ask(Activity activity)
     {
         DialogFragment dialog = new GetUserInput();
         Bundle args = new Bundle();
         args.putString("title", "titre");
         args.putString("message", "messagem");
         dialog.setArguments(args);
-        dialog.setTargetFragment(this, YES_NO_CALL);
-        dialog.show(getFragmentManager(), "tag");
+        //dialog.setTargetFragment(activity, 1); // YES_NO_CALL
+        dialog.show(activity.getFragmentManager(), "tag");
+        return "toto";
     }
 }
 

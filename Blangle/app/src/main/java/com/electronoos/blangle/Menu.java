@@ -415,21 +415,23 @@ public class Menu extends Activity {
     }
 
     public void askUser() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                if (!isFinishing()) {
-                    new AlertDialog.Builder(Global.getCurrentActivity())
-                            .setTitle("Your Alert")
-                            .setMessage("Your Message")
-                            .setCancelable(false)
-                            .show();
-                }
-                Log.v("DBG", "askText: returning: 'debugbugu'" );
-
-//                GetUserInput.askText("New sensor detected, name it please:");
-            }
-        });
+//
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                if (!isFinishing()) {
+//                    new AlertDialog.Builder(Global.getCurrentActivity())
+//                            .setTitle("Your Alert")
+//                            .setMessage("Your Message")
+//                            .setCancelable(false)
+//                            .show();
+//                }
+//                Log.v("DBG", "askText: returning: 'debugbugu'" );
+//
+////                GetUserInput.askText("New sensor detected, name it please:");
+//            }
+//        });
+        GetUserInput.ask(this);
     }
 }
