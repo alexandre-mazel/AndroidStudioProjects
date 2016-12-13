@@ -15,6 +15,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.electronoos.blangle.util.GetUserInput;
+
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
@@ -98,13 +100,15 @@ public class SensorsManager {
             @Override
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                 // your implementation here
-                Log.v("DBG", "Found: Device name:" + device.getName());
+                Log.v("DBG", "Found: Device name:" + device.getName() + ", address: " + device.getAddress() );
                 if( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1  )
                 {
                     Log.v("DBG", "Found !"); // arreter l'attente ici! TODO
                     ((Menu)Global.getCurrentActivity()).updateStatus( "Found");
                     mDevice = device;
                     mbIsSensorTag = device.getName().indexOf("SensorTag") != -1;
+
+                    GetUserInput.askText("New sensor detected, name it please:");
                 }
             }
         };
