@@ -432,6 +432,6 @@ public class Menu extends Activity {
 ////                GetUserInput.askText("New sensor detected, name it please:");
 //            }
 //        });
-        GetUserInput.ask(this);
+        //GetUserInput.ask(this);
     }
 }
