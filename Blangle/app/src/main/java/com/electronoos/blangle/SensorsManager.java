@@ -279,7 +279,7 @@ public class SensorsManager {
                     Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
                     assert( Global.getCurrentActivity() instanceof Menu );
-                    ((Menu)Global.getCurrentActivity()).updateAngle( rAngleZ );
+                    ((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
 
 
                 }

@@ -30,7 +30,7 @@ public class Averager <T extends Number> {
 
     public Double computeAverage() // want to put T but problem to initialise it
     {
-        //Log.v("DBG", "Averager: computeAverage: size: " + mData.size());
+        Log.v("DBG", "Averager: computeAverage: size: " + mData.size());
         double sum = 0.; // new T();
         for( T t : mData )
         {

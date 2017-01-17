@@ -101,7 +101,7 @@ public class Menu extends Activity {
 
         mnBpm = 0;
         mrAngle = -1.;
-        mAngleAverage = new Averager<Double>(20);
+        mAngleAverage = new Averager<Double>(2000);
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
 
@@ -375,10 +375,11 @@ public class Menu extends Activity {
         }
 
     }
-    public void updateAngle(double rAngle)
+    public void updateAngle(String strDeviceName, double rAngle)
     {
         //mTxtBpm.setText(String.valueOf(nBpm));
         //mrAngle = rAngle; // to be refreshed later
+        rAngle -= 17.9; // results: 161.6 / 162.0 / 162.3 / 160.2 / 158.6 / 153.8 / 168.1 / 168.4 / 168.0 / 166.5 / 167.3 / 165.6 / 167.0 / 167.0 / 165.1 / 167.
         mAngleAverage.addValue(rAngle);
         mrAngle = mAngleAverage.computeAverage().doubleValue();
     }
