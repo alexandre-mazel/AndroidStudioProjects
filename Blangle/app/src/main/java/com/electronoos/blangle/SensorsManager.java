@@ -64,6 +64,7 @@ public class SensorsManager {
     private BluetoothAdapter                    mAdapter;
     private BluetoothAdapter.LeScanCallback     mLeScanCallback;
     private BluetoothDevice                     mDevice;
+//    private List<BluetoothDevice>               mListDevice;
     private BluetoothGattCallback               mleGattCallback;
     private BluetoothGatt                       mBluetoothGatt;
     private BluetoothGattCharacteristic         mCharacToWrite;
@@ -110,7 +111,7 @@ public class SensorsManager {
 
                     //GetUserInput.askText("New sensor detected, name it please:");
                     //GetUserInput.askUser2();
-                    ((Menu)Global.getCurrentActivity()).askUser();
+                    //((Menu)Global.getCurrentActivity()).askUser();
                 }
             }
         };
