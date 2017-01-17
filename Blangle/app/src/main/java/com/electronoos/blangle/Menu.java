@@ -292,7 +292,7 @@ public class Menu extends Activity {
         mTxtDeviceStatus.setText("Searching...");
         if( true ) {
             mSensorsManager = new SensorsManager();
-            Global.setCurrentSensorManager(mSensorsManager)
+            Global.setCurrentSensorsManager(mSensorsManager);
             mSensorsManager.init();
             mSensorsManager.discover();
             postRefreshBLE(1000);

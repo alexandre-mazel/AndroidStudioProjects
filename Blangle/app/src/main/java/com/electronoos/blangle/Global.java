@@ -1,7 +1,6 @@
 package com.electronoos.blangle;
 
 import android.app.Activity;
-import android.hardware.SensorManager;
 import android.util.Log;
 
 /**
@@ -18,13 +17,13 @@ public class Global {
         gmCurrentActivity = currentActivity;
     }
 
-    private static SensorManager gmCurrentSensorManager = null;
-    public static SensorManager getCurrentSensorManager(){
-        //Log.v("DBG", "return current SensorManager: " + gmCurrentSensorManager);
-        return gmCurrentSensorManager;
+    private static SensorsManager gmCurrentSensorsManager = null;
+    public static SensorsManager getCurrentSensorsManager(){
+        //Log.v("DBG", "return current SensorsManager: " + gmCurrentSensorsManager);
+        return gmCurrentSensorsManager;
     }
-    public static void setCurrentSensorManager(SensorManager currentSensorManager){
-        Log.v( "DBG", "set current SensorManager: " + currentSensorManager );
-        gmCurrentSensorManager = currentSensorManager;
+    public static void setCurrentSensorsManager(SensorsManager currentSensorsManager){
+        Log.v( "DBG", "set current SensorsManager: " + currentSensorsManager );
+        gmCurrentSensorsManager = currentSensorsManager;
     }
 }
