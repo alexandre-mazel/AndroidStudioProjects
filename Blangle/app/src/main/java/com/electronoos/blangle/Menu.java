@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -81,6 +82,7 @@ public class Menu extends Activity {
 
     final int mnNbrAngle = 3;
     private double[] marAngle; // used to refresh in the good thread
+    private double[] maTimeLastUpdateMs;
     private Averager[] maAngleAverage;
     private int mnNbrUpdateBpm;
     private String mstrLastTxt;
@@ -108,6 +110,7 @@ public class Menu extends Activity {
 
         mnBpm = 0;
         marAngle = new double[mnNbrAngle];
+        maTimeLastUpdateMs = new double[mnNbrAngle];
         maAngleAverage = new Averager[mnNbrAngle];
         for( int i = 0; i < mnNbrAngle; ++i) {
             Log.v("DBG", "i: " + i );
@@ -413,6 +416,20 @@ public class Menu extends Activity {
             if (marAngle[i] != 0.) {
                 maTxtAngle[i].setText(String.format("%.1f", marAngle[i]) + "°");
                 marAngle[i] = 0.; // could miss one from time to time
+                if( maTimeLastUpdateMs[i] <= -1 ) {
+                    maTxtAngle[i].setTextColor(Color.BLACK);
+                }
+                maTimeLastUpdateMs[i] = System.currentTimeMillis();
+            }
+            else
+            {
+                if( maTimeLastUpdateMs[i] > -1 )
+                {
+                    if( System.currentTimeMillis() - maTimeLastUpdateMs[i] > 2000 ) {
+                        maTimeLastUpdateMs[i] = -1;
+                        maTxtAngle[i].setTextColor(Color.RED);
+                    }
+                }
             }
         }
 
