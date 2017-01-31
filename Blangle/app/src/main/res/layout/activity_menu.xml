@@ -71,7 +71,7 @@
 
             <Space
                 android:layout_width="1dp"
-                android:layout_height="180dp"/>
+                android:layout_height="18dp"/>
 
             <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
@@ -139,7 +139,15 @@
                 android:textStyle="normal" android:textSize="20sp" android:gravity="center"
                 android:text="@string/menu_txt_bpm" />
 
-            <TextView android:id="@+id/menu_angle" android:layout_width="match_parent"
+            <TextView android:id="@+id/menu_angle1" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_angle" />
+            <TextView android:id="@+id/menu_angle2" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_angle" />
+            <TextView android:id="@+id/menu_angle3" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
                 android:textStyle="normal" android:textSize="20sp" android:gravity="center"
                 android:text="@string/menu_txt_angle" />

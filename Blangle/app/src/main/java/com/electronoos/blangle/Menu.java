@@ -27,6 +27,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -71,13 +72,16 @@ public class Menu extends Activity {
     // interface element
     private TextView mTxtDeviceStatus;
     private TextView mTxtBpm;
-    private TextView mTxtAngle;
+    private TextView[] maTxtAngle;
+
 
 
     private String mstrStatus;
     private int mnBpm; // used to refresh in the good thread
-    private double mrAngle; // used to refresh in the good thread
-    private Averager mAngleAverage;
+
+    final int mnNbrAngle = 3;
+    private double[] marAngle; // used to refresh in the good thread
+    private Averager[] maAngleAverage;
     private int mnNbrUpdateBpm;
     private String mstrLastTxt;
 
@@ -96,12 +100,19 @@ public class Menu extends Activity {
         final View contentView = findViewById(R.id.fullscreen_content);
 
         mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
-        mTxtAngle = (TextView) findViewById(R.id.menu_angle);
+        maTxtAngle = new TextView[mnNbrAngle];
+        maTxtAngle[0] = (TextView) findViewById(R.id.menu_angle1);
+        maTxtAngle[1] = (TextView) findViewById(R.id.menu_angle2);
+        maTxtAngle[2] = (TextView) findViewById(R.id.menu_angle3);
         mTxtDeviceStatus = (TextView) findViewById(R.id.menu_txt_device_status);
 
         mnBpm = 0;
-        mrAngle = -1.;
-        mAngleAverage = new Averager<Double>(2000);
+        marAngle = new double[mnNbrAngle];
+        maAngleAverage = new Averager[mnNbrAngle];
+        for( int i = 0; i < mnNbrAngle; ++i) {
+            Log.v("DBG", "i: " + i );
+            maAngleAverage[i] = new Averager<Double>(40);
+        }
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
 
@@ -291,9 +302,11 @@ public class Menu extends Activity {
         Log.v("DBG", "start BLE stuffs");
         mTxtDeviceStatus.setText("Searching...");
         if( true ) {
-            mSensorsManager = new SensorsManager();
-            Global.setCurrentSensorsManager(mSensorsManager);
-            mSensorsManager.init();
+            if( Global.getCurrentSensorsManager() == null ) {
+                mSensorsManager = new SensorsManager();
+                Global.setCurrentSensorsManager(mSensorsManager);
+                mSensorsManager.init();
+            }
             mSensorsManager.discover();
             postRefreshBLE(1000);
         }
@@ -381,8 +394,9 @@ public class Menu extends Activity {
         //mTxtBpm.setText(String.valueOf(nBpm));
         //mrAngle = rAngle; // to be refreshed later
         rAngle -= 17.9; // results: 161.6 / 162.0 / 162.3 / 160.2 / 158.6 / 153.8 / 168.1 / 168.4 / 168.0 / 166.5 / 167.3 / 165.6 / 167.0 / 167.0 / 165.1 / 167.
-        mAngleAverage.addValue(rAngle);
-        mrAngle = mAngleAverage.computeAverage().doubleValue();
+        int nCurrentIdx = 0;
+        maAngleAverage[nCurrentIdx].addValue(rAngle);
+        marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
     }
 
     private void refreshInterface() {
@@ -395,9 +409,11 @@ public class Menu extends Activity {
             mTxtBpm.setText(String.valueOf(mnBpm));
             mnBpm = 0; // could miss one from time to time
         }
-        if( mrAngle != 0. ) {
-            mTxtAngle.setText( String.format("%.1f", mrAngle) + "°" );
-            mrAngle = 0.; // could miss one from time to time
+        for( int i = 0; i < mnNbrAngle; ++i) {
+            if (marAngle[i] != 0.) {
+                maTxtAngle[i].setText(String.format("%.1f", marAngle[i]) + "°");
+                marAngle[i] = 0.; // could miss one from time to time
+            }
         }
 
         postRefreshInterface(500);

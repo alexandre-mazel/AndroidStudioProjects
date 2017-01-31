@@ -18,9 +18,12 @@ import android.widget.Toast;
 import com.electronoos.blangle.util.GetUserInput;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Queue;
 import java.util.UUID;
+
 
 
 /**
@@ -63,8 +66,8 @@ public class SensorsManager {
     private BluetoothManager                    mManager;
     private BluetoothAdapter                    mAdapter;
     private BluetoothAdapter.LeScanCallback     mLeScanCallback;
-    private BluetoothDevice                     mDevice;
-//    private List<BluetoothDevice>               mListDevice;
+//    private BluetoothDevice                     mDevice;
+    private ArrayList<BluetoothDevice>          mListDevice;
     private BluetoothGattCallback               mleGattCallback;
     private BluetoothGatt                       mBluetoothGatt;
     private BluetoothGattCharacteristic         mCharacToWrite;
@@ -75,7 +78,7 @@ public class SensorsManager {
     private boolean mbDiscovered;
     private boolean mbConnected;
     private boolean mbNotifyAsked;
-    private boolean mbIsSensorTag; // else it's HR
+    //private boolean mbIsSensorTag; // else it's HR
 
     private int mnNumService;
     private int mnNumCharact;
@@ -83,6 +86,25 @@ public class SensorsManager {
 
     private Queue<Object> mWaitingWrite;
     private Queue<Object> mWaitingRead;
+
+
+    public boolean isConnectedToSensorTag( BluetoothGatt gatt )
+    {
+        return gatt.getDevice().getName().indexOf("SensorTag")!=-1;
+    }
+
+    // do we have already found this device ?
+    private boolean isAlreadyFound( BluetoothDevice newDev )
+    {
+        for( BluetoothDevice dev: mListDevice )
+        {
+            if( newDev.getAddress() == newDev.getAddress() )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void init()
     {
@@ -93,10 +115,12 @@ public class SensorsManager {
         mnNumDesc = -1;
         mWaitingWrite = new ArrayDeque<Object>();
         mWaitingRead = new ArrayDeque<Object>();
+        mListDevice = new ArrayList<BluetoothDevice>();
     }
     public void discover()
     {
         Log.v("DBG", "discover");
+        mListDevice.clear();
         mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
             @Override
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
@@ -104,14 +128,22 @@ public class SensorsManager {
                 Log.v("DBG", "Found: Device name:" + device.getName() + ", address: " + device.getAddress() );
                 if( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1  )
                 {
-                    Log.v("DBG", "Found !"); // arreter l'attente ici! TODO
-                    ((Menu)Global.getCurrentActivity()).updateStatus( "Found");
-                    mDevice = device;
-                    mbIsSensorTag = device.getName().indexOf("SensorTag") != -1;
+                    if( isAlreadyFound( device ) )
+                    {
+                        Log.v("DBG", "Already Found!");
+                    }
+                    else
+                    {
+                        Log.v("DBG", "Found an interesting one!"); // arreter l'attente ici! TODO
+                        ((Menu) Global.getCurrentActivity()).updateStatus("Found");
+                        //mDevice = device;
+                        mListDevice.add(device);
+                        //mbIsSensorTag = device.getName().indexOf("SensorTag") != -1;
 
-                    //GetUserInput.askText("New sensor detected, name it please:");
-                    //GetUserInput.askUser2();
-                    //((Menu)Global.getCurrentActivity()).askUser();
+                        //GetUserInput.askText("New sensor detected, name it please:");
+                        //GetUserInput.askUser2();
+                        //((Menu)Global.getCurrentActivity()).askUser();
+                    }
                 }
             }
         };
@@ -132,7 +164,7 @@ public class SensorsManager {
 
 
         Log.v("DBG", "start lescan, callback: " + mLeScanCallback);
-        mDevice = null;
+        mListDevice.clear();
         mTimeStartDiscover = System.currentTimeMillis();
         mbScanning = true;
         mAdapter.startLeScan(mLeScanCallback);
@@ -161,20 +193,21 @@ public class SensorsManager {
         // return 1 if found
         // 0 while scan is incomplete
         // -1 if not found
-        if( mDevice == null && System.currentTimeMillis() - mTimeStartDiscover < 5000 )
+        if( mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 5000 )
             return 0;
 
         mbScanning = false;
         Log.v("DBG", "stop lescan");
         mAdapter.stopLeScan(mLeScanCallback);
 
-        if( mDevice == null )
+        if( mListDevice.size() == 0 )
         {
             Log.v( "DBG", "discover: timeout!");
             ((Menu)Global.getCurrentActivity()).updateStatus( "timeout!");
             return -1;
 
         }
+        ((Menu)Global.getCurrentActivity()).updateStatus( "found: " + mListDevice.size() );
 
         return 1;
     }
@@ -182,7 +215,7 @@ public class SensorsManager {
     private void connect()
     {
         Log.v( "DBG", "SensorManager: connecting...");
-        ((Menu)Global.getCurrentActivity()).updateStatus( "connected");
+        ((Menu)Global.getCurrentActivity()).updateStatus( "connected: " +  mListDevice.size() );
         mbConnected = true;
 
         mbDiscovering = false;
@@ -191,7 +224,7 @@ public class SensorsManager {
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
                 // this will get called anytime you perform a read or write characteristic operation
-                Log.v("DBG", "SensorManager: onCharacteristicChanged - time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
+                Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
                 Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
                 //read the characteristic data
                 byte[] data = characteristic.getValue();
@@ -527,7 +560,7 @@ public class SensorsManager {
 
                 Log.v("DBG", "SensorManager: onServicesDiscovered");
 
-                ((Menu)Global.getCurrentActivity()).updateStatus( "running");
+                ((Menu)Global.getCurrentActivity()).updateStatus( "running: " + mListDevice.size() );
 
                 if( ! mbDiscovered ) {
                     mbDiscovered = true;
@@ -562,7 +595,7 @@ public class SensorsManager {
 //                        BluetoothManager mBluetoothManager = mManager;
 //                        BluetoothAdapter mBluetoothAdapter = mBluetoothManager.getAdapter();
 //                        BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice(....);
-                        BluetoothGatt mBG = mDevice.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
+                        BluetoothGatt mBG = mListDevice.get(0).connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
 
                         BluetoothGattService service = mBG.getService(UUID.fromString(mstrS_HR));
                         // service is null here
@@ -571,7 +604,7 @@ public class SensorsManager {
                         boolean resw = mBG.writeCharacteristic(characteristic);
                         Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
                     }
-                    if( ! mbIsSensorTag )
+                    if( ! isConnectedToSensorTag(gatt) )
                     {
                         BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_HR));
 
@@ -592,7 +625,7 @@ public class SensorsManager {
                         Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes );
                     }
 
-                    if( mbIsSensorTag ) {
+                    if( isConnectedToSensorTag(gatt) ) {
                         if( false ) {
                             // buttons
                             BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Button));
@@ -753,17 +786,19 @@ public class SensorsManager {
                 }
             }
         };
-        mBluetoothGatt = mDevice.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
-        mbNotifyAsked = false;
-        if( false ) {
-            BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString(mstrS_HR));
-            if (service == null) {
-                Log.v("DBG", "SensorManager: onServicesDiscovered: SERVICE IS NULL!");
-            } else {
-                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_HR));
-                characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
-                boolean resw = mBluetoothGatt.writeCharacteristic(characteristic);
-                Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
+        for( BluetoothDevice device : mListDevice ) {
+            BluetoothGatt bluetoothGatt = device.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
+            mbNotifyAsked = false;
+            if (false) {
+                BluetoothGattService service = bluetoothGatt.getService(UUID.fromString(mstrS_HR));
+                if (service == null) {
+                    Log.v("DBG", "SensorManager: onServicesDiscovered: SERVICE IS NULL!");
+                } else {
+                    BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_HR));
+                    characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                    boolean resw = bluetoothGatt.writeCharacteristic(characteristic);
+                    Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
+                }
             }
         }
     }
@@ -777,7 +812,7 @@ public class SensorsManager {
         }
         else
         {
-             if( mDevice != null && ! mbConnected ) {
+             if( mListDevice.size() != 0 && ! mbConnected ) {
                  try {
                      connect();
                  } catch (Exception e) {
