@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
 import java.util.UUID;
-
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -68,14 +68,13 @@ public class SensorsManager {
     private BluetoothAdapter.LeScanCallback     mLeScanCallback;
 //    private BluetoothDevice                     mDevice;
     private ArrayList<BluetoothDevice>          mListDevice;
-    private BluetoothGattCallback               mleGattCallback;
-    private BluetoothGatt                       mBluetoothGatt;
+    //private ArrayList<BluetoothGattCallback>    mleGattCallback;
+    //private ArrayList<BluetoothGattCallback>    maLeGattCallback;
+    private ArrayList<BluetoothGatt>            maBluetoothGatt;
     private BluetoothGattCharacteristic         mCharacToWrite;
 
     private long mTimeStartDiscover;
     private boolean mbScanning;
-    private boolean mbDiscovering;
-    private boolean mbDiscovered;
     private boolean mbConnected;
     private boolean mbNotifyAsked;
     //private boolean mbIsSensorTag; // else it's HR
@@ -86,6 +85,7 @@ public class SensorsManager {
 
     private Queue<Object> mWaitingWrite;
     private Queue<Object> mWaitingRead;
+    private Semaphore mWaitingMutex; // I want a mutex non-reentrant (even if current thread has locked it, I want to be sure, it's locked)
 
 
     public boolean isConnectedToSensorTag( BluetoothGatt gatt )
@@ -98,7 +98,7 @@ public class SensorsManager {
     {
         for( BluetoothDevice dev: mListDevice )
         {
-            if( newDev.getAddress() == newDev.getAddress() )
+            if( dev.getAddress().toString().equals( newDev.getAddress().toString() ) )
             {
                 return true;
             }
@@ -113,14 +113,191 @@ public class SensorsManager {
         mnNumService = 0;
         mnNumCharact = 0;
         mnNumDesc = -1;
+
         mWaitingWrite = new ArrayDeque<Object>();
         mWaitingRead = new ArrayDeque<Object>();
+        mWaitingMutex = new Semaphore(1);
+
         mListDevice = new ArrayList<BluetoothDevice>();
+        maBluetoothGatt = new ArrayList<BluetoothGatt>();
     }
+    private void addWaitingWrite(BluetoothGatt gatt, Object o)
+    {
+        if( o == null )
+        {
+            Log.v("DBG", "SensorManager: addWaitingWrite: WRN: trying to add null object!");
+            return;
+        }
+
+        try
+        {
+            mWaitingMutex.acquire(1);
+        }
+        catch(Exception e)
+        {
+            Log.v("DBG", "ERR: SensorManager: mutex acquire unknown error! err: " + e.toString() );
+        }
+
+        try
+        {
+            mWaitingWrite.add(o);
+            if (mWaitingWrite.size() == 1) {
+                _updateWaitingWrite(gatt); // when no write are pending, let's activate the pump
+            }
+        }
+        finally
+        {
+            mWaitingMutex.release(1);
+        }
+    }
+
+    private void addWaitingRead(BluetoothGatt gatt, Object o)
+    {
+        if( o == null )
+        {
+            Log.v("DBG", "SensorManager: addWaitingRead: WRN: trying to add null object!");
+            return;
+        }
+
+        try
+        {
+            mWaitingMutex.acquire(1);
+        }
+        catch(Exception e)
+        {
+            Log.v("DBG", "ERR: SensorManager: mutex acquire unknown error! err: " + e.toString() );
+        }
+        try {
+            mWaitingRead.add(o);
+            if (mWaitingRead.size() == 1) {
+                _updateWaitingRead(gatt); // when no write are pending, let's activate the pump
+            }
+        }
+        finally
+        {
+            mWaitingMutex.release(1);
+        }
+    }
+
+    private void updateWaitingCalls(BluetoothGatt gatt)
+    {
+        updateWaitingWrite( gatt );
+        updateWaitingRead( gatt );
+    }
+
+    private void updateWaitingWrite(BluetoothGatt gatt)
+    {
+        try
+        {
+            mWaitingMutex.acquire(1);
+        }
+        catch(Exception e)
+        {
+            Log.v("DBG", "ERR: SensorManager: mutex acquire unknown error! err: " + e.toString() );
+        }
+        try
+        {
+            _updateWaitingWrite(gatt);
+        }
+        finally
+        {
+            mWaitingMutex.release(1);
+        }
+    }
+    private void updateWaitingRead(BluetoothGatt gatt)
+    {
+        try
+        {
+            mWaitingMutex.acquire(1);
+        }
+        catch(Exception e)
+        {
+            Log.v("DBG", "ERR: SensorManager: mutex acquire unknown error! err: " + e.toString() );
+        }
+        try
+        {
+            _updateWaitingRead(gatt);
+        }
+        finally
+        {
+            mWaitingMutex.release(1);
+        }
+    }
+
+    private void _updateWaitingWrite(BluetoothGatt gatt)
+    {
+        if (mWaitingWrite.size() == 0)
+        {
+            Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: empty queue?");
+            return;
+        }
+        Object o = mWaitingWrite.peek();
+        if( o == null ) {
+            Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: null object! (empty queue?)");
+            return;
+        }
+        boolean bSuccess = false;
+        if( o instanceof BluetoothGattCharacteristic )
+        {
+            Log.v("DBG", "SensorManager: updateWaitingWrite: writing charac");
+            bSuccess = gatt.writeCharacteristic((BluetoothGattCharacteristic)o);
+        }
+        if( o instanceof BluetoothGattDescriptor )
+        {
+            Log.v("DBG", "SensorManager: updateWaitingWrite: writing desc");
+            bSuccess = gatt.writeDescriptor((BluetoothGattDescriptor)o);
+        }
+        Log.v("DBG", "SensorManager: updateWaitingWrite: res: " + bSuccess );
+        if( bSuccess )
+        {
+            mWaitingWrite.poll(); // remove it !
+        }
+        else
+        {
+            Log.v("DBG", "SensorManager: updateWaitingWrite: false => retrying later..." );
+        }
+    }
+
+    private void _updateWaitingRead(BluetoothGatt gatt)
+    {
+        if (mWaitingRead.size() == 0)
+        {
+            Log.v("DBG", "SensorManager: updateWaitingRead: WRN: empty queue?");
+            return;
+        }
+        Object o = mWaitingRead.peek();
+        if( o == null ) {
+            Log.v("DBG", "SensorManager: updateWaitingRead: WRN: null object! (empty queue?)");
+            return;
+        }
+        boolean bSuccess = false;
+        if( o instanceof BluetoothGattCharacteristic )
+        {
+            Log.v("DBG", "SensorManager: updateWaitingRead: reading charac");
+            bSuccess = gatt.readCharacteristic((BluetoothGattCharacteristic)o);
+        }
+        if( o instanceof BluetoothGattDescriptor )
+        {
+            Log.v("DBG", "SensorManager: updateWaitingRead: reading desc");
+            bSuccess = gatt.readDescriptor((BluetoothGattDescriptor)o);
+        }
+        Log.v("DBG", "SensorManager: updateWaitingRead: res: " + bSuccess );
+        if( bSuccess )
+        {
+            mWaitingRead.poll(); // remove it !
+        }
+        else
+        {
+            Log.v("DBG", "SensorManager: updateWaitingRead: false => retrying later..." );
+        }
+    }
+
     public void discover()
     {
         Log.v("DBG", "discover");
+        closeAllGatt();
         mListDevice.clear();
+        mbConnected = false;
         mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
             @Override
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
@@ -215,167 +392,25 @@ public class SensorsManager {
     private void connect()
     {
         Log.v( "DBG", "SensorManager: connecting...");
-        ((Menu)Global.getCurrentActivity()).updateStatus( "connected: " +  mListDevice.size() );
+        ((Menu)Global.getCurrentActivity()).updateStatus( "connecting: " +  mListDevice.size() );
         mbConnected = true;
 
-        mbDiscovering = false;
-        mleGattCallback = new BluetoothGattCallback() {
+        for( BluetoothDevice device : mListDevice ) {
 
-            @Override
-            public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-                // this will get called anytime you perform a read or write characteristic operation
-                Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
-                Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
-                //read the characteristic data
-                byte[] data = characteristic.getValue();
-                Log.v("DBG", "SensorManager: onCharacteristicChanged: " + data );
-                logGattData(data);
-                if( characteristic.getUuid().toString().equals(mstrC_HR) ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
-                {
-                    int flag = characteristic.getProperties();
-                    int format = -1;
-                    if ((flag & 0x01) != 0) {
-                        format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                        Log.d("DBG", "Heart rate format UINT16.");
-                    } else {
-                        format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                        Log.d("DBG", "Heart rate format UINT8.");
-                    }
-                    try {
-                        final int heartRate = characteristic.getIntValue(format, 1);
-                        Log.d("DBG", String.format("Received heart rate: %d", heartRate));
-                        //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
-                        assert( Global.getCurrentActivity() instanceof Menu );
-                        ((Menu)Global.getCurrentActivity()).updateBpm( heartRate );
-                        //Global.getCurrentActivity().
-                    }
-                    catch (Exception e) {
-                        Log.v("DBG", "SensorManager: Exception: int Value?: " + e.toString() );
-                    }
-                }
-                else if( characteristic.getUuid().toString().equals(mstrC_Button) )
-                {
-                    int val = data[0];
-                    if( (val & 1) > 0 ) {
-                        Log.v("DBG", "SensorManager: onCharacteristicChanged: Button 1 (user) is pushed" );
-                    }
-                    if( (val & 2) > 0 ) {
-                        Log.v("DBG", "SensorManager: onCharacteristicChanged: Button 2 (power) is pushed" );
-                    }
-                    if( val == 0 ) {
-                        Log.v("DBG", "SensorManager: onCharacteristicChanged: no more button pushed" );
-                    }
+            Log.v( "DBG", "SensorManager: connecting to: " + device.getAddress() );
 
-                }
-                else if( characteristic.getUuid().toString().equals(mstrC_Temperature) )
-                {
-                    int objectTempRaw = (data[0] & 0xff) | (data[1] << 8);
-                    int ambientTempRaw = (data[2] & 0xff) | (data[3] << 8);
+            BluetoothGattCallback bluetoothGattCallback =  new BluetoothGattCallback() {
 
-                    float objectTempCelsius = objectTempRaw / 128f;
-                    float ambientTempCelsius = ambientTempRaw / 128f;
-
-                    // tested: validated as in official apps
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: temperature: obj: " + objectTempCelsius + ", ambi: " + ambientTempCelsius );
-
-                }
-                else if( characteristic.getUuid().toString().equals(mstrC_Acc) )
-                {
-                    int objectTempRaw = (data[0] & 0xff) | (data[1] << 8);
-                    int ambientTempRaw = (data[2] & 0xff) | (data[3] << 8);
-
-                    float objectTempCelsius = objectTempRaw / 128f;
-                    float ambientTempCelsius = ambientTempRaw / 128f;
-
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: temperature: obj: " + objectTempCelsius + ", ambi: " + ambientTempCelsius );
-                }
-                else if( characteristic.getUuid().toString().equals(mstrC_Mov) )
-                {
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: move data received" );
-                    int gyrX = (data[0] & 0xff) | (data[1] << 8);
-                    int gyrY = (data[2] & 0xff) | (data[3] << 8);
-                    int gyrZ = (data[4] & 0xff) | (data[5] << 8);
-
-                    //gyrX = (gyrX * 1.0) / (65536 / 500);
-
-                    int accX = (data[6] & 0xff) | (data[7] << 8);
-                    int accY = (data[8] & 0xff) | (data[9] << 8);
-                    int accZ = (data[10] & 0xff) | (data[11] << 8);
-
-                    int magX = (data[12] & 0xff) | (data[13] << 8);
-                    int magY = (data[14] & 0xff) | (data[15] << 8);
-                    int magZ = (data[16] & 0xff) | (data[17] << 8);
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ + ", mX: " + magX + ", mY: " + magY + ", mZ: " + magZ );
-
-                    //float rAngleZ = (accZ * 1.0f) / (32768/2);
-                    double rAngleZ = (accZ * 180) / 4121.; // 4200: empiric maximum // entre -4110 et 4133
-                    //rAngleZ = accZ;
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
-
-                    assert( Global.getCurrentActivity() instanceof Menu );
-                    ((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
-
-
-                }
-
-
-            }
-
-            @Override
-            public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status)
-            {
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-                    Log.v("DBG", "SensorManager: onDescriptorRead: char-uuid:" + descriptor.getUuid() );
+                @Override
+                public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
+                    // this will get called anytime you perform a read or write characteristic operation
+                    Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
+                    Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
                     //read the characteristic data
-                    final byte[] data = descriptor.getValue();
-                    Log.v("DBG", "SensorManager: onDescriptorRead: " + data );
-
-                    if (data != null && data.length > 0) {
-                        final StringBuilder stringBuilder = new StringBuilder(data.length);
-                        for(byte byteChar : data)
-                            stringBuilder.append(String.format("%02X ", byteChar));
-                        Log.v("DBG", "SensorManager: onDescriptorRead: " + new String(data) + " | " + stringBuilder.toString() );
-                    }
-                }
-            }
-            private void logGattData( byte[] data )
-            {
-                if (data != null && data.length > 0) {
-                    final StringBuilder stringBuilder = new StringBuilder(data.length);
-                    for (byte byteChar : data)
-                        stringBuilder.append(String.format("%02X ", byteChar));
-                    Log.v("DBG", "SensorManager: logGattData: " + new String(data) + " | " + stringBuilder.toString());
-                }
-                else
-                    Log.v("DBG", "SensorManager: logGattData: null (or empty)");
-            }
-
-            @Override
-            // Result of a characteristic read operation
-            public void onCharacteristicRead(BluetoothGatt gatt,
-                                             BluetoothGattCharacteristic characteristic,
-                                             int status) {
-                Log.v("DBG", "SensorManager: onCharacteristicRead");
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    // temp test: continuous read!
-                    onCharacteristicChanged(gatt, characteristic);
-                    updateWaitingCalls( gatt );
-                    //boolean resread = gatt.readCharacteristic( characteristic );
-                    //Log.v("DBG", "SensorManager: resread: " + resread);
-                    addWaitingRead( gatt, characteristic );
-                    return;
-                }
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-                    Log.v("DBG", "SensorManager: onCharacteristicRead: char-uuid:" + characteristic.getUuid());
-                    //read the characteristic data
-                    final byte[] data = characteristic.getValue();
-                    Log.v("DBG", "SensorManager: onCharacteristicRead: " + data);
-
-                    //static UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString( SampleGattAttributes.HEART_RATE_MEASUREMENT);
-
-                    if( true ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
+                    byte[] data = characteristic.getValue();
+                    Log.v("DBG", "SensorManager: onCharacteristicChanged: " + data );
+                    logGattData(data);
+                    if( characteristic.getUuid().toString().equals(mstrC_HR) ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
                     {
                         int flag = characteristic.getProperties();
                         int format = -1;
@@ -390,404 +425,448 @@ public class SensorsManager {
                             final int heartRate = characteristic.getIntValue(format, 1);
                             Log.d("DBG", String.format("Received heart rate: %d", heartRate));
                             //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+                            assert( Global.getCurrentActivity() instanceof Menu );
+                            ((Menu)Global.getCurrentActivity()).updateBpm( heartRate );
+                            //Global.getCurrentActivity().
                         }
                         catch (Exception e) {
-                            Log.v("DBG", "SensorManager: Exception: int Value?");
+                            Log.v("DBG", "SensorManager: Exception: int Value?: " + e.toString() );
                         }
                     }
-                    if( true )
+                    else if( characteristic.getUuid().toString().equals(mstrC_Button) )
                     {
-                        logGattData(data);
+                        int val = data[0];
+                        if( (val & 1) > 0 ) {
+                            Log.v("DBG", "SensorManager: onCharacteristicChanged: Button 1 (user) is pushed" );
+                        }
+                        if( (val & 2) > 0 ) {
+                            Log.v("DBG", "SensorManager: onCharacteristicChanged: Button 2 (power) is pushed" );
+                        }
+                        if( val == 0 ) {
+                            Log.v("DBG", "SensorManager: onCharacteristicChanged: no more button pushed" );
+                        }
+
+                    }
+                    else if( characteristic.getUuid().toString().equals(mstrC_Temperature) )
+                    {
+                        int objectTempRaw = (data[0] & 0xff) | (data[1] << 8);
+                        int ambientTempRaw = (data[2] & 0xff) | (data[3] << 8);
+
+                        float objectTempCelsius = objectTempRaw / 128f;
+                        float ambientTempCelsius = ambientTempRaw / 128f;
+
+                        // tested: validated as in official apps
+                        Log.v("DBG", "SensorManager: onCharacteristicChanged: temperature: obj: " + objectTempCelsius + ", ambi: " + ambientTempCelsius );
+
+                    }
+                    else if( characteristic.getUuid().toString().equals(mstrC_Acc) )
+                    {
+                        int objectTempRaw = (data[0] & 0xff) | (data[1] << 8);
+                        int ambientTempRaw = (data[2] & 0xff) | (data[3] << 8);
+
+                        float objectTempCelsius = objectTempRaw / 128f;
+                        float ambientTempCelsius = ambientTempRaw / 128f;
+
+                        Log.v("DBG", "SensorManager: onCharacteristicChanged: temperature: obj: " + objectTempCelsius + ", ambi: " + ambientTempCelsius );
+                    }
+                    else if( characteristic.getUuid().toString().equals(mstrC_Mov) )
+                    {
+                        Log.v("DBG", "SensorManager: onCharacteristicChanged: move data received" );
+                        int gyrX = (data[0] & 0xff) | (data[1] << 8);
+                        int gyrY = (data[2] & 0xff) | (data[3] << 8);
+                        int gyrZ = (data[4] & 0xff) | (data[5] << 8);
+
+                        //gyrX = (gyrX * 1.0) / (65536 / 500);
+
+                        int accX = (data[6] & 0xff) | (data[7] << 8);
+                        int accY = (data[8] & 0xff) | (data[9] << 8);
+                        int accZ = (data[10] & 0xff) | (data[11] << 8);
+
+                        int magX = (data[12] & 0xff) | (data[13] << 8);
+                        int magY = (data[14] & 0xff) | (data[15] << 8);
+                        int magZ = (data[16] & 0xff) | (data[17] << 8);
+                        Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ + ", mX: " + magX + ", mY: " + magY + ", mZ: " + magZ );
+
+                        //float rAngleZ = (accZ * 1.0f) / (32768/2);
+                        double rAngleZ = (accZ * 180) / 4121.; // 4200: empiric maximum // entre -4110 et 4133
+                        //rAngleZ = accZ;
+                        Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
+
+                        assert( Global.getCurrentActivity() instanceof Menu );
+                        ((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
+
+
+                    }
+
+
+                }
+
+                @Override
+                public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status)
+                {
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                        Log.v("DBG", "SensorManager: onDescriptorRead: char-uuid:" + descriptor.getUuid() );
+                        //read the characteristic data
+                        final byte[] data = descriptor.getValue();
+                        Log.v("DBG", "SensorManager: onDescriptorRead: " + data );
+
+                        if (data != null && data.length > 0) {
+                            final StringBuilder stringBuilder = new StringBuilder(data.length);
+                            for(byte byteChar : data)
+                                stringBuilder.append(String.format("%02X ", byteChar));
+                            Log.v("DBG", "SensorManager: onDescriptorRead: " + new String(data) + " | " + stringBuilder.toString() );
+                        }
                     }
                 }
-            }
-
-            private void addWaitingWrite(BluetoothGatt gatt, Object o)
-            {
-                if( o == null )
+                private void logGattData( byte[] data )
                 {
-                    Log.v("DBG", "SensorManager: addWaitingWrite: WRN: trying to add null object!");
-                    return;
+                    if (data != null && data.length > 0) {
+                        final StringBuilder stringBuilder = new StringBuilder(data.length);
+                        for (byte byteChar : data)
+                            stringBuilder.append(String.format("%02X ", byteChar));
+                        Log.v("DBG", "SensorManager: logGattData: " + new String(data) + " | " + stringBuilder.toString());
+                    }
+                    else
+                        Log.v("DBG", "SensorManager: logGattData: null (or empty)");
                 }
 
-                mWaitingWrite.add(o);
-                if(mWaitingWrite.size() == 1) {
-                    updateWaitingWrite(gatt); // when no write are pending, let's activate the pump
-                }
-            }
+                @Override
+                // Result of a characteristic read operation
+                public void onCharacteristicRead(BluetoothGatt gatt,
+                                                 BluetoothGattCharacteristic characteristic,
+                                                 int status) {
+                    Log.v("DBG", "SensorManager: onCharacteristicRead");
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        // temp test: continuous read!
+                        onCharacteristicChanged(gatt, characteristic);
+                        updateWaitingCalls( gatt );
+                        //boolean resread = gatt.readCharacteristic( characteristic );
+                        //Log.v("DBG", "SensorManager: resread: " + resread);
+                        addWaitingRead( gatt, characteristic );
+                        return;
+                    }
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                        Log.v("DBG", "SensorManager: onCharacteristicRead: char-uuid:" + characteristic.getUuid());
+                        //read the characteristic data
+                        final byte[] data = characteristic.getValue();
+                        Log.v("DBG", "SensorManager: onCharacteristicRead: " + data);
 
-            private void addWaitingRead(BluetoothGatt gatt, Object o)
-            {
-                if( o == null )
+                        //static UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString( SampleGattAttributes.HEART_RATE_MEASUREMENT);
+
+                        if( true ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
+                        {
+                            int flag = characteristic.getProperties();
+                            int format = -1;
+                            if ((flag & 0x01) != 0) {
+                                format = BluetoothGattCharacteristic.FORMAT_UINT16;
+                                Log.d("DBG", "Heart rate format UINT16.");
+                            } else {
+                                format = BluetoothGattCharacteristic.FORMAT_UINT8;
+                                Log.d("DBG", "Heart rate format UINT8.");
+                            }
+                            try {
+                                final int heartRate = characteristic.getIntValue(format, 1);
+                                Log.d("DBG", String.format("Received heart rate: %d", heartRate));
+                                //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+                            }
+                            catch (Exception e) {
+                                Log.v("DBG", "SensorManager: Exception: int Value?");
+                            }
+                        }
+                        if( true )
+                        {
+                            logGattData(data);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCharacteristicWrite(BluetoothGatt gatt,
+                                            BluetoothGattCharacteristic characteristic,
+                                            int status)
                 {
-                    Log.v("DBG", "SensorManager: addWaitingRead: WRN: trying to add null object!");
-                    return;
+                    Log.v("DBG", "SensorManager: onCharacteristicWrite");
+                    updateWaitingCalls( gatt );
                 }
 
-                mWaitingRead.add(o);
-                if(mWaitingRead.size() == 1) {
-                    updateWaitingRead(gatt); // when no write are pending, let's activate the pump
-                }
-            }
+                @Override
+                public void onDescriptorWrite(BluetoothGatt gatt,
+                                                  BluetoothGattDescriptor descriptor,
+                                                  int status)
+                {
+                    Log.v("DBG", "SensorManager: onDescriptorWrite");
+                    /*
+                    if( mCharacToWrite != null ) {
+                        boolean reswwc = gatt.writeCharacteristic(mCharacToWrite);
+                        Log.v("DBG", "SensorManager: onCharacteristicWrite: write chararc: rescw: " + reswwc);
+                        mCharacToWrite = null;
 
-            private void updateWaitingCalls(BluetoothGatt gatt)
-            {
-                updateWaitingWrite( gatt );
-                updateWaitingRead( gatt );
-            }
-
-            private void updateWaitingWrite(BluetoothGatt gatt)
-            {
-                if (mWaitingWrite.size() == 0)
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: empty queue?");
-                    return;
-                }
-                Object o = mWaitingWrite.peek();
-                if( o == null ) {
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: null object! (empty queue?)");
-                    return;
-                }
-                boolean bSuccess = false;
-                if( o instanceof BluetoothGattCharacteristic )
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: writing charac");
-                    bSuccess = gatt.writeCharacteristic((BluetoothGattCharacteristic)o);
-                }
-                if( o instanceof BluetoothGattDescriptor )
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: writing desc");
-                    bSuccess = gatt.writeDescriptor((BluetoothGattDescriptor)o);
-                }
-                Log.v("DBG", "SensorManager: updateWaitingWrite: res: " + bSuccess );
-                if( bSuccess )
-                {
-                    mWaitingWrite.poll(); // remove it !
-                }
-                else
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingWrite: false => retrying later..." );
-                }
-            }
-
-            private void updateWaitingRead(BluetoothGatt gatt)
-            {
-                if (mWaitingRead.size() == 0)
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingRead: WRN: empty queue?");
-                    return;
-                }
-                Object o = mWaitingRead.peek();
-                if( o == null ) {
-                    Log.v("DBG", "SensorManager: updateWaitingRead: WRN: null object! (empty queue?)");
-                    return;
-                }
-                boolean bSuccess = false;
-                if( o instanceof BluetoothGattCharacteristic )
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingRead: reading charac");
-                    bSuccess = gatt.readCharacteristic((BluetoothGattCharacteristic)o);
-                }
-                if( o instanceof BluetoothGattDescriptor )
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingRead: reading desc");
-                    bSuccess = gatt.readDescriptor((BluetoothGattDescriptor)o);
-                }
-                Log.v("DBG", "SensorManager: updateWaitingRead: res: " + bSuccess );
-                if( bSuccess )
-                {
-                    mWaitingRead.poll(); // remove it !
-                }
-                else
-                {
-                    Log.v("DBG", "SensorManager: updateWaitingRead: false => retrying later..." );
-                }
-            }
-
-
-            @Override
-            public void onCharacteristicWrite(BluetoothGatt gatt,
-                                        BluetoothGattCharacteristic characteristic,
-                                        int status)
-            {
-                Log.v("DBG", "SensorManager: onCharacteristicWrite");
-                updateWaitingCalls( gatt );
-            }
-
-            @Override
-            public void onDescriptorWrite(BluetoothGatt gatt,
-                                              BluetoothGattDescriptor descriptor,
-                                              int status)
-            {
-                Log.v("DBG", "SensorManager: onDescriptorWrite");
-                /*
-                if( mCharacToWrite != null ) {
-                    boolean reswwc = gatt.writeCharacteristic(mCharacToWrite);
-                    Log.v("DBG", "SensorManager: onCharacteristicWrite: write chararc: rescw: " + reswwc);
-                    mCharacToWrite = null;
+                    }
+                    */
+                    updateWaitingCalls( gatt );
 
                 }
-                */
-                updateWaitingCalls( gatt );
 
-            }
-
-            @Override
-            public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
-                // this will get called when a device connects or disconnects
-                Log.v("DBG", "SensorManager: onConnectionStateChange");
-                if( newState == BluetoothProfile.STATE_CONNECTED ) {
-                    Log.v("DBG", "SensorManager: onConnectionStateChange: newState: connected");
-                    if( ! mbDiscovering && ! mbDiscovered ) {
-                        mbDiscovering = true;
-                        mbDiscovered = false;
+                @Override
+                public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
+                    // this will get called when a device connects or disconnects
+                    Log.v("DBG", "SensorManager: onConnectionStateChange: " + gatt.getDevice().getAddress() );
+                    if( newState == BluetoothProfile.STATE_CONNECTED )
+                    {
+                        Log.v("DBG", "SensorManager: onConnectionStateChange: newState: connected");
                         Log.v("DBG", "SensorManager: onConnectionStateChange: discovering");
                         gatt.discoverServices();
                     }
+                    else {
+                        Log.v("DBG", "SensorManager: onConnectionStateChange: newState: " + newState);
+                        ((Menu)Global.getCurrentActivity()).updateStatus("lost...");
+                    }
+
+
                 }
-                else {
-                    Log.v("DBG", "SensorManager: onConnectionStateChange: newState: " + newState);
-                    ((Menu)Global.getCurrentActivity()).updateStatus( "lost...");
-                }
 
+                @Override
+                public void onServicesDiscovered(final BluetoothGatt gatt, final int status)
+                {
+                    // this will get called after the client initiates a BluetoothGatt.discoverServices() call
 
-            }
+                    Log.v("DBG", "SensorManager: onServicesDiscovered: " + gatt.getDevice().getAddress() );
 
-            @Override
-            public void onServicesDiscovered(final BluetoothGatt gatt, final int status)
-            {
-                // this will get called after the client initiates a BluetoothGatt.discoverServices() call
-
-                Log.v("DBG", "SensorManager: onServicesDiscovered");
-
-                ((Menu)Global.getCurrentActivity()).updateStatus( "running: " + mListDevice.size() );
-
-                if( ! mbDiscovered ) {
-                    mbDiscovered = true;
-
-                    if( false ) {
-                        List<BluetoothGattService> services = gatt.getServices();
-                        for (BluetoothGattService service : services) {
-                            // heartService = bluetoothGatt.getService(DeviceConstants.HEART_RATE_SERVICE);
-                            // heartCharact = heartService.getCharacteristic(DeviceConstants.HEART_RATE_MEASUREMENT);
-                            if (service.getUuid().toString().indexOf("0000180d") == 0) {
-                                // Heart Rate Service
-                                List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
-                                for (BluetoothGattCharacteristic characteristic : characteristics) {
-                                    if (characteristic.getUuid().toString().indexOf("00002a37") == 0) {
-                                        // Heart Rate Measurement
-                                        gatt.setCharacteristicNotification(characteristic, true);
-                                        //characteristic.setValue( BluetoothGattCharacteristic.PROPERTY_NOTIFY, true);
-                                        characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
-
-//                                    descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                                        boolean resw = gatt.writeCharacteristic(characteristic);
-                                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res: " + resw);
-
-                                    }
-                                }
-                            }
-                        } // for services
-                    }
-
-                    if( false )
-                    {
-//                        BluetoothManager mBluetoothManager = mManager;
-//                        BluetoothAdapter mBluetoothAdapter = mBluetoothManager.getAdapter();
-//                        BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice(....);
-                        BluetoothGatt mBG = mListDevice.get(0).connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
-
-                        BluetoothGattService service = mBG.getService(UUID.fromString(mstrS_HR));
-                        // service is null here
-                        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_HR));
-                        characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
-                        boolean resw = mBG.writeCharacteristic(characteristic);
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
-                    }
-                    if( ! isConnectedToSensorTag(gatt) )
-                    {
-                        BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_HR));
-
-                        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_HR));
-/*
-                        boolean rescc = mBluetoothGatt.setCharacteristicNotification(characteristic, true);
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write rescc: " + rescc); // always false
-                        characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
-                        boolean resw = mBluetoothGatt.writeCharacteristic(characteristic);
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res4: " + resw); // always false
-                        boolean resc = mBluetoothGatt.readCharacteristic(characteristic);
-                        Log.v("DBG", "SensorManager: resc: " + resc);
-*/
-                        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
-                        descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-//                         descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                        boolean resdes = mBluetoothGatt.writeDescriptor(descriptor);
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes );
-                    }
-
-                    if( isConnectedToSensorTag(gatt) ) {
-                        if( false ) {
-                            // buttons
-                            BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Button));
-                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Button));
-                            gatt.setCharacteristicNotification(characteristic, true);
-                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
-                            descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            //boolean resdes = mBluetoothGatt.writeDescriptor(descriptor);
-                            //Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes);
-                            addWaitingWrite(gatt, descriptor);
-                        }
-                        if( false ) {
-                            // humidity
-                            BluetoothGattService service = gatt.getService(UUID.fromString("f000aa20-0451-4000-b000-000000000000"));
-                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("f000aa21-0451-4000-b000-000000000000"));
-                            gatt.setCharacteristicNotification(characteristic, true);
-                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            addWaitingWrite(gatt, descriptor);
-
-                            characteristic = service.getCharacteristic(UUID.fromString("f000aa22-0451-4000-b000-000000000000")); // enable
-                            characteristic.setValue(new byte[]{(byte) 0x01});
-                            addWaitingWrite(gatt, characteristic);
-                        }
-                        if( false ) {
-                            // IR-temperature (temperature at pointed object) & ambi
-                            BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Temperature));
-                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Temperature));
-                            if(false)
-                            {
-                                // temps test: manual read, ici ca ne fonctionne pas, car le capteur n'est pas activé
-                                addWaitingRead(gatt, characteristic);
-                                return;
-                            }
-                            gatt.setCharacteristicNotification(characteristic, true);
-                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            addWaitingWrite(gatt, descriptor);
-
-                            characteristic = service.getCharacteristic(UUID.fromString("f000aa02-0451-4000-b000-000000000000")); // enable
-                            characteristic.setValue(new byte[]{(byte) 0x01});
-                            addWaitingWrite(gatt, characteristic);
-                            if(true)
-                            {
-                                // temps test: manual read. ici ca fonctionne car le capteur est activé
-                                characteristic = service.getCharacteristic(UUID.fromString(mstrC_Temperature));
-                                addWaitingRead(gatt, characteristic);
-                                return;
-                            }
-                        }
-                        if( false ) {
-                            // accelero: gives inclination when static (not present in this sensortag?)
-                            BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Acc));
-                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Acc));
-                            gatt.setCharacteristicNotification(characteristic, true);
-                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            addWaitingWrite(gatt, descriptor);
-
-                            characteristic = service.getCharacteristic(UUID.fromString("f000aa12-0451-4000-b000-000000000000")); // enable
-                            characteristic.setValue(new byte[]{(byte) 0x01});
-                            addWaitingWrite(gatt, characteristic);
-                        }
-                        if( true ) {
-                            // move: acc et gyro in one sensors
-                            BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Mov));
-                            if( service == null )
-                            {
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: service is null !!!" );
-                            }
-                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
-                            gatt.setCharacteristicNotification(characteristic, true);
-
-                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            //descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                            addWaitingWrite(gatt, descriptor);
-
-                            characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
-                            characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00});
-                            addWaitingWrite(gatt, characteristic);
-
-                            if( true )
-                            {
-                                // change refresh time
-                                characteristic = service.getCharacteristic(UUID.fromString("f000aa83-0451-4000-b000-000000000000"));
-                                //characteristic.setValue(new byte[]{(byte) 0x0A}); // multiple of 10ms, 10 => 100ms 0x64 => 1s
-                                characteristic.setValue(new byte[]{(byte) 0x0A}); //
-                                addWaitingWrite(gatt, characteristic);
-                            }
-
-                            if( false )
-                            {
-                                // manual read
-                                characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
-                                addWaitingRead(gatt, characteristic);
-                            }
-                        }
-
-                    }
+                    ((Menu)Global.getCurrentActivity()).updateStatus( "running: " + mListDevice.size() );
 
                     if( true ) {
-                        return;
-                    }
-                    // explore
+                        //mbDiscovered = true;
 
-                    List<BluetoothGattService> services = gatt.getServices();
-                    for (BluetoothGattService service : services) {
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: ---\n" );
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: service: " + service);
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: service-uuid: " + service.getUuid());
+                        if( false ) {
+                            List<BluetoothGattService> services = gatt.getServices();
+                            for (BluetoothGattService service : services) {
+                                // heartService = bluetoothGatt.getService(DeviceConstants.HEART_RATE_SERVICE);
+                                // heartCharact = heartService.getCharacteristic(DeviceConstants.HEART_RATE_MEASUREMENT);
+                                if (service.getUuid().toString().indexOf("0000180d") == 0) {
+                                    // Heart Rate Service
+                                    List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                                    for (BluetoothGattCharacteristic characteristic : characteristics) {
+                                        if (characteristic.getUuid().toString().indexOf("00002a37") == 0) {
+                                            // Heart Rate Measurement
+                                            gatt.setCharacteristicNotification(characteristic, true);
+                                            //characteristic.setValue( BluetoothGattCharacteristic.PROPERTY_NOTIFY, true);
+                                            characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
 
+    //                                    descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                                            boolean resw = gatt.writeCharacteristic(characteristic);
+                                            Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res: " + resw);
 
-                        List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
-                        Log.v("DBG", "SensorManager: onServicesDiscovered: service-characteristics: " + characteristics);
+                                        }
+                                    }
+                                }
+                            } // for services
+                        }
 
-                        for (BluetoothGattCharacteristic characteristic : characteristics )
+                        if( false )
                         {
-                            Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-uuid: " + characteristic.getUuid());
-                            Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-val: " + characteristic.getValue());
-                            logGattData( characteristic.getValue() );
-                            //Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-fval: " + characteristic.getFloatValue(0,0) );
-                            int prop = characteristic.getProperties();
-                            Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: " + prop );
-                            if( prop == BluetoothGattCharacteristic.PROPERTY_NOTIFY ) Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: only notify !!!" );
-                            if( ( prop & BluetoothGattCharacteristic.PROPERTY_READ) > 0 ) Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: has read" );
-                            if( ( prop & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0 ) Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: has write" );
-                            Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-perm: " + characteristic.getPermissions());
-                            boolean res = gatt.readCharacteristic(characteristic);
-                            Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-read: res: " + res);
+    //                        BluetoothManager mBluetoothManager = mManager;
+    //                        BluetoothAdapter mBluetoothAdapter = mBluetoothManager.getAdapter();
+    //                        BluetoothDevice mDevice = mBluetoothAdapter.getRemoteDevice(....);
+                            /*
+                            BluetoothGatt mBG = mListDevice.get(0).connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
 
+                            BluetoothGattService service = mBG.getService(UUID.fromString(mstrS_HR));
+                            // service is null here
+                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_HR));
+                            characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                            boolean resw = mBG.writeCharacteristic(characteristic);
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res2: " + resw);
+                            */
+                        }
+                        if( ! isConnectedToSensorTag(gatt) )
+                        {
+                            BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_HR));
 
-                            for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: " + descriptor);
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc-uuid: " + descriptor.getUuid());
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc-val: " + descriptor.getValue());
-                                boolean resd = gatt.readDescriptor(descriptor);
-                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc-read: res: " + resd);
-                                if( descriptor.getUuid().toString().indexOf("00002901" ) == 0 )
+                            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_HR));
+    /*
+                            boolean rescc = mBluetoothGatt.setCharacteristicNotification(characteristic, true);
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write rescc: " + rescc); // always false
+                            characteristic.setValue(1, BluetoothGattCharacteristic.PROPERTY_NOTIFY, 0);
+                            boolean resw = mBluetoothGatt.writeCharacteristic(characteristic);
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: charac heart rate write res4: " + resw); // always false
+                            boolean resc = mBluetoothGatt.readCharacteristic(characteristic);
+                            Log.v("DBG", "SensorManager: resc: " + resc);
+    */
+                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
+                            descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    //                         descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                            boolean resdes = gatt.writeDescriptor(descriptor);
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes );
+                        }
+
+                        if( isConnectedToSensorTag(gatt) ) {
+                            if( false ) {
+                                // buttons
+                                BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Button));
+                                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Button));
+                                gatt.setCharacteristicNotification(characteristic, true);
+                                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
+                                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                //boolean resdes = mBluetoothGatt.writeDescriptor(descriptor);
+                                //Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write resdes: " + resdes);
+                                addWaitingWrite(gatt, descriptor);
+                            }
+                            if( false ) {
+                                // humidity
+                                BluetoothGattService service = gatt.getService(UUID.fromString("f000aa20-0451-4000-b000-000000000000"));
+                                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("f000aa21-0451-4000-b000-000000000000"));
+                                gatt.setCharacteristicNotification(characteristic, true);
+                                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
+                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                addWaitingWrite(gatt, descriptor);
+
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa22-0451-4000-b000-000000000000")); // enable
+                                characteristic.setValue(new byte[]{(byte) 0x01});
+                                addWaitingWrite(gatt, characteristic);
+                            }
+                            if( false ) {
+                                // IR-temperature (temperature at pointed object) & ambi
+                                BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Temperature));
+                                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Temperature));
+                                if(false)
                                 {
-                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: is 901" );
-                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: val: " + descriptor.getValue() );
+                                    // temps test: manual read, ici ca ne fonctionne pas, car le capteur n'est pas activé
+                                    addWaitingRead(gatt, characteristic);
+                                    return;
+                                }
+                                gatt.setCharacteristicNotification(characteristic, true);
+                                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
+                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                addWaitingWrite(gatt, descriptor);
+
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa02-0451-4000-b000-000000000000")); // enable
+                                characteristic.setValue(new byte[]{(byte) 0x01});
+                                addWaitingWrite(gatt, characteristic);
+                                if(true)
+                                {
+                                    // temps test: manual read. ici ca fonctionne car le capteur est activé
+                                    characteristic = service.getCharacteristic(UUID.fromString(mstrC_Temperature));
+                                    addWaitingRead(gatt, characteristic);
+                                    return;
+                                }
+                            }
+                            if( false ) {
+                                // accelero: gives inclination when static (not present in this sensortag?)
+                                BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Acc));
+                                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Acc));
+                                gatt.setCharacteristicNotification(characteristic, true);
+                                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
+                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                addWaitingWrite(gatt, descriptor);
+
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa12-0451-4000-b000-000000000000")); // enable
+                                characteristic.setValue(new byte[]{(byte) 0x01});
+                                addWaitingWrite(gatt, characteristic);
+                            }
+                            if( true ) {
+                                // move: acc et gyro in one sensors
+                                BluetoothGattService service = gatt.getService(UUID.fromString(mstrS_Mov));
+                                if( service == null )
+                                {
+                                    Log.v("DBG", "SensorManager: onServicesDiscovered: service is null !!!" );
+                                }
+                                BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
+                                gatt.setCharacteristicNotification(characteristic, true);
+
+                                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(mstrD_Config));
+                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                //descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                                addWaitingWrite(gatt, descriptor);
+
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
+                                characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00});
+                                addWaitingWrite(gatt, characteristic);
+
+                                if( true )
+                                {
+                                    // change refresh time
+                                    characteristic = service.getCharacteristic(UUID.fromString("f000aa83-0451-4000-b000-000000000000"));
+                                    //characteristic.setValue(new byte[]{(byte) 0x0A}); // multiple of 10ms, 10 => 100ms 0x64 => 1s
+                                    characteristic.setValue(new byte[]{(byte) 0x0A}); //
+                                    addWaitingWrite(gatt, characteristic);
                                 }
 
-                                if( descriptor.getUuid().toString().indexOf("00002902" ) == 0 )
+                                if( false )
                                 {
-                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: is 902" );
-                                    mBluetoothGatt.setCharacteristicNotification(characteristic, true);
-                                    descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                                    descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                                    boolean resw = gatt.writeDescriptor(descriptor);
-                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write res: " + resw );
+                                    // manual read
+                                    characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
+                                    addWaitingRead(gatt, characteristic);
                                 }
+                            }
 
+                        }
+
+                        if( true ) {
+                            return;
+                        }
+                        // explore
+
+                        List<BluetoothGattService> services = gatt.getServices();
+                        for (BluetoothGattService service : services) {
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: ---\n" );
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: service: " + service);
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: service-uuid: " + service.getUuid());
+
+
+                            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                            Log.v("DBG", "SensorManager: onServicesDiscovered: service-characteristics: " + characteristics);
+
+                            for (BluetoothGattCharacteristic characteristic : characteristics )
+                            {
+                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-uuid: " + characteristic.getUuid());
+                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-val: " + characteristic.getValue());
+                                logGattData( characteristic.getValue() );
+                                //Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-fval: " + characteristic.getFloatValue(0,0) );
+                                int prop = characteristic.getProperties();
+                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: " + prop );
+                                if( prop == BluetoothGattCharacteristic.PROPERTY_NOTIFY ) Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: only notify !!!" );
+                                if( ( prop & BluetoothGattCharacteristic.PROPERTY_READ) > 0 ) Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: has read" );
+                                if( ( prop & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0 ) Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-prop: has write" );
+                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-perm: " + characteristic.getPermissions());
+                                boolean res = gatt.readCharacteristic(characteristic);
+                                Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-read: res: " + res);
+
+
+                                for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: " + descriptor);
+                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc-uuid: " + descriptor.getUuid());
+                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc-val: " + descriptor.getValue());
+                                    boolean resd = gatt.readDescriptor(descriptor);
+                                    Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc-read: res: " + resd);
+                                    if( descriptor.getUuid().toString().indexOf("00002901" ) == 0 )
+                                    {
+                                        Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: is 901" );
+                                        Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: val: " + descriptor.getValue() );
+                                    }
+
+                                    if( descriptor.getUuid().toString().indexOf("00002902" ) == 0 )
+                                    {
+                                        Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: is 902" );
+                                        gatt.setCharacteristicNotification(characteristic, true);
+                                        descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                        descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                                        boolean resw = gatt.writeDescriptor(descriptor);
+                                        Log.v("DBG", "SensorManager: onServicesDiscovered: services-characteristic-desc: write res: " + resw );
+                                    }
+
+                                }
                             }
                         }
                     }
                 }
-            }
-        };
-        for( BluetoothDevice device : mListDevice ) {
-            BluetoothGatt bluetoothGatt = device.connectGatt(Global.getCurrentActivity(), false, mleGattCallback);
+            };
+            //mleGattCallback = bluetoothGattCallback;
+            //maLeGattCallback.add(
+
+            BluetoothGatt bluetoothGatt = device.connectGatt(Global.getCurrentActivity(), false, bluetoothGattCallback );
+            maBluetoothGatt.add( bluetoothGatt );
             mbNotifyAsked = false;
             if (false) {
                 BluetoothGattService service = bluetoothGatt.getService(UUID.fromString(mstrS_HR));
@@ -822,6 +901,7 @@ public class SensorsManager {
              }
              else
              {
+/*
                  // do we have something to do ?
                  Log.v("DBG", "SensorManager: updating..." );
                  //Log.v("DBG", "SensorManager: updating: state: " + mManager.getConnectionState(mDevice.getType()) );
@@ -877,12 +957,12 @@ public class SensorsManager {
                              List<BluetoothGattDescriptor> descriptors = characteristics.get(mnNumCharact).getDescriptors();
                              Log.v("DBG", "SensorManager: up: " + mnNumService + " / " + services.size() + " - " + mnNumCharact + " / " + characteristics.size() + " - " + mnNumDesc + " / " + descriptors.size());
 
-                             /*
-                             if( mnNumCharact < characteristics.size() ) {
-                                 boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
-                                 Log.v("DBG", "SensorManager: resb: " + resb);
-                             }
-                             */
+
+                             //if( mnNumCharact < characteristics.size() ) {
+                             //    boolean resb = mBluetoothGatt.readCharacteristic(characteristics.get(mnNumCharact));
+                             //    Log.v("DBG", "SensorManager: resb: " + resb);
+                             //}
+
                              if( mnNumDesc == -1 )
                              {
                                  // read charact
@@ -919,18 +999,25 @@ public class SensorsManager {
                          }
                      }
                  }
+
+*/
              }
         }
         return 1;
+    }
+
+    private void closeAllGatt()
+    {
+        for( BluetoothGatt gatt: maBluetoothGatt ) {
+            gatt.close();
+        }
+        maBluetoothGatt.clear();
     }
 
     public void exit()
     {
         Log.v("DBG", "SensorManager: exiting..." );
         mAdapter.stopLeScan(mLeScanCallback);
-        if( mBluetoothGatt != null ) {
-            mBluetoothGatt.close();
-            mBluetoothGatt = null;
-        }
+        closeAllGatt();
     }
 }

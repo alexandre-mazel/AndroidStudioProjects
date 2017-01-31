@@ -111,7 +111,7 @@ public class Menu extends Activity {
         maAngleAverage = new Averager[mnNbrAngle];
         for( int i = 0; i < mnNbrAngle; ++i) {
             Log.v("DBG", "i: " + i );
-            maAngleAverage[i] = new Averager<Double>(40);
+            maAngleAverage[i] = new Averager<Double>(10);
         }
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
@@ -394,7 +394,7 @@ public class Menu extends Activity {
         //mTxtBpm.setText(String.valueOf(nBpm));
         //mrAngle = rAngle; // to be refreshed later
         rAngle -= 17.9; // results: 161.6 / 162.0 / 162.3 / 160.2 / 158.6 / 153.8 / 168.1 / 168.4 / 168.0 / 166.5 / 167.3 / 165.6 / 167.0 / 167.0 / 165.1 / 167.
-        int nCurrentIdx = 0;
+        int nCurrentIdx = Global.getSensorIdx(strDeviceName);
         maAngleAverage[nCurrentIdx].addValue(rAngle);
         marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
     }

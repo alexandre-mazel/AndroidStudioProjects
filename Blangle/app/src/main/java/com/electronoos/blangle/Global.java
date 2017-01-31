@@ -2,6 +2,8 @@ package com.electronoos.blangle;
 
 import android.app.Activity;
 import android.util.Log;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
  * Created by a on 08/10/16.
@@ -26,4 +28,20 @@ public class Global {
         Log.v( "DBG", "set current SensorsManager: " + currentSensorsManager );
         gmCurrentSensorsManager = currentSensorsManager;
     }
+
+    private static Hashtable<String,Integer> gmSensorTable = null; // a way to associate a sensor string to an idx
+    public static int getSensorIdx( String address ){
+        if( gmSensorTable == null )
+        {
+            gmSensorTable = new Hashtable<String, Integer>();
+        }
+        if( ! gmSensorTable.containsKey(address) )
+        {
+            gmSensorTable.put(address, gmSensorTable.size() );
+        }
+        int nIdx = gmSensorTable.get(address);
+        Log.v( "DBG", "getSensorIdx: " + address + " => " + nIdx );
+        return nIdx;
+    }
+
 }
