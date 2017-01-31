@@ -114,7 +114,7 @@ public class Menu extends Activity {
         maAngleAverage = new Averager[mnNbrAngle];
         for( int i = 0; i < mnNbrAngle; ++i) {
             Log.v("DBG", "i: " + i );
-            maAngleAverage[i] = new Averager<Double>(10);
+            maAngleAverage[i] = new Averager<Double>(30);
         }
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
@@ -336,11 +336,11 @@ public class Menu extends Activity {
     }
 
     private void refreshBLE() {
-        Log.v("DBG", "refreshBLE");
+        //Log.v("DBG", "refreshBLE");
         if( mSensorsManager != null )
             mSensorsManager.update();
         postRefreshBLE( 1000 );
-        Log.v("DBG", "refreshBLE - end");
+        //Log.v("DBG", "refreshBLE - end");
     }
 
     private void postRefreshBLE(int interval)

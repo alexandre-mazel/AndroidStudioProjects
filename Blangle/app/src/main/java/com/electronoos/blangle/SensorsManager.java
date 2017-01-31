@@ -13,6 +13,7 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.electronoos.blangle.util.GetUserInput;
@@ -83,8 +84,8 @@ public class SensorsManager {
     private int mnNumCharact;
     private int mnNumDesc;
 
-    private Queue<Object> mWaitingWrite;
-    private Queue<Object> mWaitingRead;
+    private Queue<Pair<BluetoothGatt,Object>> mWaitingWrite;
+    private Queue<Pair<BluetoothGatt,Object>> mWaitingRead;
     private Semaphore mWaitingMutex; // I want a mutex non-reentrant (even if current thread has locked it, I want to be sure, it's locked)
 
 
@@ -114,8 +115,8 @@ public class SensorsManager {
         mnNumCharact = 0;
         mnNumDesc = -1;
 
-        mWaitingWrite = new ArrayDeque<Object>();
-        mWaitingRead = new ArrayDeque<Object>();
+        mWaitingWrite = new ArrayDeque<Pair<BluetoothGatt,Object>>();
+        mWaitingRead = new ArrayDeque<Pair<BluetoothGatt,Object>>();
         mWaitingMutex = new Semaphore(1);
 
         mListDevice = new ArrayList<BluetoothDevice>();
@@ -140,9 +141,9 @@ public class SensorsManager {
 
         try
         {
-            mWaitingWrite.add(o);
+            mWaitingWrite.add( Pair.create(gatt,o) );
             if (mWaitingWrite.size() == 1) {
-                _updateWaitingWrite(gatt); // when no write are pending, let's activate the pump
+                _updateWaitingWrite(); // when no write are pending, let's activate the pump
             }
         }
         finally
@@ -168,9 +169,9 @@ public class SensorsManager {
             Log.v("DBG", "ERR: SensorManager: mutex acquire unknown error! err: " + e.toString() );
         }
         try {
-            mWaitingRead.add(o);
+            mWaitingRead.add( Pair.create(gatt,o) );
             if (mWaitingRead.size() == 1) {
-                _updateWaitingRead(gatt); // when no write are pending, let's activate the pump
+                _updateWaitingRead(); // when no write are pending, let's activate the pump
             }
         }
         finally
@@ -179,13 +180,13 @@ public class SensorsManager {
         }
     }
 
-    private void updateWaitingCalls(BluetoothGatt gatt)
+    private void updateWaitingCalls()
     {
-        updateWaitingWrite( gatt );
-        updateWaitingRead( gatt );
+        updateWaitingWrite();
+        updateWaitingRead();
     }
 
-    private void updateWaitingWrite(BluetoothGatt gatt)
+    private void updateWaitingWrite()
     {
         try
         {
@@ -197,14 +198,14 @@ public class SensorsManager {
         }
         try
         {
-            _updateWaitingWrite(gatt);
+            _updateWaitingWrite();
         }
         finally
         {
             mWaitingMutex.release(1);
         }
     }
-    private void updateWaitingRead(BluetoothGatt gatt)
+    private void updateWaitingRead()
     {
         try
         {
@@ -216,7 +217,7 @@ public class SensorsManager {
         }
         try
         {
-            _updateWaitingRead(gatt);
+            _updateWaitingRead();
         }
         finally
         {
@@ -224,18 +225,20 @@ public class SensorsManager {
         }
     }
 
-    private void _updateWaitingWrite(BluetoothGatt gatt)
+    private void _updateWaitingWrite()
     {
         if (mWaitingWrite.size() == 0)
         {
             Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: empty queue?");
             return;
         }
-        Object o = mWaitingWrite.peek();
-        if( o == null ) {
+        Pair<BluetoothGatt,Object> p = mWaitingWrite.peek();
+        if( p == null ) {
             Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: null object! (empty queue?)");
             return;
         }
+        BluetoothGatt gatt = p.first;
+        Object o = p.second;
         boolean bSuccess = false;
         if( o instanceof BluetoothGattCharacteristic )
         {
@@ -258,18 +261,20 @@ public class SensorsManager {
         }
     }
 
-    private void _updateWaitingRead(BluetoothGatt gatt)
+    private void _updateWaitingRead()
     {
         if (mWaitingRead.size() == 0)
         {
             Log.v("DBG", "SensorManager: updateWaitingRead: WRN: empty queue?");
             return;
         }
-        Object o = mWaitingRead.peek();
-        if( o == null ) {
+        Pair<BluetoothGatt,Object> p = mWaitingRead.peek();
+        if( p == null ) {
             Log.v("DBG", "SensorManager: updateWaitingRead: WRN: null object! (empty queue?)");
             return;
         }
+        BluetoothGatt gatt = p.first;
+        Object o = p.second;
         boolean bSuccess = false;
         if( o instanceof BluetoothGattCharacteristic )
         {
@@ -540,7 +545,7 @@ public class SensorsManager {
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         // temp test: continuous read!
                         onCharacteristicChanged(gatt, characteristic);
-                        updateWaitingCalls( gatt );
+                        updateWaitingCalls();
                         //boolean resread = gatt.readCharacteristic( characteristic );
                         //Log.v("DBG", "SensorManager: resread: " + resread);
                         addWaitingRead( gatt, characteristic );
@@ -588,7 +593,7 @@ public class SensorsManager {
                                             int status)
                 {
                     Log.v("DBG", "SensorManager: onCharacteristicWrite");
-                    updateWaitingCalls( gatt );
+                    updateWaitingCalls();
                 }
 
                 @Override
@@ -605,7 +610,7 @@ public class SensorsManager {
 
                     }
                     */
-                    updateWaitingCalls( gatt );
+                    updateWaitingCalls();
 
                 }
 
@@ -634,7 +639,9 @@ public class SensorsManager {
 
                     Log.v("DBG", "SensorManager: onServicesDiscovered: " + gatt.getDevice().getAddress() );
 
-                    ((Menu)Global.getCurrentActivity()).updateStatus( "running: " + mListDevice.size() );
+                    ((Menu)Global.getCurrentActivity()).updateStatus("discovered: " + gatt.getDevice().getAddress());
+
+                    updateWaitingCalls();
 
                     if( true ) {
                         //mbDiscovered = true;
@@ -772,6 +779,7 @@ public class SensorsManager {
                                 {
                                     Log.v("DBG", "SensorManager: onServicesDiscovered: service is null !!!" );
                                 }
+                                Log.v("DBG", "SensorManager: onServicesDiscovered 1: " + gatt.getDevice().getAddress() );
                                 BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
                                 gatt.setCharacteristicNotification(characteristic, true);
 
@@ -779,6 +787,7 @@ public class SensorsManager {
                                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                                 //descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                                 addWaitingWrite(gatt, descriptor);
+                                Log.v("DBG", "SensorManager: onServicesDiscovered 2: " + gatt.getDevice().getAddress() );
 
                                 characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
                                 characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00});
@@ -799,6 +808,7 @@ public class SensorsManager {
                                     characteristic = service.getCharacteristic(UUID.fromString(mstrC_Mov));
                                     addWaitingRead(gatt, characteristic);
                                 }
+                                Log.v("DBG", "SensorManager: onServicesDiscovered 3: " + gatt.getDevice().getAddress() );
                             }
 
                         }
@@ -901,9 +911,11 @@ public class SensorsManager {
              }
              else
              {
-/*
                  // do we have something to do ?
                  Log.v("DBG", "SensorManager: updating..." );
+                 updateWaitingCalls();
+/*
+
                  //Log.v("DBG", "SensorManager: updating: state: " + mManager.getConnectionState(mDevice.getType()) );
                  //boolean resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(0) );
                  //resa = mBluetoothGatt.readCharacteristic( mBluetoothGatt.getServices().get(0).getCharacteristics().get(1) );
@@ -1012,6 +1024,8 @@ public class SensorsManager {
             gatt.close();
         }
         maBluetoothGatt.clear();
+        mWaitingWrite.clear();
+        mWaitingRead.clear();
     }
 
     public void exit()
