@@ -84,6 +84,7 @@ public class SensorsManager {
     private int mnNumCharact;
     private int mnNumDesc;
 
+    // sub optimal: we have a waiting list global, mais je pense qu'on pourrait en avoir une par gatt, car c'est le gatt qui bloque...
     private Queue<Pair<BluetoothGatt,Object>> mWaitingWrite;
     private Queue<Pair<BluetoothGatt,Object>> mWaitingRead;
     private Semaphore mWaitingMutex; // I want a mutex non-reentrant (even if current thread has locked it, I want to be sure, it's locked)
@@ -182,6 +183,7 @@ public class SensorsManager {
 
     private void updateWaitingCalls()
     {
+
         updateWaitingWrite();
         updateWaitingRead();
     }
