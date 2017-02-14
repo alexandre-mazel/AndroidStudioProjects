@@ -11,12 +11,24 @@ import java.util.Hashtable;
 public class Global {
     private static Activity gmCurrentActivity = null;
     public static Activity getCurrentActivity(){
-        //Log.v("DBG", "return current activity: " + gmCurrentActivity);
+        Log.v("DBG", "return current activity: " + gmCurrentActivity);
         return gmCurrentActivity;
     }
     public static void setCurrentActivity(Activity currentActivity){
         Log.v( "DBG", "set current activity: " + currentActivity );
         gmCurrentActivity = currentActivity;
+    }
+    public static void callCurrentSensorActivityUpdate(String strDeviceName, double rAngle){
+        // I should have done a super virtual class SensorsCallbackActivity with some updateAngle protected method
+        Activity a = getCurrentActivity();
+        if( a instanceof Menu )
+        {
+            ((Menu)a).updateAngle(strDeviceName,rAngle);
+        }
+        else
+        {
+            ((SettingsActivity)a).updateAngle(strDeviceName,rAngle);
+        }
     }
 
     private static SensorsManager gmCurrentSensorsManager = null;
@@ -30,6 +42,7 @@ public class Global {
     }
 
     private static Hashtable<String,Integer> gmSensorTable = null; // a way to associate a sensor string to an idx
+    // TODO:     private ArrayList<BluetoothGatt>            maDeviceOffset; // for each sensor, an offset, in fact, we would need a class to handle all that, even if it remains a singleton...
     public static int getSensorIdx( String address ){
         if( gmSensorTable == null )
         {

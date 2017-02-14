@@ -40,6 +40,9 @@
 
     <string name="def_error_empty_input">ERREUR: Vous devez remplir chaque information</string>
 
+
+    <string name="title_activity_settings">Settingsage</string>
+    <string name="settings_txt_desc">Choisissez votre settings</string>
     <string name="settings_txt_calibration">Calibration</string>
     <string name="settings_txt_discrimination">Discrimination</string>
     <string name="settings_txt_place_sensor_flat_and_dont_move">place_sensor_flat_and_dont_move</string>
@@ -49,6 +52,7 @@
     <string name="ble_not_supported">ATTENTION: this device doesn\'t support BLE!!!</string>
     <string name="bt_please_activate_bt">PLEASE: You must activate BT !!!</string>
     <string name="txt_done">fini !!!</string>
+    <string name="txt_back">Retour</string>
 
 
 

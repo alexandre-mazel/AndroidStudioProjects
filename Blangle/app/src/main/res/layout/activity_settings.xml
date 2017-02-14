@@ -72,38 +72,11 @@
             <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
                 android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-                android:text="@string/menu_txt_desc" />
-<!--
-            <RadioGroup android:layout_width="match_parent" android:layout_height="wrap_content">
-                <RadioButton android:id="@+id/menu_radio_choice_def"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/menu_txt_choice_def"
-                    android:textSize="40sp"
-                    android:layout_gravity="center"
-                    android:onClick="onRadioButtonClicked"/>
-                <RadioButton android:id="@+id/menu_radio_choice_calc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/menu_txt_choice_calc"
-                    android:textSize="40sp"
-                    android:layout_gravity="center"
-                    android:onClick="onRadioButtonClicked"/>
-            </RadioGroup>
--->
+                android:text="@string/settings_txt_desc" />
 
             <Space
                 android:layout_width="1dp"
                 android:layout_height="10dp"/>
-
-            <Button
-                android:layout_height="wrap_content"
-                android:layout_width="600dp"
-                android:layout_gravity="center"
-                android:text="@string/menu_txt_choice_settings"
-                android:background="@color/def"
-                android:textSize="60sp"
-                android:onClick="onChoiceSettings" />
 
             <Space
                 android:layout_width="1dp"
@@ -121,11 +94,25 @@
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="200dp"
+                android:layout_width="600dp"
+                android:layout_gravity="center"
                 android:text="@string/settings_txt_discrimination"
                 android:background="@color/calc"
-                android:textSize="40sp"
+                android:textSize="60sp"
                 android:onClick="onSettingsDiscrimination" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="500dp"
+                android:layout_gravity="center"
+                android:text="@string/txt_back"
+                android:background="@color/back"
+                android:textSize="20sp"
+                android:onClick="onBack" />
 
         </LinearLayout>
     </LinearLayout>

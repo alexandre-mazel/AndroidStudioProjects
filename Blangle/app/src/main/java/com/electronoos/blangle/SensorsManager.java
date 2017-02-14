@@ -499,8 +499,9 @@ public class SensorsManager {
                         //rAngleZ = accZ;
                         Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
-                        assert( Global.getCurrentActivity() instanceof Menu );
-                        ((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
+                        //assert( Global.getCurrentActivity() instanceof Menu );
+                        //((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
+                        Global.callCurrentSensorActivityUpdate( gatt.getDevice().getAddress(), rAngleZ );
 
 
                     }

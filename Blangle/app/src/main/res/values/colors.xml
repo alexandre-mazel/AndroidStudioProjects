@@ -4,6 +4,7 @@
     <color name="button_txt_color">#444444</color>
     <color name="def">#92d050</color>
     <color name="calc">#fec31f</color>
+    <color name="back">#80838f</color>
     <color name="pagetitle">#202020</color>
     <color name="input_layout">#888888</color>
     <color name="input_libelle">#505050</color>

@@ -208,15 +208,15 @@ public class Menu extends Activity {
         // we want this application to be stopped when set on background
         Log.v("DBG", "------------------------------ onPause...");
         super.onPause();
-        onStop();
-        System.exit(0); // exit this application
+        //onStop();
+        //System.exit(0); // exit this application
     }
     @Override
     protected void onStop() {
         if( true ) {
             Log.v("DBG", "------------------------------ onStop...");
-            mSensorsManager.exit();
-            mSensorsManager = null;
+            //mSensorsManager.exit();
+            //mSensorsManager = null;
 
         }
         super.onStop();
@@ -287,10 +287,8 @@ public class Menu extends Activity {
 
     public void onChoiceSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
-        //EditText editText = (EditText) findViewById(R.id.edit_message);
-        //String message = editText.getText().toString();
-        //intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
+//        startActivityForResult(intent, 1);
     }
 
     public void onChoiceDef(View view) {
