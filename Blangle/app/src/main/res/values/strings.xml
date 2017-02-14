@@ -7,6 +7,7 @@
     <string name="title_activity_definition">Definition</string>
 
     <string name="menu_txt_desc">Choix du mode</string>
+    <string name="menu_txt_choice_settings">Settings</string>
     <string name="menu_txt_choice_def">Références</string>
     <string name="menu_txt_choice_calc">Détermination</string>
     <string name="menu_txt_choice_reconnect">Reconnect</string>
@@ -39,7 +40,16 @@
 
     <string name="def_error_empty_input">ERREUR: Vous devez remplir chaque information</string>
 
+    <string name="settings_txt_calibration">Calibration</string>
+    <string name="settings_txt_discrimination">Discrimination</string>
+    <string name="settings_txt_place_sensor_flat_and_dont_move">place_sensor_flat_and_dont_move</string>
+    <string name="settings_txt_move_first_one_then_second_then_third">move_first_one_then_second_then_third</string>
+
+
     <string name="ble_not_supported">ATTENTION: this device doesn\'t support BLE!!!</string>
     <string name="bt_please_activate_bt">PLEASE: You must activate BT !!!</string>
+    <string name="txt_done">fini !!!</string>
+
+
 
 </resources>

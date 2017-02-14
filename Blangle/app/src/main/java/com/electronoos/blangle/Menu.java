@@ -285,6 +285,14 @@ public class Menu extends Activity {
         */
     }
 
+    public void onChoiceSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        //EditText editText = (EditText) findViewById(R.id.edit_message);
+        //String message = editText.getText().toString();
+        //intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
+
     public void onChoiceDef(View view) {
         Intent intent = new Intent(this, Definition.class);
         //EditText editText = (EditText) findViewById(R.id.edit_message);
@@ -296,6 +304,7 @@ public class Menu extends Activity {
     public void onChoiceCalc(View view) {
         // Kabloey
     }
+
 
     public void onButtonReconnect(View view) {
         postConnectBLE(10);

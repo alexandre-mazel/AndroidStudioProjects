@@ -377,7 +377,7 @@ public class SensorsManager {
         // return 1 if found
         // 0 while scan is incomplete
         // -1 if not found
-        if( mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 5000 )
+        if( mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 2*5000 )
             return 0;
 
         mbScanning = false;
@@ -412,11 +412,11 @@ public class SensorsManager {
                 public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
                     // this will get called anytime you perform a read or write characteristic operation
                     Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
-                    Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
+                    //Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
                     //read the characteristic data
                     byte[] data = characteristic.getValue();
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged: " + data );
-                    logGattData(data);
+                    //Log.v("DBG", "SensorManager: onCharacteristicChanged: " + data );
+                    //logGattData(data);
                     if( characteristic.getUuid().toString().equals(mstrC_HR) ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
                     {
                         int flag = characteristic.getProperties();
@@ -478,7 +478,7 @@ public class SensorsManager {
                     }
                     else if( characteristic.getUuid().toString().equals(mstrC_Mov) )
                     {
-                        Log.v("DBG", "SensorManager: onCharacteristicChanged: move data received" );
+                        //Log.v("DBG", "SensorManager: onCharacteristicChanged: move data received" );
                         int gyrX = (data[0] & 0xff) | (data[1] << 8);
                         int gyrY = (data[2] & 0xff) | (data[3] << 8);
                         int gyrZ = (data[4] & 0xff) | (data[5] << 8);
@@ -492,7 +492,7 @@ public class SensorsManager {
                         int magX = (data[12] & 0xff) | (data[13] << 8);
                         int magY = (data[14] & 0xff) | (data[15] << 8);
                         int magZ = (data[16] & 0xff) | (data[17] << 8);
-                        Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ + ", mX: " + magX + ", mY: " + magY + ", mZ: " + magZ );
+                        //Log.v("DBG", "SensorManager: onCharacteristicChanged: move: gX: " + gyrX + ", gY: " + gyrY + ", gZ: " + gyrZ + ", aX: " + accX + ", aY: " + accY + ", aZ: " + accZ + ", mX: " + magX + ", mY: " + magY + ", mZ: " + magZ );
 
                         //float rAngleZ = (accZ * 1.0f) / (32768/2);
                         double rAngleZ = (accZ * 180) / 4121.; // 4200: empiric maximum // entre -4110 et 4133
