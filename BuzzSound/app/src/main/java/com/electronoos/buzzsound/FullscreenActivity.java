@@ -4,11 +4,16 @@ import com.electronoos.buzzsound.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 
 /**
@@ -45,6 +50,8 @@ public class FullscreenActivity extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
+
+    private MediaPlayer mMP_TheVoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +120,24 @@ public class FullscreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        mMP_TheVoice = MediaPlayer.create(this, R.raw.voicebuzz);
+/*
+        final ImageButton b = (ImageButton) findViewById(R.id.buzz_button);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    if (mMP_TheVoice.isPlaying()) {
+                        mMP_TheVoice.stop();
+                        mMP_TheVoice.release();
+                        mMP_TheVoice = MediaPlayer.create(this, R.raw.voicebuzz);
+                    } mMP_TheVoice.start();
+                } catch(Exception e) { e.printStackTrace(); }
+            }
+        });
+*/
     }
 
     @Override
@@ -156,5 +181,25 @@ public class FullscreenActivity extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public void onBuzz( View v )
+    {
+        Context context = this;
+        //mMP_TheVoice.start();
+        try {
+            if (mMP_TheVoice.isPlaying())
+            {
+                mMP_TheVoice.stop();
+                mMP_TheVoice.release();
+                mMP_TheVoice = MediaPlayer.create(context, R.raw.voicebuzz);
+            }
+            mMP_TheVoice.start();
+            // Turn the stream audio volume to the max!
+            //AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            //am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+            Toast.makeText(this, "Bam", Toast.LENGTH_LONG).show();
+        } catch(Exception e) { e.printStackTrace(); }
+
     }
 }
