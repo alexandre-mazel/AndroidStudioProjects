@@ -10,9 +10,11 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -27,7 +29,7 @@ public class FullscreenActivity extends Activity {
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    private static final boolean AUTO_HIDE = true;
+    private static final boolean AUTO_HIDE = false;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -119,7 +121,7 @@ public class FullscreenActivity extends Activity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
         mMP_TheVoice = MediaPlayer.create(this, R.raw.voicebuzz);
 /*
@@ -138,6 +140,7 @@ public class FullscreenActivity extends Activity {
             }
         });
 */
+		postHideAppName(100);
     }
 
     @Override
@@ -200,6 +203,29 @@ public class FullscreenActivity extends Activity {
             //am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
             Toast.makeText(this, "Bam", Toast.LENGTH_LONG).show();
         } catch(Exception e) { e.printStackTrace(); }
+        postHideAppName(100); // this line do nothing more to hide menu...
+    }
 
+    private void hideAppName() {
+
+        ((TextView) findViewById(R.id.fullscreen_content)).setText("");
+        //((TextView) findViewById(R.id.app_name)).setText("");
+        setTitle("");
+        getActionBar().setIcon(R.mipmap.ic_blank);
+        getActionBar().hide();
+        //getSupportActionBar().hide();
+    }
+
+    private void postHideAppName(int interval)
+    {
+        Log.v("BuzzSound", "postWebUpdate: update in: " + interval);
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable(){
+            public void run() {
+                FullscreenActivity.this.hideAppName();
+            }
+        };
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
     }
 }
