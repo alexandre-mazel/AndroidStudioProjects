@@ -501,7 +501,8 @@ public class SensorsManager {
 
                         //assert( Global.getCurrentActivity() instanceof Menu );
                         //((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
-                        Global.callCurrentSensorActivityUpdate( gatt.getDevice().getAddress(), rAngleZ );
+                        //Global.callCurrentSensorActivityUpdate( gatt.getDevice().getAddress(), rAngleZ );
+                        Global.getAngularManager().updateAngle( gatt.getDevice().getAddress(), rAngleZ );
 
 
                     }

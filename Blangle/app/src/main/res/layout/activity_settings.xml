@@ -82,6 +82,14 @@
                 android:layout_width="1dp"
                 android:layout_height="10dp"/>
 
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="600dp"
+                android:layout_gravity="center"
+                android:text="@string/settings_txt_discover"
+                android:background="@color/def"
+                android:textSize="60sp"
+                android:onClick="onSettingsDiscover" />
 
             <Button
                 android:layout_height="wrap_content"
