@@ -33,12 +33,9 @@ import java.util.Date;
 
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
+ * Abstract class to draw update from sensor management (should have ABC in the class name, but not compatible ?
  */
-public class Menu extends Activity {
+public class DisplaySensorActivity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
