@@ -1,0 +1,149 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#0099cc" tools:context=".Menu">
+
+    <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
+        android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+        android:text="@string/dummy_content" android:visibility="invisible"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="horizontal" >
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="80"
+            android:background="#dddddd"
+            android:orientation="vertical" >
+<!--
+            <TextView android:id="@+id/menu_desc_test" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
+                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                android:text="test1" />
+            -->
+
+            <ImageButton
+                android:layout_width="800dp"
+                android:layout_height="800dp"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:src="@drawable/icon_appli2"
+                android:background="@null"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_weight="80"
+            android:background="#cccccc"
+            android:orientation="vertical" >
+<!--
+            <TextView android:id="@+id/menu_desc_test" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
+
+                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                android:text="test2" />
+
+            <TextView android:id="@+id/menu_desc_test"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+
+                android:text="test3"
+                android:gravity="center"
+                android:textSize="40dp"
+                />
+-->
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="18dp"/>
+
+            <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+                android:text="@string/settings_txt_desc" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="10dp"/>
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="10dp"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="600dp"
+                android:layout_gravity="center"
+                android:text="@string/settings_txt_discover"
+                android:background="@color/def"
+                android:textSize="60sp"
+                android:onClick="onSettingsDiscover" />
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="600dp"
+                android:layout_gravity="center"
+                android:text="@string/settings_txt_calibration"
+                android:background="@color/def"
+                android:textSize="60sp"
+                android:onClick="onSettingsCalibration" />
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="600dp"
+                android:layout_gravity="center"
+                android:text="@string/settings_txt_discrimination"
+                android:background="@color/calc"
+                android:textSize="60sp"
+                android:onClick="onSettingsDiscrimination" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="500dp"
+                android:layout_gravity="center"
+                android:text="@string/txt_back"
+                android:background="@color/back"
+                android:textSize="20sp"
+                android:onClick="onBack" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"
+        >
+
+        <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay" android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button android:id="@+id/dummy_button" style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="@string/dummy_button" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

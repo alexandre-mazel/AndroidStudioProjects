@@ -52,6 +52,11 @@ public class SettingsActivity extends Activity {
         finish();
     }
 
+    public void onSettingsDiscover(View view) {
+        Intent intent = new Intent(this, DiscoverActivity.class);
+        startActivity(intent);
+    }
+
     public void onSettingsCalibration(View view) {
         mMode = 1;
         Toast.makeText(this, R.string.settings_txt_place_sensor_flat_and_dont_move, Toast.LENGTH_LONG).show();
