@@ -45,7 +45,7 @@ public class DiscoverActivity extends DisplaySensorActivity {
     }
 
     public void onBack(View view) {
-        Intent intent = new Intent(this, Menu.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 

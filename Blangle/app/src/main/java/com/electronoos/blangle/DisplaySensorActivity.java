@@ -100,7 +100,7 @@ public class DisplaySensorActivity extends Activity {
 
 
 
-    private void postConnectBLE(int interval)
+    protected void postConnectBLE(int interval)
     {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
@@ -178,7 +178,7 @@ public class DisplaySensorActivity extends Activity {
         //marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
     }
 
-    protected void refreshDisplayInterface() {
+    protected void refreshDisplayInterface(Boolean bAutoRepost) {
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
         Log.d("DBG", "refreshDisplayInterface: entering..." );
         if( mstrStatus != null ) {
@@ -213,7 +213,9 @@ public class DisplaySensorActivity extends Activity {
             }
         }
 
-        postRefreshDisplayInterface(500);
+        if( bAutoRepost ) {
+            postRefreshDisplayInterface(500);
+        }
 
     }
 
@@ -222,7 +224,7 @@ public class DisplaySensorActivity extends Activity {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                DisplaySensorActivity.this.refreshDisplayInterface();
+                DisplaySensorActivity.this.refreshDisplayInterface(true);
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
