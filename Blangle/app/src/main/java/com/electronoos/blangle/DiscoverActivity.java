@@ -12,7 +12,7 @@ import com.electronoos.blangle.util.Averager;
 /**
  * Created by a on 14/02/17.
  */
-public class DiscoverActivity extends Activity {
+public class DiscoverActivity extends DisplaySensorActivity {
 
 
     private Integer mMode = 0; // 0: in nothing, 1: in calib, 2: in discrimination
@@ -22,8 +22,6 @@ public class DiscoverActivity extends Activity {
         Log.v("DBG", "------------------------------");
 
         super.onCreate(savedInstanceState);
-
-        Global.setCurrentActivity(this);
 
         setContentView(R.layout.activity_discover);
 

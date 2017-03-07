@@ -38,7 +38,7 @@ import java.util.Date;
  *
  * @see SystemUiHider
  */
-public class Menu extends Activity {
+public class Menu extends DisplaySensorActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.

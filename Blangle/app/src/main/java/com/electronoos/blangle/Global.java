@@ -31,6 +31,16 @@ public class Global {
         }
     }
 
+    private static DisplaySensorActivity gmDisplayActivity = null;
+    public static DisplaySensorActivity getDisplayActivity(){
+        Log.v("DBG", "return current display activity: " + gmCurrentActivity);
+        return getDisplayActivity;
+    }
+    public static void setDisplayActivity(DisplaySensorActivity currentActivity){
+        Log.v( "DBG", "set current display activity: " + currentActivity );
+        getDisplayActivity = currentActivity;
+    }
+
     private static SensorsManager gmCurrentSensorsManager = null;
     public static SensorsManager getCurrentSensorsManager(){
         //Log.v("DBG", "return current SensorsManager: " + gmCurrentSensorsManager);

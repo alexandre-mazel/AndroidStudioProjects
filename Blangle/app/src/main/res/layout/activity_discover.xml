@@ -49,6 +49,8 @@
             android:background="#cccccc"
             android:orientation="vertical" >
 
+            <!-- DisplaySensorActivityABC part -->
+
 
             <Button
                 android:layout_height="wrap_content"
@@ -62,6 +64,12 @@
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
                 android:textStyle="normal" android:textSize="20sp" android:gravity="center"
                 android:text="@string/menu_txt_device_status" />
+
+            <TextView android:id="@+id/menu_txt_device_info" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_device_info" />
+
 
             <TextView android:id="@+id/menu_bpm" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
