@@ -71,6 +71,11 @@ public class AngularManager {
         return aTimeLastUpdateMs_[nIdx];
     }
 
+    // return the number of detected sensors
+    public int getDetectedSensorNbr(){
+        return sensorTable_.size();
+    }
+
     public void calibrateAll()
     {
         for (int i = 0; i < nNbrSensors_; ++i) {

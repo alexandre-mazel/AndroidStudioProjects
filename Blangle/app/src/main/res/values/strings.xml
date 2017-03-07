@@ -50,6 +50,8 @@
     <string name="settings_txt_place_sensor_flat_and_dont_move">place_sensor_flat_and_dont_move</string>
     <string name="settings_txt_move_first_one_then_second_then_third">move_first_one_then_second_then_third</string>
 
+    <string name="title_activity_discover">Discover</string>
+
 
     <string name="ble_not_supported">ATTENTION: this device doesn\'t support BLE!!!</string>
     <string name="bt_please_activate_bt">PLEASE: You must activate BT !!!</string>

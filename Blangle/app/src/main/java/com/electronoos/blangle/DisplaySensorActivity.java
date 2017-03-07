@@ -52,10 +52,10 @@ public class DisplaySensorActivity extends Activity {
     private int mnNbrUpdateBpm;
     private String mstrBpmLastTxt;
 
-    private double[] maTimeLastUpdateMs;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v("DBG", "------------------------------");
+        Log.v("DBG", "DisplaySensorActivity -- Create");
         Log.v("DBG", "------------------------------");
 
         super.onCreate(savedInstanceState);
@@ -75,6 +75,8 @@ public class DisplaySensorActivity extends Activity {
         maTxtAngle[2] = (TextView) findViewById(R.id.menu_angle3);
         mTxtDeviceStatus = (TextView) findViewById(R.id.menu_txt_device_status);
         mTxtDeviceInfo = (TextView) findViewById(R.id.menu_txt_device_info);
+
+        postRefreshDisplayInterface(2000);
     }
 
     public void onChoiceCalc(View view) {
@@ -176,8 +178,9 @@ public class DisplaySensorActivity extends Activity {
         //marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
     }
 
-    private void refreshInterface() {
+    protected void refreshDisplayInterface() {
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
+        Log.d("DBG", "refreshDisplayInterface: entering..." );
         if( mstrStatus != null ) {
             mTxtDeviceStatus.setText(mstrStatus);
             mstrStatus = null; // could miss one from time to time
@@ -186,12 +189,20 @@ public class DisplaySensorActivity extends Activity {
             mTxtBpm.setText(String.valueOf(mnBpm));
             mnBpm = 0; // could miss one from time to time
         }
+
+        if( mTxtDeviceInfo == null ) {
+            Log.d("DBG", "refreshDisplayInterface: the interface hasn't been created ?!?" );
+            return;
+        }
+
+        mTxtDeviceInfo.setText( "Seen: " + Global.getAngularManager().getDetectedSensorNbr() + "\n" );
+
         for( int i = 0; i < mnNbrAngle; ++i) {
             double rAngle = Global.getAngularManager().getAngle(i);
             double timeLastUpdate = Global.getAngularManager().getLastUpdate(i);
 
 
-            if( System.currentTimeMillis() - maTimeLastUpdateMs[i] > 2000 )
+            if( System.currentTimeMillis() - timeLastUpdate > 2000 )
             {
                 maTxtAngle[i].setTextColor(Color.RED);
             }
@@ -202,16 +213,16 @@ public class DisplaySensorActivity extends Activity {
             }
         }
 
-        postRefreshInterface(500);
+        postRefreshDisplayInterface(500);
 
     }
 
-    private void postRefreshInterface(int interval)
+    private void postRefreshDisplayInterface(int interval)
     {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                DisplaySensorActivity.this.refreshInterface();
+                DisplaySensorActivity.this.refreshDisplayInterface();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);

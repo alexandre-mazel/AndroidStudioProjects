@@ -20,6 +20,8 @@ public class DiscoverActivity extends DisplaySensorActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("DBG", "------------------------------");
+        Log.v("DBG", "DiscoverActivity -- Create");
+        Log.v("DBG", "------------------------------");
 
         super.onCreate(savedInstanceState);
 

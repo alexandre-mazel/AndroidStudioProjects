@@ -41,7 +41,7 @@
         <activity
             android:name=".DiscoverActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_settings"
+            android:label="@string/title_activity_discover"
             android:parentActivityName=".SettingsActivity"
             android:theme="@style/FullscreenTheme" >
             <meta-data
