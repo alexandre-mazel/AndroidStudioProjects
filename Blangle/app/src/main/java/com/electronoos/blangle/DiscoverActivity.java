@@ -25,6 +25,8 @@ public class DiscoverActivity extends DisplaySensorActivity {
 
         setContentView(R.layout.activity_discover);
 
+        createDisplaySensorWidgets( R.layout.activity_discover );
+
     }
 
     @Override

@@ -18,9 +18,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +46,13 @@ public class DisplaySensorActivity extends Activity {
     private TextView mTxtDeviceStatus;
     private TextView mTxtDeviceInfo;
 
+    private String mstrStatus; // used to refresh in the good thread
+    private int mnBpm;
+
+    private int mnNbrUpdateBpm;
+    private String mstrBpmLastTxt;
+
+    private double[] maTimeLastUpdateMs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +62,11 @@ public class DisplaySensorActivity extends Activity {
 
         Global.setDisplayActivity( this );
 
+    } // onCreate
+
+    protected void createDisplaySensorWidgets(int v)
+    {
+        setContentView( v );
 
         mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
         maTxtAngle = new TextView[mnNbrAngle];
@@ -61,7 +75,7 @@ public class DisplaySensorActivity extends Activity {
         maTxtAngle[2] = (TextView) findViewById(R.id.menu_angle3);
         mTxtDeviceStatus = (TextView) findViewById(R.id.menu_txt_device_status);
         mTxtDeviceInfo = (TextView) findViewById(R.id.menu_txt_device_info);
-    } // onCreate
+    }
 
     public void onChoiceCalc(View view) {
         // Kabloey
@@ -76,18 +90,8 @@ public class DisplaySensorActivity extends Activity {
         Log.v("DBG", "start BLE stuffs");
         mTxtDeviceStatus.setText("Searching...");
         if( true ) {
-            if( Global.getCurrentSensorsManager() == null ) {
-                mSensorsManager = new SensorsManager();
-                Global.setCurrentSensorsManager(mSensorsManager);
-                mSensorsManager.init();
-            }
-            mSensorsManager.discover();
+            Global.getCurrentSensorsManager().discover();
             postRefreshBLE(1000);
-        }
-        if( false ) {
-            Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);
-            //myIntent.putExtra("key", value); //Optional parameters
-            Menu.this.startActivity(myIntent);
         }
         Log.v("DBG", "start BLE stuffs - end");
     }
@@ -99,7 +103,7 @@ public class DisplaySensorActivity extends Activity {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                Menu.this.connectBLE();
+                DisplaySensorActivity.this.connectBLE();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
@@ -108,8 +112,7 @@ public class DisplaySensorActivity extends Activity {
 
     private void refreshBLE() {
         //Log.v("DBG", "refreshBLE");
-        if( mSensorsManager != null )
-            mSensorsManager.update();
+        Global.getCurrentSensorsManager().update();
         postRefreshBLE( 1000 );
         //Log.v("DBG", "refreshBLE - end");
     }
@@ -119,7 +122,7 @@ public class DisplaySensorActivity extends Activity {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                Menu.this.refreshBLE();
+                DisplaySensorActivity.this.refreshBLE();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);
@@ -142,7 +145,7 @@ public class DisplaySensorActivity extends Activity {
         String currentDateandTime = sdf.format(new Date());
         String newLine = currentDateandTime + ": " + String.valueOf(nBpm);
         Log.v( "DBG", newLine );
-        mstrLastTxt += newLine + "\n";
+        mstrBpmLastTxt += newLine + "\n";
 
         mnNbrUpdateBpm += 1;
         if( mnNbrUpdateBpm > 60 ) {
@@ -152,14 +155,14 @@ public class DisplaySensorActivity extends Activity {
                 File file = new File(path, "alex_hr.txt");
 
                 FileOutputStream fOut = new FileOutputStream(file, true ); // true for append
-                fOut.write(mstrLastTxt.getBytes());
+                fOut.write(mstrBpmLastTxt.getBytes());
                 fOut.close();
             }
             catch (Exception e){
                 Log.v("DBG", "updateBpm: Exception: disk error: " + e.toString());
             }
             mnNbrUpdateBpm = 0;
-            mstrLastTxt = "";
+            mstrBpmLastTxt = "";
         }
 
     }
@@ -169,8 +172,8 @@ public class DisplaySensorActivity extends Activity {
         //mrAngle = rAngle; // to be refreshed later
         rAngle -= 17.9; // results: 161.6 / 162.0 / 162.3 / 160.2 / 158.6 / 153.8 / 168.1 / 168.4 / 168.0 / 166.5 / 167.3 / 165.6 / 167.0 / 167.0 / 165.1 / 167.
         int nCurrentIdx = Global.getSensorIdx(strDeviceName);
-        maAngleAverage[nCurrentIdx].addValue(rAngle);
-        marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
+        //maAngleAverage[nCurrentIdx].addValue(rAngle);
+        //marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
     }
 
     private void refreshInterface() {
@@ -184,23 +187,18 @@ public class DisplaySensorActivity extends Activity {
             mnBpm = 0; // could miss one from time to time
         }
         for( int i = 0; i < mnNbrAngle; ++i) {
-            if (marAngle[i] != 0.) {
-                maTxtAngle[i].setText(String.format("%.1f", marAngle[i]) + "°");
-                marAngle[i] = 0.; // could miss one from time to time
-                if( maTimeLastUpdateMs[i] <= -1 ) {
-                    maTxtAngle[i].setTextColor(Color.BLACK);
-                }
-                maTimeLastUpdateMs[i] = System.currentTimeMillis();
+            double rAngle = Global.getAngularManager().getAngle(i);
+            double timeLastUpdate = Global.getAngularManager().getLastUpdate(i);
+
+
+            if( System.currentTimeMillis() - maTimeLastUpdateMs[i] > 2000 )
+            {
+                maTxtAngle[i].setTextColor(Color.RED);
             }
             else
             {
-                if( maTimeLastUpdateMs[i] > -1 )
-                {
-                    if( System.currentTimeMillis() - maTimeLastUpdateMs[i] > 2000 ) {
-                        maTimeLastUpdateMs[i] = -1;
-                        maTxtAngle[i].setTextColor(Color.RED);
-                    }
-                }
+                maTxtAngle[i].setTextColor(Color.BLACK);
+                maTxtAngle[i].setText(String.format("%.1f", rAngle) + "°");
             }
         }
 
@@ -213,7 +211,7 @@ public class DisplaySensorActivity extends Activity {
         Handler handler = new Handler();
         Runnable runnable = new Runnable(){
             public void run() {
-                Menu.this.refreshInterface();
+                DisplaySensorActivity.this.refreshInterface();
             }
         };
         handler.postAtTime(runnable, System.currentTimeMillis()+interval);

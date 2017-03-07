@@ -49,8 +49,11 @@
             android:background="#cccccc"
             android:orientation="vertical" >
 
-            <!-- DisplaySensorActivityABC part -->
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="80dp"/>
 
+            <!-- DisplaySensorActivityABC part -->
 
             <Button
                 android:layout_height="wrap_content"

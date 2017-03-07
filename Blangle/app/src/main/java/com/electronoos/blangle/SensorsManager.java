@@ -319,14 +319,14 @@ public class SensorsManager {
                     else
                     {
                         Log.v("DBG", "Found an interesting one!"); // arreter l'attente ici! TODO
-                        ((Menu) Global.getCurrentActivity()).updateStatus("Found");
+                        Global.getDisplayActivity().updateStatus("Found");
                         //mDevice = device;
                         mListDevice.add(device);
                         //mbIsSensorTag = device.getName().indexOf("SensorTag") != -1;
 
                         //GetUserInput.askText("New sensor detected, name it please:");
                         //GetUserInput.askUser2();
-                        //((Menu)Global.getCurrentActivity()).askUser();
+                        //Global.getDisplayActivity().askUser();
                     }
                 }
             }
@@ -387,11 +387,11 @@ public class SensorsManager {
         if( mListDevice.size() == 0 )
         {
             Log.v( "DBG", "discover: timeout!");
-            ((Menu)Global.getCurrentActivity()).updateStatus( "timeout!");
+            Global.getDisplayActivity().updateStatus( "timeout!");
             return -1;
 
         }
-        ((Menu)Global.getCurrentActivity()).updateStatus( "found: " + mListDevice.size() );
+        Global.getDisplayActivity().updateStatus( "found: " + mListDevice.size() );
 
         return 1;
     }
@@ -399,7 +399,7 @@ public class SensorsManager {
     private void connect()
     {
         Log.v( "DBG", "SensorManager: connecting...");
-        ((Menu)Global.getCurrentActivity()).updateStatus( "connecting: " +  mListDevice.size() );
+        Global.getDisplayActivity().updateStatus( "connecting: " +  mListDevice.size() );
         mbConnected = true;
 
         for( BluetoothDevice device : mListDevice ) {
@@ -432,8 +432,8 @@ public class SensorsManager {
                             final int heartRate = characteristic.getIntValue(format, 1);
                             Log.d("DBG", String.format("Received heart rate: %d", heartRate));
                             //intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
-                            assert( Global.getCurrentActivity() instanceof Menu );
-                            ((Menu)Global.getCurrentActivity()).updateBpm( heartRate );
+                            //assert( Global.getCurrentActivity() instanceof Menu );
+                            Global.getDisplayActivity().updateBpm( heartRate );
                             //Global.getCurrentActivity().
                         }
                         catch (Exception e) {
@@ -500,7 +500,7 @@ public class SensorsManager {
                         Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
                         //assert( Global.getCurrentActivity() instanceof Menu );
-                        //((Menu)Global.getCurrentActivity()).updateAngle( gatt.getDevice().getAddress(), rAngleZ );
+                        //Global.getDisplayActivity().updateAngle( gatt.getDevice().getAddress(), rAngleZ );
                         //Global.callCurrentSensorActivityUpdate( gatt.getDevice().getAddress(), rAngleZ );
                         Global.getAngularManager().updateAngle( gatt.getDevice().getAddress(), rAngleZ );
 
@@ -630,7 +630,7 @@ public class SensorsManager {
                     }
                     else {
                         Log.v("DBG", "SensorManager: onConnectionStateChange: newState: " + newState);
-                        ((Menu)Global.getCurrentActivity()).updateStatus("lost...");
+                        Global.getDisplayActivity().updateStatus("lost...");
                     }
 
 
@@ -643,7 +643,7 @@ public class SensorsManager {
 
                     Log.v("DBG", "SensorManager: onServicesDiscovered: " + gatt.getDevice().getAddress() );
 
-                    ((Menu)Global.getCurrentActivity()).updateStatus("discovered: " + gatt.getDevice().getAddress());
+                    Global.getDisplayActivity().updateStatus("discovered: " + gatt.getDevice().getAddress());
 
                     updateWaitingCalls();
 

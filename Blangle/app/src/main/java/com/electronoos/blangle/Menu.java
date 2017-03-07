@@ -77,8 +77,8 @@ public class Menu extends DisplaySensorActivity {
 
 
 
-    private String mstrStatus;
-    private int mnBpm; // used to refresh in the good thread
+    private String mstrStatus; // used to refresh in the good thread
+    private int mnBpm;
 
     final int mnNbrAngle = 3;
     private double[] marAngle; // used to refresh in the good thread
@@ -198,7 +198,7 @@ public class Menu extends DisplaySensorActivity {
         }
         Log.v("DBG", "BLE check - end");
 
-        postConnectBLE(2000);
+        //postConnectBLE(2000);
         postRefreshInterface(2000);
 
     } // onCreate
@@ -312,12 +312,7 @@ public class Menu extends DisplaySensorActivity {
         Log.v("DBG", "start BLE stuffs");
         mTxtDeviceStatus.setText("Searching...");
         if( true ) {
-            if( Global.getCurrentSensorsManager() == null ) {
-                mSensorsManager = new SensorsManager();
-                Global.setCurrentSensorsManager(mSensorsManager);
-                mSensorsManager.init();
-            }
-            mSensorsManager.discover();
+            Global.getCurrentSensorsManager().discover();
             postRefreshBLE(1000);
         }
         if( false ) {

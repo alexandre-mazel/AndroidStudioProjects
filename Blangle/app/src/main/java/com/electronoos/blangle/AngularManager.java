@@ -20,6 +20,8 @@ public class AngularManager {
 
     private double[] arOffset_;
 
+    private double[] aTimeLastUpdateMs_;
+
     private Hashtable<String,Integer> sensorTable_; // a way to associate a sensor string to an idx (idx is then the index of above list)
 
 
@@ -30,6 +32,7 @@ public class AngularManager {
         aAngleAverager_ = new Averager[nNbrSensors_];
         arAngle_ = new double[nNbrSensors_];
         arOffset_= new double[nNbrSensors_];
+        aTimeLastUpdateMs_ = new double[nNbrSensors_];
 
         for (int i = 0; i < nNbrSensors_; ++i) {
             aAngleAverager_[i] = new Averager<Double>(nNbrValueToAverage);
@@ -56,11 +59,16 @@ public class AngularManager {
         int nCurrentIdx = getSensorIdx(strDeviceName);
         aAngleAverager_[nCurrentIdx].addValue(rAngle);
         arAngle_[nCurrentIdx] = aAngleAverager_[nCurrentIdx].computeAverage().doubleValue();
+        aTimeLastUpdateMs_[nCurrentIdx] = System.currentTimeMillis();
     }
 
     public double getAngle( int nIdx )
     {
         return arAngle_[nIdx] - arOffset_[nIdx];
+    }
+    public double getLastUpdate( int nIdx )
+    {
+        return aTimeLastUpdateMs_[nIdx];
     }
 
     public void calibrateAll()

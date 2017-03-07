@@ -34,22 +34,25 @@ public class Global {
     private static DisplaySensorActivity gmDisplayActivity = null;
     public static DisplaySensorActivity getDisplayActivity(){
         Log.v("DBG", "return current display activity: " + gmCurrentActivity);
-        return getDisplayActivity;
+        return gmDisplayActivity;
     }
     public static void setDisplayActivity(DisplaySensorActivity currentActivity){
         Log.v( "DBG", "set current display activity: " + currentActivity );
-        getDisplayActivity = currentActivity;
+        gmDisplayActivity = currentActivity;
     }
 
     private static SensorsManager gmCurrentSensorsManager = null;
     public static SensorsManager getCurrentSensorsManager(){
+        if( gmCurrentSensorsManager == null )
+        {
+            Log.v("DBG", "creating a new SensorsManager...");
+            gmCurrentSensorsManager = new SensorsManager();
+            gmCurrentSensorsManager.init();
+        }
         //Log.v("DBG", "return current SensorsManager: " + gmCurrentSensorsManager);
         return gmCurrentSensorsManager;
     }
-    public static void setCurrentSensorsManager(SensorsManager currentSensorsManager){
-        Log.v( "DBG", "set current SensorsManager: " + currentSensorsManager );
-        gmCurrentSensorsManager = currentSensorsManager;
-    }
+
 
     private static Hashtable<String,Integer> gmSensorTable = null; // a way to associate a sensor string to an idx
     // TODO:     private ArrayList<BluetoothGatt>            maDeviceOffset; // for each sensor, an offset, in fact, we would need a class to handle all that, even if it remains a singleton...
