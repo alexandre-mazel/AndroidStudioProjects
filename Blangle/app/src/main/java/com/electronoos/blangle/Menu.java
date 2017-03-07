@@ -91,16 +91,20 @@ public class Menu extends DisplaySensorActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("DBG", "------------------------------");
+        Log.v("DBG", "Menu -- Create");
+        Log.v("DBG", "------------------------------");
 
         super.onCreate(savedInstanceState);
 
         Global.setCurrentActivity( this );
 
         setContentView(R.layout.activity_menu);
+        createDisplaySensorWidgets( R.layout.activity_menu );
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
 
+/*
         mTxtBpm = (TextView) findViewById(R.id.menu_bpm);
         maTxtAngle = new TextView[mnNbrAngle];
         maTxtAngle[0] = (TextView) findViewById(R.id.menu_angle1);
@@ -118,6 +122,7 @@ public class Menu extends DisplaySensorActivity {
         }
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
+*/
 
 
         // Set up an instance of SystemUiHider to control the system UI for
@@ -305,106 +310,15 @@ public class Menu extends DisplaySensorActivity {
 
 
     public void onButtonReconnect(View view) {
-        postConnectBLE(10);
-    }
-
-    private void connectBLE() {
-        Log.v("DBG", "start BLE stuffs");
-        mTxtDeviceStatus.setText("Searching...");
-        if( true ) {
-            Global.getCurrentSensorsManager().discover();
-            postRefreshBLE(1000);
-        }
-        if( false ) {
-            Intent myIntent = new Intent(Menu.this, DeviceScanActivity.class);
-            //myIntent.putExtra("key", value); //Optional parameters
-            Menu.this.startActivity(myIntent);
-        }
-        Log.v("DBG", "start BLE stuffs - end");
+        super.postConnectBLE(10);
     }
 
 
-
-    private void postConnectBLE(int interval)
-    {
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable(){
-            public void run() {
-                Menu.this.connectBLE();
-            }
-        };
-        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
-        handler.postDelayed(runnable, interval);
-    }
-
-    private void refreshBLE() {
-        //Log.v("DBG", "refreshBLE");
-        if( mSensorsManager != null )
-            mSensorsManager.update();
-        postRefreshBLE( 1000 );
-        //Log.v("DBG", "refreshBLE - end");
-    }
-
-    private void postRefreshBLE(int interval)
-    {
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable(){
-            public void run() {
-                Menu.this.refreshBLE();
-            }
-        };
-        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
-        handler.postDelayed(runnable, interval);
-    }
-
-    public void updateStatus(String strStatus) {
-        mstrStatus = strStatus;
-    }
-
-    public void updateBpm(int nBpm)
-    {
-        //Log.v("DBG", "in txtview update !!!: " + nBpm);
-        //mTxtBpm.setText(String.valueOf(nBpm));
-        mnBpm = nBpm; // to be refreshed later
-        //postRefreshBpm( 10 ); // Can't create handler inside thread that has not called Looper.prepare()
-
-        // output to file
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String currentDateandTime = sdf.format(new Date());
-        String newLine = currentDateandTime + ": " + String.valueOf(nBpm);
-        Log.v( "DBG", newLine );
-        mstrLastTxt += newLine + "\n";
-
-        mnNbrUpdateBpm += 1;
-        if( mnNbrUpdateBpm > 60 ) {
-            try{
-                Log.v("DBG", "updateBpm: outputting to file!!!");
-                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                File file = new File(path, "alex_hr.txt");
-
-                FileOutputStream fOut = new FileOutputStream(file, true ); // true for append
-                fOut.write(mstrLastTxt.getBytes());
-                fOut.close();
-            }
-            catch (Exception e){
-                Log.v("DBG", "updateBpm: Exception: disk error: " + e.toString());
-            }
-            mnNbrUpdateBpm = 0;
-            mstrLastTxt = "";
-        }
-
-    }
-    public void updateAngle(String strDeviceName, double rAngle)
-    {
-        //mTxtBpm.setText(String.valueOf(nBpm));
-        //mrAngle = rAngle; // to be refreshed later
-        rAngle -= 17.9; // results: 161.6 / 162.0 / 162.3 / 160.2 / 158.6 / 153.8 / 168.1 / 168.4 / 168.0 / 166.5 / 167.3 / 165.6 / 167.0 / 167.0 / 165.1 / 167.
-        int nCurrentIdx = Global.getSensorIdx(strDeviceName);
-        maAngleAverage[nCurrentIdx].addValue(rAngle);
-        marAngle[nCurrentIdx] = maAngleAverage[nCurrentIdx].computeAverage().doubleValue();
-    }
-
+    //@Override
     private void refreshInterface() {
+        Log.v("DBG", "in menu refreshInterface" );
+        super.refreshDisplayInterface();
+        /*
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
         if( mstrStatus != null ) {
             mTxtDeviceStatus.setText(mstrStatus);
@@ -434,6 +348,7 @@ public class Menu extends DisplaySensorActivity {
                 }
             }
         }
+        */
 
         postRefreshInterface(500);
 
