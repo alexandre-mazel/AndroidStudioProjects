@@ -48,66 +48,38 @@
             android:layout_weight="80"
             android:background="#cccccc"
             android:orientation="vertical" >
-<!--
-            <TextView android:id="@+id/menu_desc_test" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="#33b5e5"
 
-                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-                android:text="test2" />
-
-            <TextView android:id="@+id/menu_desc_test"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-
-                android:text="test3"
-                android:gravity="center"
-                android:textSize="40dp"
-                />
--->
-
-            <Space
-                android:layout_width="1dp"
-                android:layout_height="18dp"/>
-
-            <TextView android:id="@+id/menu_desc" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
-                android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-                android:text="@string/settings_txt_desc" />
-
-            <Space
-                android:layout_width="1dp"
-                android:layout_height="10dp"/>
-
-            <Space
-                android:layout_width="1dp"
-                android:layout_height="10dp"/>
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="600dp"
-                android:layout_gravity="center"
-                android:text="@string/settings_txt_discover"
-                android:background="@color/def"
-                android:textSize="60sp"
-                android:onClick="onSettingsDiscover" />
-
-            <Button
-                android:layout_height="wrap_content"
-                android:layout_width="600dp"
-                android:layout_gravity="center"
-                android:text="@string/settings_txt_calibration"
-                android:background="@color/def"
-                android:textSize="60sp"
-                android:onClick="onSettingsCalibration" />
-
-            <Button
-                android:layout_height="wrap_content"
-                android:layout_width="600dp"
-                android:layout_gravity="center"
-                android:text="@string/settings_txt_discrimination"
+                android:layout_width="200dp"
+                android:text="@string/menu_txt_choice_reconnect"
                 android:background="@color/calc"
-                android:textSize="60sp"
-                android:onClick="onSettingsDiscrimination" />
+                android:textSize="40sp"
+                android:onClick="onButtonReconnect" />
+
+            <TextView android:id="@+id/menu_txt_device_status" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_device_status" />
+
+            <TextView android:id="@+id/menu_bpm" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_bpm" />
+
+            <TextView android:id="@+id/menu_angle1" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_angle" />
+            <TextView android:id="@+id/menu_angle2" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_angle" />
+            <TextView android:id="@+id/menu_angle3" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:keepScreenOn="true" android:textColor="@color/pagetitle"
+                android:textStyle="normal" android:textSize="20sp" android:gravity="center"
+                android:text="@string/menu_txt_angle" />
 
             <Space
                 android:layout_width="1dp"

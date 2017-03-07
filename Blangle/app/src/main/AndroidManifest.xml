@@ -38,6 +38,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.electronoos.blangle.Menu" />
         </activity>
+        <activity
+            android:name=".DiscoverActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".SettingsActivity"
+            android:theme="@style/FullscreenTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.electronoos.blangle.SettingsActivity" />
+        </activity>
         <!--<activity android:label="toto" android:name="DeviceScanActivity"/> -->
     </application>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
