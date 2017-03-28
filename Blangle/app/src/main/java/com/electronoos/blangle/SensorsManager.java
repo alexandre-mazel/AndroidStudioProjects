@@ -125,6 +125,7 @@ public class SensorsManager {
         mListDevice = new ArrayList<BluetoothDevice>();
         maBluetoothGatt = new ArrayList<BluetoothGatt>();
     }
+    
 
     public void setKnownSensor( String[] listKnown )
     {
