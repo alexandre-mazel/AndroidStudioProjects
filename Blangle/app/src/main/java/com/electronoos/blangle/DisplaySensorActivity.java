@@ -144,8 +144,8 @@ public class DisplaySensorActivity extends Activity {
 
         // output to file
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String currentDateandTime = sdf.format(new Date());
-        String newLine = currentDateandTime + ": " + String.valueOf(nBpm);
+        String currentDateAndTime = sdf.format(new Date());
+        String newLine = currentDateAndTime + ": " + String.valueOf(nBpm);
         Log.v( "DBG", newLine );
         mstrBpmLastTxt += newLine + "\n";
 

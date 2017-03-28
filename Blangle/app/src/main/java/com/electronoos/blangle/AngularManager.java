@@ -1,9 +1,17 @@
 package com.electronoos.blangle;
 
+import android.os.Environment;
 import android.util.Log;
 
 import com.electronoos.blangle.util.Averager;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Hashtable;
 
 /**
@@ -24,6 +32,8 @@ public class AngularManager {
 
     private Hashtable<String,Integer> sensorTable_; // a way to associate a sensor string to an idx (idx is then the index of above list)
 
+    File pathForConfig_;
+
 
     // nNbrValueToAverage => in BTLE each second gives 10 values... so 20 to 30 is ok
     public AngularManager( int nNbrSensors, int nNbrValueToAverage )
@@ -41,6 +51,72 @@ public class AngularManager {
 
         }
         sensorTable_ = new Hashtable<String, Integer>();
+
+        File pathForConfig_ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+        readConfig();
+    }
+
+    private void readConfig()
+    {
+        Log.v("DBG", "readConfig: reading from file!!!");
+        try
+        {
+            File file = new File( pathForConfig_, "blangle.cfg");
+
+            FileInputStream fIn = new FileInputStream(file );
+            DataInputStream dis = new DataInputStream( fIn );
+            int n = dis.readInt();
+            Log.v("DBG", "readConfig: " + n );
+            for( int i = 0; i < n; ++i )
+            {
+                String s = dis.readUTF();
+                Double d = dis.readDouble();
+                Log.v("DBG", "readConfig: " + s + ": " + d );
+                arOffset_[sensorTable_.size()] = d;
+                sensorTable_.put(s, sensorTable_.size() );
+            }
+
+            dis.close();
+        }
+        catch(FileNotFoundException fe)
+        {
+            Log.d("ERROR", "FileNotFoundException : " + fe);
+        }
+        catch(IOException ioe)
+        {
+            Log.d("ERROR","IOException : " + ioe);
+        }
+        Log.v("DBG", "GOOD: config wrotten");
+    }
+
+    private void writeConfig()
+    {
+        Log.v("DBG", "writeConfig: outputting to file!!!");
+        try
+        {
+            File file = new File( pathForConfig_, "blangle.cfg");
+
+            FileOutputStream fOut = new FileOutputStream(file, false );
+            DataOutputStream dos = new DataOutputStream( fOut );
+            dos.writeInt( getDetectedSensorNbr() );
+            for (String key : sensorTable_.keySet())
+            {
+                dos.writeUTF( key );
+                dos.writeDouble( arOffset_[sensorTable_.get(key)] );
+            }
+
+            dos.close();
+        }
+        catch(FileNotFoundException fe)
+        {
+            Log.d("ERROR", "FileNotFoundException : " + fe);
+        }
+        catch(IOException ioe)
+        {
+            Log.d("ERROR","IOException : " + ioe);
+        }
+        Log.v("DBG", "GOOD: config wrotten");
     }
 
 
@@ -81,6 +157,7 @@ public class AngularManager {
         for (int i = 0; i < nNbrSensors_; ++i) {
             calibrate(i);
         }
+        writeConfig();
     }
 
     public void calibrate( int nIdx )
