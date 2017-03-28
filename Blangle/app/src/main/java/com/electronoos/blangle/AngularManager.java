@@ -181,5 +181,10 @@ public class AngularManager {
         arOffset_[nIdx] = arAngle_[nIdx];
     }
 
+    public void clearAllKnown()
+    {
+        sensorTable_ = new Hashtable<String, Integer>();
+    }
+
 
 }

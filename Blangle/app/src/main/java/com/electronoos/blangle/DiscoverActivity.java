@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.electronoos.blangle.util.Averager;
 
+import java.util.ArrayList;
+
 /**
  * Created by a on 14/02/17.
  */
@@ -28,6 +30,10 @@ public class DiscoverActivity extends DisplaySensorActivity {
         setContentView(R.layout.activity_discover);
 
         createDisplaySensorWidgets( R.layout.activity_discover );
+
+        // in discover, we erase all previous data and sensor narrowing
+        Global.getAngularManager().clearAllKnown();
+        Global.getCurrentSensorsManager().setKnownSensors( new ArrayList <String>() );
 
     }
 

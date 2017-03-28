@@ -87,6 +87,8 @@ public class Menu extends DisplaySensorActivity {
     private int mnNbrUpdateBpm;
     private String mstrLastTxt;
 
+    private TextView mTxtComputed;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +125,7 @@ public class Menu extends DisplaySensorActivity {
         mnNbrUpdateBpm = 0;
         mstrLastTxt = "";
 */
+        mTxtComputed = (TextView) findViewById(R.id.menu_computed);
 
 
         // Set up an instance of SystemUiHider to control the system UI for

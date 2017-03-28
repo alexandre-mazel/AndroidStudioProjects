@@ -382,7 +382,7 @@ public class SensorsManager {
         Log.v("DBG", "discover - end (running in background)");
     }
 
-    private boolean isAllKnownFound()
+    public boolean isAllKnownFound()
     {
         for( String s: listKnown_ ) {
             boolean bFound = false;
@@ -397,7 +397,7 @@ public class SensorsManager {
                 return false;
             }
         }
-        String strStatus = "ALL Found ! (nbr dev: " + listKnown_.size() + " )";
+        String strStatus = "ALL Found ! (nbr dev to found: " + listKnown_.size() + " )";
         Log.v("DBG", "isAllKnownFound: " + strStatus );
         Global.getDisplayActivity().updateStatus( strStatus );
         return true;
@@ -419,6 +419,14 @@ public class SensorsManager {
         }
 
         // if you arrive there, we'll stop
+
+        if( listKnown_ != null && listKnown_.size() > 0 && ! isAllKnownFound() )
+        {
+            // found bad one or incomplete => remove all !
+            Log.v("DBG", "clearing all!" );
+            mListDevice = new ArrayList<BluetoothDevice>();
+        }
+
 
         mbScanning = false;
         Log.v("DBG", "stop lescan");
@@ -683,7 +691,7 @@ public class SensorsManager {
 
                     Log.v("DBG", "SensorManager: onServicesDiscovered: " + gatt.getDevice().getAddress() );
 
-                    Global.getDisplayActivity().updateStatus("discovered: " + gatt.getDevice().getAddress());
+                    //Global.getDisplayActivity().updateStatus("discovered: " + gatt.getDevice().getAddress());
 
                     updateWaitingCalls();
 
@@ -934,6 +942,8 @@ public class SensorsManager {
                 }
             }
         }
+
+        isAllKnownFound(); // just to update info on screen (lazy)
     }
 
     public int update()
