@@ -84,7 +84,9 @@ public class DisplaySensorActivity extends Activity {
         // connect to previously discovered and calibrated sensors
         Global.getAngularManager().getDetectedSensorNbr(); // to just create the singleton
         Global.getCurrentSensorsManager().setKnownSensors(Global.getAngularManager().getKnownSensors());
-        Global.getCurrentSensorsManager().discover();
+
+        postConnectBLE(10);
+        //Global.getCurrentSensorsManager().discover();
 
     }
 

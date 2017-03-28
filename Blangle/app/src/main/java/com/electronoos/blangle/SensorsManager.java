@@ -130,6 +130,7 @@ public class SensorsManager {
 
     public void setKnownSensors( ArrayList<String> listKnown )
     {
+        Log.v("DBG", "SensorManager: setKnownSensors: waiting to find this list: " + listKnown );
         listKnown_ = listKnown;
     }
     private void addWaitingWrite(BluetoothGatt gatt, Object o)
@@ -396,6 +397,9 @@ public class SensorsManager {
                 return false;
             }
         }
+        String strStatus = "ALL Found ! (nbr dev: " + listKnown_.size() + " )";
+        Log.v("DBG", "isAllKnownFound: " + strStatus );
+        Global.getDisplayActivity().updateStatus( strStatus );
         return true;
     }
 
@@ -404,11 +408,17 @@ public class SensorsManager {
         // return 1 if found
         // 0 while scan is incomplete
         // -1 if not found
-        if( listKnown_.size() == 0 && mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 2*5000 )
+        if( ( listKnown_ == null || listKnown_.size() == 0 ) && mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 2*5000 ) {
+            Log.v("DBG", "waitFound: pas found (1)" );
             return 0;
+        }
 
-        if( listKnown_.size() > 1 && ( ! isAllKnownFound() || System.currentTimeMillis() - mTimeStartDiscover < 30*1000 ) )
+        if( listKnown_ != null && listKnown_.size() > 0 && ! isAllKnownFound() && System.currentTimeMillis() - mTimeStartDiscover < 30*1000 ) {
+            Log.v("DBG", "waitFound: pas found (2)" );
             return 0;
+        }
+
+        // if you arrive there, we'll stop
 
         mbScanning = false;
         Log.v("DBG", "stop lescan");
