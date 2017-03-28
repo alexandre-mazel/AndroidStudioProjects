@@ -290,6 +290,11 @@ public class Menu extends DisplaySensorActivity {
         */
     }
 
+    public void onChoiceConnect(View view) {
+
+        super.connect(view);
+    }
+
     public void onChoiceSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);

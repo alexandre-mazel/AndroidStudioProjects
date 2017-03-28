@@ -79,6 +79,15 @@ public class DisplaySensorActivity extends Activity {
         postRefreshDisplayInterface(2000);
     }
 
+    public void connect(View view)
+    {
+        // connect to previously discovered and calibrated sensors
+        Global.getAngularManager().getDetectedSensorNbr(); // to just create the singleton
+        Global.getCurrentSensorsManager().setKnownSensors(Global.getAngularManager().getKnownSensors());
+        Global.getCurrentSensorsManager().discover();
+
+    }
+
     public void onChoiceCalc(View view) {
         // Kabloey
     }

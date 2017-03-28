@@ -104,18 +104,18 @@
                 android:layout_height="wrap_content"
                 android:layout_width="600dp"
                 android:layout_gravity="center"
-                android:text="@string/menu_txt_choice_settings"
+                android:text="@string/menu_txt_choice_connect"
                 android:background="@color/def"
-                android:textSize="40sp"
+                android:textSize="60sp"
                 android:onClick="onChoiceConnect" />
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="600dp"
+                android:layout_width="400dp"
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_settings"
                 android:background="@color/def"
-                android:textSize="30sp"
+                android:textSize="40sp"
                 android:onClick="onChoiceSettings" />
 
             <Space
@@ -124,7 +124,7 @@
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="600dp"
+                android:layout_width="200dp"
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_def"
                 android:background="@color/def"
@@ -136,7 +136,7 @@
 
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="600dp"
+                android:layout_width="200dp"
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_calc"
                 android:background="@color/calc"

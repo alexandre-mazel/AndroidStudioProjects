@@ -20,6 +20,7 @@ import com.electronoos.blangle.util.GetUserInput;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -89,7 +90,7 @@ public class SensorsManager {
     private Queue<Pair<BluetoothGatt,Object>> mWaitingRead;
     private Semaphore mWaitingMutex; // I want a mutex non-reentrant (even if current thread has locked it, I want to be sure, it's locked)
 
-    private String[] listKnown_; // if set, discover will only find and wait for those in this list
+    private List<String> listKnown_; // if set, discover will only find and wait for those in this list
 
 
     public boolean isConnectedToSensorTag( BluetoothGatt gatt )
@@ -125,9 +126,9 @@ public class SensorsManager {
         mListDevice = new ArrayList<BluetoothDevice>();
         maBluetoothGatt = new ArrayList<BluetoothGatt>();
     }
-    
 
-    public void setKnownSensor( String[] listKnown )
+
+    public void setKnownSensors( ArrayList<String> listKnown )
     {
         listKnown_ = listKnown;
     }
@@ -380,12 +381,33 @@ public class SensorsManager {
         Log.v("DBG", "discover - end (running in background)");
     }
 
+    private boolean isAllKnownFound()
+    {
+        for( String s: listKnown_ ) {
+            boolean bFound = false;
+            for (BluetoothDevice dev : mListDevice) {
+                if (dev.getAddress().toString().equals(s)) {
+                    bFound = true;
+                    break;
+                }
+            }
+            if( ! bFound )
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private int waitFound()
     {
         // return 1 if found
         // 0 while scan is incomplete
         // -1 if not found
-        if( mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 2*5000 )
+        if( listKnown_.size() == 0 && mListDevice.size() < 4 && System.currentTimeMillis() - mTimeStartDiscover < 2*5000 )
+            return 0;
+
+        if( listKnown_.size() > 1 && ( ! isAllKnownFound() || System.currentTimeMillis() - mTimeStartDiscover < 30*1000 ) )
             return 0;
 
         mbScanning = false;

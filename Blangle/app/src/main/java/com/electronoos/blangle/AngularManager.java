@@ -13,6 +13,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
@@ -102,7 +105,7 @@ public class AngularManager {
         {
             //File file = new File( pathForConfig_, "blangle.cfg");
             //FileOutputStream fOut = new FileOutputStream(file, false );
-            FileOutputStream fOut = Global.getDisplayActivity().getApplicationContext().openFileOutput("blangle.cfg",Context.MODE_PRIVATE);
+            FileOutputStream fOut = Global.getDisplayActivity().getApplicationContext().openFileOutput("blangle.cfg", Context.MODE_PRIVATE);
             DataOutputStream dos = new DataOutputStream( fOut );
             dos.writeInt( getDetectedSensorNbr() );
             for (String key : sensorTable_.keySet())
@@ -156,6 +159,13 @@ public class AngularManager {
     public int getDetectedSensorNbr(){
         return sensorTable_.size();
     }
+
+    public ArrayList<String> getKnownSensors()
+    {
+        ArrayList<String> ll =  Collections.list( sensorTable_.keys() );
+        return ll;
+    }
+
 
     public void calibrateAll()
     {
