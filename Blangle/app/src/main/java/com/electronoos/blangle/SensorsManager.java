@@ -89,6 +89,8 @@ public class SensorsManager {
     private Queue<Pair<BluetoothGatt,Object>> mWaitingRead;
     private Semaphore mWaitingMutex; // I want a mutex non-reentrant (even if current thread has locked it, I want to be sure, it's locked)
 
+    private String[] listKnown_; // if set, discover will only find and wait for those in this list
+
 
     public boolean isConnectedToSensorTag( BluetoothGatt gatt )
     {
@@ -122,6 +124,11 @@ public class SensorsManager {
 
         mListDevice = new ArrayList<BluetoothDevice>();
         maBluetoothGatt = new ArrayList<BluetoothGatt>();
+    }
+
+    public void setKnownSensor( String[] listKnown )
+    {
+        listKnown_ = listKnown;
     }
     private void addWaitingWrite(BluetoothGatt gatt, Object o)
     {

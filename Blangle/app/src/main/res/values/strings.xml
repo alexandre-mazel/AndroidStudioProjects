@@ -7,6 +7,7 @@
     <string name="title_activity_definition">Definition</string>
 
     <string name="menu_txt_desc">Choix du mode</string>
+    <string name="menu_txt_choice_connect">Connecte</string>
     <string name="menu_txt_choice_settings">Settings</string>
     <string name="menu_txt_choice_def">Références</string>
     <string name="menu_txt_choice_calc">Détermination</string>

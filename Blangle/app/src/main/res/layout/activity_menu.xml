@@ -106,7 +106,16 @@
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_settings"
                 android:background="@color/def"
-                android:textSize="60sp"
+                android:textSize="40sp"
+                android:onClick="onChoiceConnect" />
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="600dp"
+                android:layout_gravity="center"
+                android:text="@string/menu_txt_choice_settings"
+                android:background="@color/def"
+                android:textSize="30sp"
                 android:onClick="onChoiceSettings" />
 
             <Space
@@ -119,7 +128,7 @@
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_def"
                 android:background="@color/def"
-                android:textSize="60sp"
+                android:textSize="20sp"
                 android:onClick="onChoiceDef" />
             <Space
                 android:layout_width="1dp"
@@ -131,7 +140,7 @@
                 android:layout_gravity="center"
                 android:text="@string/menu_txt_choice_calc"
                 android:background="@color/calc"
-                android:textSize="60sp"
+                android:textSize="20sp"
                 android:onClick="onChoiceCalc" />
 
             <Button

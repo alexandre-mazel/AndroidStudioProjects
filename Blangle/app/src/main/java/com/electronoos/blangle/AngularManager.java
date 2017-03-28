@@ -1,5 +1,6 @@
 package com.electronoos.blangle;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -52,7 +53,9 @@ public class AngularManager {
         }
         sensorTable_ = new Hashtable<String, Integer>();
 
-        File pathForConfig_ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        //File pathForConfig_ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        //File pathForConfig_ = Context.getCacheDir() + File.separator;
+        File pathForConfig_ = Environment.getDataDirectory();
 
         readConfig();
     }
@@ -62,9 +65,10 @@ public class AngularManager {
         Log.v("DBG", "readConfig: reading from file!!!");
         try
         {
-            File file = new File( pathForConfig_, "blangle.cfg");
+            //File file = new File( pathForConfig_, "blangle.cfg");
 
-            FileInputStream fIn = new FileInputStream(file );
+            //FileInputStream fIn = new FileInputStream(file );
+            FileInputStream fIn = Global.getDisplayActivity().getApplicationContext().openFileInput("blangle.cfg"); //Context.MODE_PRIVATE
             DataInputStream dis = new DataInputStream( fIn );
             int n = dis.readInt();
             Log.v("DBG", "readConfig: " + n );
@@ -78,16 +82,17 @@ public class AngularManager {
             }
 
             dis.close();
+            Log.v("DBG", "readConfig: read succeeded...");
         }
         catch(FileNotFoundException fe)
         {
-            Log.d("ERROR", "FileNotFoundException : " + fe);
+            Log.d("DBG", "readConfig: FileNotFoundException : " + fe);
         }
         catch(IOException ioe)
         {
-            Log.d("ERROR","IOException : " + ioe);
+            Log.d("DBG","readConfig: IOException : " + ioe);
         }
-        Log.v("DBG", "GOOD: config wrotten");
+        Log.v("DBG", "readConfig: read finished...");
     }
 
     private void writeConfig()
@@ -95,9 +100,9 @@ public class AngularManager {
         Log.v("DBG", "writeConfig: outputting to file!!!");
         try
         {
-            File file = new File( pathForConfig_, "blangle.cfg");
-
-            FileOutputStream fOut = new FileOutputStream(file, false );
+            //File file = new File( pathForConfig_, "blangle.cfg");
+            //FileOutputStream fOut = new FileOutputStream(file, false );
+            FileOutputStream fOut = Global.getDisplayActivity().getApplicationContext().openFileOutput("blangle.cfg",Context.MODE_PRIVATE);
             DataOutputStream dos = new DataOutputStream( fOut );
             dos.writeInt( getDetectedSensorNbr() );
             for (String key : sensorTable_.keySet())
@@ -110,13 +115,13 @@ public class AngularManager {
         }
         catch(FileNotFoundException fe)
         {
-            Log.d("ERROR", "FileNotFoundException : " + fe);
+            Log.d("ERROR", "writeConfig: FileNotFoundException : " + fe);
         }
         catch(IOException ioe)
         {
-            Log.d("ERROR","IOException : " + ioe);
+            Log.d("ERROR","writeConfig: IOException : " + ioe);
         }
-        Log.v("DBG", "GOOD: config wrotten");
+        Log.v("DBG", "writeConfig: GOOD: config wrotten");
     }
 
 
