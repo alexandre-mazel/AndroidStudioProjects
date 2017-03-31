@@ -103,6 +103,7 @@ public class DisplaySensorActivity extends Activity {
         Log.v("DBG", "start BLE stuffs");
         mTxtDeviceStatus.setText("Searching...");
         if( true ) {
+
             Global.getCurrentSensorsManager().discover();
             postRefreshBLE(1000);
         }

@@ -25,6 +25,7 @@ import java.util.Hashtable;
 public class AngularManager {
 
     private int nNbrSensors_;
+    private int nNbrValueToAverage_;
 
     // for each sensors:
     private Averager[] aAngleAverager_;
@@ -36,6 +37,8 @@ public class AngularManager {
 
     private Hashtable<String,Integer> sensorTable_; // a way to associate a sensor string to an idx (idx is then the index of above list)
 
+    private String[] aDeviceOrder_; // the name of the device ordered 0 (the first sensor) => name of the sensor ... (empty if unset)
+
     File pathForConfig_;
 
 
@@ -43,18 +46,9 @@ public class AngularManager {
     public AngularManager( int nNbrSensors, int nNbrValueToAverage )
     {
         nNbrSensors_ = nNbrSensors;
-        aAngleAverager_ = new Averager[nNbrSensors_];
-        arAngle_ = new double[nNbrSensors_];
-        arOffset_= new double[nNbrSensors_];
-        aTimeLastUpdateMs_ = new double[nNbrSensors_];
+        nNbrValueToAverage_ = nNbrValueToAverage;
+        reset();
 
-        for (int i = 0; i < nNbrSensors_; ++i) {
-            aAngleAverager_[i] = new Averager<Double>(nNbrValueToAverage);
-            arAngle_[i] = -1;
-            arOffset_[i] = 0;
-
-        }
-        sensorTable_ = new Hashtable<String, Integer>();
 
         //File pathForConfig_ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         //File pathForConfig_ = Context.getCacheDir() + File.separator;
@@ -63,9 +57,49 @@ public class AngularManager {
         readConfig();
     }
 
+    public void reset()
+    {
+        Log.d( "DBG", "AngularManager.reset: begin..." );
+        aAngleAverager_ = new Averager[nNbrSensors_];
+        arAngle_ = new double[nNbrSensors_];
+        arOffset_= new double[nNbrSensors_];
+        aTimeLastUpdateMs_ = new double[nNbrSensors_];
+        aDeviceOrder_ = new String[nNbrSensors_];
+
+        for (int i = 0; i < nNbrSensors_; ++i) {
+            aAngleAverager_[i] = new Averager<Double>(nNbrValueToAverage_);
+            arAngle_[i] = -1;
+            arOffset_[i] = 0;
+            aDeviceOrder_[i] = "";
+
+        }
+        sensorTable_ = new Hashtable<String, Integer>();
+
+        Log.d( "DBG", "AngularManager.reset: getDetectedSensorNbr: " + getDetectedSensorNbr() );
+    }
+
+    public void drawDebug()
+    {
+        Log.d( "DBG", "AngularManager.drawDebug: getDetectedSensorNbr: " + getDetectedSensorNbr() );
+        for (int i = 0; i < getDetectedSensorNbr(); ++i) {
+            Log.d( "DBG", "AngularManager.drawDebug: aDeviceOrder_ " + i + ": " + aDeviceOrder_[i] );
+        }
+        for (String key : sensorTable_.keySet()) {
+            Log.d( "DBG", "AngularManager.drawDebug: sensorTable_ " + key + ": " + sensorTable_.get(key) );
+        }
+
+    }
+
     private void readConfig()
     {
         Log.v("DBG", "readConfig: reading from file!!!");
+
+
+        if( true )
+        {
+            // enable this to explode previous configuration
+            return;
+        }
         try
         {
             //File file = new File( pathForConfig_, "blangle.cfg");
@@ -74,7 +108,7 @@ public class AngularManager {
             FileInputStream fIn = Global.getDisplayActivity().getApplicationContext().openFileInput("blangle.cfg"); //Context.MODE_PRIVATE
             DataInputStream dis = new DataInputStream( fIn );
             int n = dis.readInt();
-            Log.v("DBG", "readConfig: " + n );
+            Log.v("DBG", "readConfig: known sensor: " + n );
             for( int i = 0; i < n; ++i )
             {
                 String s = dis.readUTF();
@@ -83,9 +117,17 @@ public class AngularManager {
                 arOffset_[sensorTable_.size()] = d;
                 sensorTable_.put(s, sensorTable_.size() );
             }
+            for( int i = 0; i < n; ++i )
+            {
+                String s = dis.readUTF();
+                Log.v("DBG", "readConfig: order: " + s );
+                aDeviceOrder_[i] = s;
+            }
 
             dis.close();
             Log.v("DBG", "readConfig: read succeeded...");
+            Log.d( "DBG", "AngularManager.read: at end: getDetectedSensorNbr: " + getDetectedSensorNbr() );
+
         }
         catch(FileNotFoundException fe)
         {
@@ -113,6 +155,11 @@ public class AngularManager {
                 dos.writeUTF( key );
                 dos.writeDouble( arOffset_[sensorTable_.get(key)] );
             }
+            for( int i = 0; i < getDetectedSensorNbr(); ++i )
+            {
+                dos.writeUTF(aDeviceOrder_[i]);
+            }
+
 
             dos.close();
         }
@@ -129,9 +176,12 @@ public class AngularManager {
 
 
     private int getSensorIdx( String address ){
+        assert( ! address.equals("") );
+
         if( ! sensorTable_.containsKey(address) )
         {
             sensorTable_.put(address, sensorTable_.size() );
+            Log.v( "DBG", "New getSensorIdx: " + address + " => " + sensorTable_.get(address) );
         }
         int nIdx = sensorTable_.get(address);
         //Log.v( "DBG", "getSensorIdx: " + address + " => " + nIdx );
@@ -140,6 +190,7 @@ public class AngularManager {
 
     public void updateAngle(String strDeviceName, double rAngle)
     {
+        drawDebug();
         int nCurrentIdx = getSensorIdx(strDeviceName);
         aAngleAverager_[nCurrentIdx].addValue(rAngle);
         arAngle_[nCurrentIdx] = aAngleAverager_[nCurrentIdx].computeAverage().doubleValue();
@@ -149,6 +200,16 @@ public class AngularManager {
     public double getAngle( int nIdx )
     {
         return arAngle_[nIdx] - arOffset_[nIdx];
+    }
+    public String getName( int nIdx ) {
+        // return "" if nidx unknown
+        for (String key : sensorTable_.keySet()) {
+            if( sensorTable_.get( key ) == nIdx )
+            {
+                return key;
+            }
+        }
+        return "";
     }
     public double getLastUpdate( int nIdx )
     {
@@ -169,6 +230,7 @@ public class AngularManager {
 
     public void calibrateAll()
     {
+        Log.d( "DBG", "AngularManager.calibrateAll: getDetectedSensorNbr: " + getDetectedSensorNbr() );
         for (int i = 0; i < nNbrSensors_; ++i) {
             calibrate(i);
         }
@@ -181,10 +243,42 @@ public class AngularManager {
         arOffset_[nIdx] = arAngle_[nIdx];
     }
 
-    public void clearAllKnown()
+    // store sensors order, return true if no more sensor to ordered
+    public boolean setOrderNext( String strDeviceName )
     {
-        sensorTable_ = new Hashtable<String, Integer>();
+        Log.d( "DBG", "AngularManager.setOrderNext: aDeviceOrder_ 0:" + aDeviceOrder_[0] + ", 1:" + aDeviceOrder_[1] + ", 2:" + aDeviceOrder_[2] );
+        Log.d( "DBG", "AngularManager.setOrderNext: getDetectedSensorNbr: " + getDetectedSensorNbr() );
+        for (int i = 0; i < getDetectedSensorNbr(); ++i) {
+            if( aDeviceOrder_[i].equals( "" ) ) {
+                aDeviceOrder_[i] = strDeviceName;
+                return i == getDetectedSensorNbr() - 1;
+            }
+        }
+        assert( false ); // thou can't go there
+        return true;
     }
+
+    // return the angle of the sensors by ordered angle (0 => top, 1 => injection, 2 => racle)
+    public double getAngleByOrderedIndex( int nIdx )
+    {
+        if( nIdx >= getDetectedSensorNbr() ) {
+            return -1000;
+        }
+        try{
+            if( aDeviceOrder_[nIdx] == "" )
+            {
+                return -1000;
+            }
+            return getAngle(getSensorIdx(aDeviceOrder_[nIdx]));
+        }
+        catch( Exception e )
+        {
+            Log.v("DBG", "WRN: ordered idx not associated:" + nIdx );
+            return -1000.0;
+        }
+
+    }
+
 
 
 }

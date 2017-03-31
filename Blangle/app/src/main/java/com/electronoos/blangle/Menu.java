@@ -80,12 +80,15 @@ public class Menu extends DisplaySensorActivity {
     private String mstrStatus; // used to refresh in the good thread
     private int mnBpm;
 
+    /*
     final int mnNbrAngle = 3;
     private double[] marAngle; // used to refresh in the good thread
     private double[] maTimeLastUpdateMs;
     private Averager[] maAngleAverage;
     private int mnNbrUpdateBpm;
     private String mstrLastTxt;
+
+    */
 
     private TextView mTxtComputed;
 
@@ -357,6 +360,13 @@ public class Menu extends DisplaySensorActivity {
             }
         }
         */
+
+        double r1 = Global.getAngularManager().getAngleByOrderedIndex(0);
+        double r2 = Global.getAngularManager().getAngleByOrderedIndex(1);
+        double rDiam = 30;
+        double rDist = ( (r2-r1)*Math.PI*rDiam) / 360.;
+        double rAngle3 = Global.getAngularManager().getAngleByOrderedIndex(2);
+        mTxtComputed.setText( String.format("dist 1-2 (%.2f-%.2f, diam:%.1fcm): %.2fcm\nangle racle3: %.1f°", r1, r2, rDiam, rDist, rAngle3) );
 
         postRefreshInterface(500);
 

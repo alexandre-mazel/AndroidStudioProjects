@@ -32,9 +32,17 @@ public class DiscoverActivity extends DisplaySensorActivity {
         createDisplaySensorWidgets( R.layout.activity_discover );
 
         // in discover, we erase all previous data and sensor narrowing
-        Global.getAngularManager().clearAllKnown();
+        Global.getAngularManager().reset();
+        Global.getCurrentSensorsManager().setKnownSensors( new ArrayList <String>() );
+    }
+
+    @Override
+    public void onButtonReconnect(View view) {
+        // in discover, we erase all previous data and sensor narrowing
+        Global.getAngularManager().reset();
         Global.getCurrentSensorsManager().setKnownSensors( new ArrayList <String>() );
 
+        super.onButtonReconnect(view);
     }
 
     @Override
