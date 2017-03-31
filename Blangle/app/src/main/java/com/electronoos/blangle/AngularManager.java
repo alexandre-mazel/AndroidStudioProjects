@@ -98,8 +98,9 @@ public class AngularManager {
         if( true )
         {
             // enable this to explode previous configuration
-            return;
+            //return;
         }
+
         try
         {
             //File file = new File( pathForConfig_, "blangle.cfg");
