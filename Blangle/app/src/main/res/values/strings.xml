@@ -55,7 +55,8 @@
     <string name="title_activity_discover">Discover</string>
 
 
-    <string name="txt_password_prompt">Enter password to change settings:</string>
+    <string name="title_activity_password">Security</string>
+    <string name="txt_password_prompt">Enter password to enter settings:</string>
     <string name="txt_password_enter">Go</string>
 
 

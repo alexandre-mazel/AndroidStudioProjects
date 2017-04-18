@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.electronoos.blangle.util.Averager;
@@ -41,20 +43,18 @@ public class PasswordActivity extends Activity {
 
 
 
-    public void onSettingsCalibration(View view) {
-
-    }
-
-    public void onSettingsDiscrimination(View view) {
-        Toast.makeText(this, R.string.settings_txt_move_first_one_then_second_then_third, Toast.LENGTH_LONG).show();
-        mMode = 2;
-        for( int i = 0; i < Global.getAngularManager().getDetectedSensorNbr(); ++i) {
-            marAngleRef[i] = Global.getAngularManager().getAngle(i);
+    public void onButtonGo(View view) {
+        EditText te = (EditText)findViewById(R.id.password_edit);
+        String strP = te.getText().toString();
+        if( strP.equals( "4211") )
+        {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return;
         }
-        postUpdateAngleTimed(500);
-        //Toast.makeText(this, R.string.txt_done, Toast.LENGTH_LONG).show();
-        //mMode = 0;
+        onBack( view );
     }
+
 
     public void onBack(View view) {
         Intent intent = new Intent(this, Menu.class);

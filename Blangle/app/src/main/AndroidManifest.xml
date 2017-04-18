@@ -48,6 +48,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.electronoos.blangle.SettingsActivity" />
         </activity>
+        <activity
+            android:name=".PasswordActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_password"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
         <!--<activity android:label="toto" android:name="DeviceScanActivity"/> -->
     </application>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
