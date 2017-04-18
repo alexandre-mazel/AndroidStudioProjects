@@ -92,6 +92,7 @@ public class SensorsManager {
 
     private List<String> listKnown_; // if set, discover will only find and wait for those in this list
 
+    public boolean isScanning() {return mbScanning;}
 
     public boolean isConnectedToSensorTag( BluetoothGatt gatt )
     {
@@ -959,7 +960,7 @@ public class SensorsManager {
                  try {
                      connect();
                  } catch (Exception e) {
-                     Log.v("DBG", "SensorManager: EXCEPTIOPN !!!!" );
+                     Log.v("DBG", "SensorManager: EXCEPTION !!!!: " + e.toString() );
                      e.printStackTrace();
                  }
              }

@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class DisplaySensorActivity extends Activity {
 
     private int mnNbrUpdateBpm;
     private String mstrBpmLastTxt;
+    private String mstrButtonOriginalReconnectText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,8 @@ public class DisplaySensorActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         Global.setDisplayActivity( this );
+
+        mstrButtonOriginalReconnectText = "";
 
     } // onCreate
 
@@ -192,7 +196,7 @@ public class DisplaySensorActivity extends Activity {
 
     protected void refreshDisplayInterface(Boolean bAutoRepost) {
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
-        Log.d("DBG", "refreshDisplayInterface: entering..." );
+        //Log.d("DBG", "DisplaySensorActivity.refreshDisplayInterface: entering..." );
         if( mstrStatus != null ) {
             mTxtDeviceStatus.setText(mstrStatus);
             mstrStatus = null; // could miss one from time to time
@@ -223,6 +227,27 @@ public class DisplaySensorActivity extends Activity {
                 maTxtAngle[i].setTextColor(Color.BLACK);
                 maTxtAngle[i].setText(String.format("%.1f", rAngle) + "°");
             }
+        }
+
+        if( Global.getCurrentSensorsManager().isScanning() )
+        {
+            Button recoButton = (Button) findViewById(R.id.menu_reconnect);
+
+            if( mstrButtonOriginalReconnectText.equals("") ) {
+                mstrButtonOriginalReconnectText = recoButton.getText().toString();
+            }
+
+            String strText = mstrButtonOriginalReconnectText;
+            long nNbrPoint = System.currentTimeMillis()/1000;
+            nNbrPoint = Global.modulo(nNbrPoint,4);
+
+            //Log.d("DBG", "nNbrPoint: " + nNbrPoint );
+
+            for(int i = 0; i < nNbrPoint; ++i ) {
+                strText += ".";
+            }
+            
+            recoButton.setText(strText);
         }
 
         if( bAutoRepost ) {

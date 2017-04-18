@@ -328,7 +328,7 @@ public class Menu extends DisplaySensorActivity {
 
     //@Override
     private void refreshInterface() {
-        Log.v("DBG", "in menu refreshInterface" );
+        //Log.v("DBG", "in menu refreshInterface" );
         //super.refreshDisplayInterface(false);
         /*
         //Log.v("DBG", "in refreshBpm update !!!: mnBpm:" + mnBpm);
