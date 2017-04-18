@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.electronoos.blangle.util.Averager;
@@ -34,6 +35,9 @@ public class DiscoverActivity extends DisplaySensorActivity {
         // in discover, we erase all previous data and sensor narrowing
         Global.getAngularManager().reset();
         Global.getCurrentSensorsManager().setKnownSensors( new ArrayList <String>() );
+
+        Button recoButton = (Button) findViewById(R.id.menu_reconnect);
+        recoButton.setText("Start");
     }
 
     @Override

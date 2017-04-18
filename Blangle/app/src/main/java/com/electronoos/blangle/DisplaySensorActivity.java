@@ -207,7 +207,7 @@ public class DisplaySensorActivity extends Activity {
             return;
         }
 
-        mTxtDeviceInfo.setText( "Seen: " + Global.getAngularManager().getDetectedSensorNbr() + "\n" );
+        mTxtDeviceInfo.setText( "Known: " + Global.getAngularManager().getDetectedSensorNbr() + "\n" );
 
         for( int i = 0; i < mnNbrAngle; ++i) {
             double rAngle = Global.getAngularManager().getAngle(i);

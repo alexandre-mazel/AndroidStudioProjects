@@ -145,7 +145,10 @@
                 android:onClick="onChoiceCalc" />
             -->
 
+            <!-- DisplaySensorActivityABC part -->
+
             <Button
+                android:id="@+id/menu_reconnect"
                 android:layout_height="wrap_content"
                 android:layout_width="200dp"
                 android:text="@string/menu_txt_choice_reconnect"

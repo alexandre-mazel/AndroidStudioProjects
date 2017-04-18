@@ -252,7 +252,11 @@ public class AngularManager {
         for (int i = 0; i < getDetectedSensorNbr(); ++i) {
             if( aDeviceOrder_[i].equals( "" ) ) {
                 aDeviceOrder_[i] = strDeviceName;
-                return i == getDetectedSensorNbr() - 1;
+                boolean bFinished = i == getDetectedSensorNbr() - 1;
+                if( bFinished) {
+                    writeConfig();
+                }
+                return bFinished;
             }
         }
         assert( false ); // thou can't go there
@@ -268,13 +272,13 @@ public class AngularManager {
         try{
             if( aDeviceOrder_[nIdx] == "" )
             {
-                return -1000;
+                return -2000.;
             }
             return getAngle(getSensorIdx(aDeviceOrder_[nIdx]));
         }
         catch( Exception e )
         {
-            Log.v("DBG", "WRN: ordered idx not associated:" + nIdx );
+            Log.v("DBG", "WRN: ordered idx not associated: " + nIdx + ",exception: " + e);
             return -1000.0;
         }
 
