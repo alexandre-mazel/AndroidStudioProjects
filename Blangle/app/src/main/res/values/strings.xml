@@ -55,10 +55,16 @@
     <string name="title_activity_discover">Discover</string>
 
 
+    <string name="txt_password_prompt">Enter password to change settings:</string>
+    <string name="txt_password_enter">Go</string>
+
+
     <string name="ble_not_supported">ATTENTION: this device doesn\'t support BLE!!!</string>
     <string name="bt_please_activate_bt">PLEASE: You must activate BT !!!</string>
     <string name="txt_done">fini !!!</string>
     <string name="txt_back">Retour</string>
+
+
 
 
 
