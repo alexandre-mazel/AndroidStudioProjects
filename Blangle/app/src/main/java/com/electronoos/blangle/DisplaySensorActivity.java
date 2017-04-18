@@ -241,12 +241,10 @@ public class DisplaySensorActivity extends Activity {
             long nNbrPoint = System.currentTimeMillis()/1000;
             nNbrPoint = Global.modulo(nNbrPoint,4);
 
-            //Log.d("DBG", "nNbrPoint: " + nNbrPoint );
-
             for(int i = 0; i < nNbrPoint; ++i ) {
                 strText += ".";
             }
-            
+
             recoButton.setText(strText);
         }
 
