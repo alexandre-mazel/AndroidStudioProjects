@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.electronoos.blangle.util.Averager;
+import com.electronoos.blangle.util.DataLogger;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,8 +14,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -29,6 +32,8 @@ public class AngularManager {
 
     // for each sensors:
     private Averager[] aAngleAverager_;
+    private DataLogger[] aAngleLogger_;
+
     private double[] arAngle_; // Last measured/averaged angle
 
     private double[] arOffset_;
@@ -61,6 +66,7 @@ public class AngularManager {
     {
         Log.d( "DBG", "AngularManager.reset: begin..." );
         aAngleAverager_ = new Averager[nNbrSensors_];
+        aAngleLogger_ = new DataLogger[nNbrSensors_];
         arAngle_ = new double[nNbrSensors_];
         arOffset_= new double[nNbrSensors_];
         aTimeLastUpdateMs_ = new double[nNbrSensors_];
@@ -68,6 +74,7 @@ public class AngularManager {
 
         for (int i = 0; i < nNbrSensors_; ++i) {
             aAngleAverager_[i] = new Averager<Double>(nNbrValueToAverage_);
+            aAngleLogger_[i] = new DataLogger<Double>( "angle_" + String.valueOf(i) );
             arAngle_[i] = -1;
             arOffset_[i] = 0;
             aDeviceOrder_[i] = "";
@@ -194,6 +201,7 @@ public class AngularManager {
         drawDebug();
         int nCurrentIdx = getSensorIdx(strDeviceName);
         aAngleAverager_[nCurrentIdx].addValue(rAngle);
+        aAngleLogger_[nCurrentIdx].addValue(rAngle);
         arAngle_[nCurrentIdx] = aAngleAverager_[nCurrentIdx].computeAverage().doubleValue();
         aTimeLastUpdateMs_[nCurrentIdx] = System.currentTimeMillis();
     }
