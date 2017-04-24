@@ -321,7 +321,7 @@ public class SensorsManager {
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                 // your implementation here
                 Log.v("DBG", "Found: Device name:" + device.getName() + ", address: " + device.getAddress() );
-                if( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1  )
+                if( device.getName() != null && ( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1 )  )
                 {
                     if( isAlreadyFound( device ) )
                     {
