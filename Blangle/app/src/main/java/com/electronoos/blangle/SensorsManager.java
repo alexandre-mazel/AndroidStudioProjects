@@ -242,7 +242,7 @@ public class SensorsManager {
     {
         if (mWaitingWrite.size() == 0)
         {
-            Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: empty queue?");
+            //Log.v("DBG", "SensorManager: updateWaitingWrite: WRN: empty queue?");
             return;
         }
         Pair<BluetoothGatt,Object> p = mWaitingWrite.peek();
@@ -278,7 +278,7 @@ public class SensorsManager {
     {
         if (mWaitingRead.size() == 0)
         {
-            Log.v("DBG", "SensorManager: updateWaitingRead: WRN: empty queue?");
+            //Log.v("DBG", "SensorManager: updateWaitingRead: WRN: empty queue?");
             return;
         }
         Pair<BluetoothGatt,Object> p = mWaitingRead.peek();
@@ -385,10 +385,15 @@ public class SensorsManager {
 
     public boolean isAllKnownFound()
     {
+        if( listKnown_ == null )
+        {
+            return false;
+        }
+
         for( String s: listKnown_ ) {
             boolean bFound = false;
             for (BluetoothDevice dev : mListDevice) {
-                if (dev.getAddress().toString().equals(s)) {
+                if (dev.getAddress().equals(s)) {
                     bFound = true;
                     break;
                 }
@@ -460,7 +465,7 @@ public class SensorsManager {
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
                     // this will get called anytime you perform a read or write characteristic operation
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
+                    // Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
                     //Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
                     //read the characteristic data
                     byte[] data = characteristic.getValue();
@@ -546,7 +551,7 @@ public class SensorsManager {
                         //float rAngleZ = (accZ * 1.0f) / (32768/2);
                         double rAngleZ = (accZ * 180) / 4121.; // 4200: empiric maximum // entre -4110 et 4133
                         //rAngleZ = accZ;
-                        Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
+                        // Log.v("DBG", "SensorManager: onCharacteristicChanged: move: rAngleZ: " + rAngleZ );
 
                         //assert( Global.getCurrentActivity() instanceof Menu );
                         //Global.getDisplayActivity().updateAngle( gatt.getDevice().getAddress(), rAngleZ );
@@ -851,7 +856,8 @@ public class SensorsManager {
                                     // change refresh time
                                     characteristic = service.getCharacteristic(UUID.fromString("f000aa83-0451-4000-b000-000000000000"));
                                     //characteristic.setValue(new byte[]{(byte) 0x0A}); // multiple of 10ms, 10 => 100ms 0x64 => 1s
-                                    characteristic.setValue(new byte[]{(byte) 0x0A}); //
+                                    characteristic.setValue(new byte[]{(byte) 0x0A}); // max refresh possible is 100ms
+                                    //characteristic.setValue(new byte[]{(byte) 0x64}); // 1s to save battery (a verifier que ca sauve vraiment la batterie) (but it's not more precise) (no filtering in the hardware)
                                     addWaitingWrite(gatt, characteristic);
                                 }
 

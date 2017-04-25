@@ -249,7 +249,7 @@ public class DisplaySensorActivity extends Activity {
         }
 
         if( bAutoRepost ) {
-            postRefreshDisplayInterface(500);
+            postRefreshDisplayInterface(1000);
         }
 
     }

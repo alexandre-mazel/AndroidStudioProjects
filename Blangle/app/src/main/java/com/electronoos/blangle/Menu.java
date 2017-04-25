@@ -369,7 +369,7 @@ public class Menu extends DisplaySensorActivity {
         double rAngle3 = Global.getAngularManager().getAngleByOrderedIndex(2);
         mTxtComputed.setText( String.format("dist 1-2 (%.2f-%.2f, diam:%.1fcm): %.2fcm\nangle racle3: %.1f°", r1, r2, rDiam, rDist, rAngle3) );
 
-        postRefreshInterface(500);
+        postRefreshInterface(1000);
 
     }
 

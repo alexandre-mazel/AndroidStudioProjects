@@ -16,26 +16,26 @@ import java.util.Queue;
  */
 public class DataLogger <T extends Number> {
     //private Queue<T> data_;
-    private int nNbrValueBetweenTwoSave_;
+    private int nNbrValueBetweenTwoSave_ = 50;
     private int nCptValue_;
     private String strDeviceOrDataName_;
     private String strConcatenatedText_;
 
-    public DataLogger( String strDeviceOrDataName, int nNbrValueBetweenTwoSave)
+    public DataLogger( String strDeviceOrDataName)
     {
         strDeviceOrDataName_ = strDeviceOrDataName;
-        nNbrValueBetweenTwoSave_ = nNbrValueBetweenTwoSave;
-        //data_ = new ArrayDeque<T>();
+      //data_ = new ArrayDeque<T>();
         nCptValue_ = 0;
+        strConcatenatedText_ = "";
     }
 
-    public DataLogger( String strDeviceOrDataName )
-    {
-        DataLogger( strDeviceOrDataName, 50 );
-    }
 
     public void addValue(T value)
     {
+        if( true ) {
+            return; // To deactivate all logers!
+        }
+
         //data_.add(value);
 
         // not optimal: tout ca a chaque fois...
@@ -52,7 +52,7 @@ public class DataLogger <T extends Number> {
         {
             // output to file
             try{
-                Log.v("DBG", "updateBpm: outputting to file!!!");
+                Log.v("DBG", "DataLogger: outputting to file!!!");
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                 File file = new File(path, "data_" + strDeviceOrDataName_ + ".txt");
 
@@ -61,7 +61,7 @@ public class DataLogger <T extends Number> {
                 fOut.close();
             }
             catch (Exception e){
-                Log.v("DBG", "updateBpm: Exception: disk error: " + e.toString());
+                Log.v("DBG", "DataLogger: Exception: disk error: " + e.toString());
             }
             nCptValue_ = 0;
             strConcatenatedText_ = "";

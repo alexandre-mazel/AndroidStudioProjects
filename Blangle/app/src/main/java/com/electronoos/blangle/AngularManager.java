@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.electronoos.blangle.util.Averager;
 import com.electronoos.blangle.util.DataLogger;
+import com.electronoos.blangle.util.EKF;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -31,7 +32,8 @@ public class AngularManager {
     private int nNbrValueToAverage_;
 
     // for each sensors:
-    private Averager[] aAngleAverager_;
+    private Averager[] aAngleAverager_; // you can choose "on the fly" wich method you want.
+    private EKF[] aAngleEKF_;
     private DataLogger[] aAngleLogger_;
 
     private double[] arAngle_; // Last measured/averaged angle
@@ -66,6 +68,7 @@ public class AngularManager {
     {
         Log.d( "DBG", "AngularManager.reset: begin..." );
         aAngleAverager_ = new Averager[nNbrSensors_];
+        aAngleEKF_ = new EKF[nNbrSensors_];
         aAngleLogger_ = new DataLogger[nNbrSensors_];
         arAngle_ = new double[nNbrSensors_];
         arOffset_= new double[nNbrSensors_];
@@ -74,6 +77,7 @@ public class AngularManager {
 
         for (int i = 0; i < nNbrSensors_; ++i) {
             aAngleAverager_[i] = new Averager<Double>(nNbrValueToAverage_);
+            aAngleEKF_[i] = new EKF();
             aAngleLogger_[i] = new DataLogger<Double>( "angle_" + String.valueOf(i) );
             arAngle_[i] = -1;
             arOffset_[i] = 0;
@@ -198,11 +202,25 @@ public class AngularManager {
 
     public void updateAngle(String strDeviceName, double rAngle)
     {
-        drawDebug();
+        //drawDebug();
         int nCurrentIdx = getSensorIdx(strDeviceName);
         aAngleAverager_[nCurrentIdx].addValue(rAngle);
-        aAngleLogger_[nCurrentIdx].addValue(rAngle);
-        arAngle_[nCurrentIdx] = aAngleAverager_[nCurrentIdx].computeAverage().doubleValue();
+        aAngleEKF_[nCurrentIdx].addValue(rAngle);
+        aAngleLogger_[nCurrentIdx].addValue(rAngle-arOffset_[nCurrentIdx]);
+
+        // choose averager or EKF
+        if( true )
+        {
+            arAngle_[nCurrentIdx] = aAngleEKF_[nCurrentIdx].getFilteredValue();
+        }
+        else
+        {
+            arAngle_[nCurrentIdx] = aAngleAverager_[nCurrentIdx].computeAverage().doubleValue();
+        }
+        if( false )
+        {
+            arAngle_[nCurrentIdx] = rAngle; // no filter nor averager
+        }
         aTimeLastUpdateMs_[nCurrentIdx] = System.currentTimeMillis();
     }
 
