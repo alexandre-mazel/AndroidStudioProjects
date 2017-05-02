@@ -16,7 +16,7 @@ import java.util.Queue;
  */
 public class DataLogger <T extends Number> {
     //private Queue<T> data_;
-    private int nNbrValueBetweenTwoSave_ = 50;
+    private int nNbrValueBetweenTwoSave_ = 100;
     private int nCptValue_;
     private String strDeviceOrDataName_;
     private String strConcatenatedText_;
@@ -32,8 +32,8 @@ public class DataLogger <T extends Number> {
 
     public void addValue(T value)
     {
-        if( true ) {
-            return; // To deactivate all logers!
+        if( false ) {
+            return; // To deactivate all loggers!
         }
 
         //data_.add(value);

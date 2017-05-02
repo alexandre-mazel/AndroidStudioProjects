@@ -79,7 +79,7 @@ public class SettingsActivity extends Activity {
 //        for( int i = 0; i < mnNbrAngle; ++i) {
 //            Log.v( "DBG: SettingsActiviy", "val: " + marAngle[i] );
 //        }
-        Global.getAngularManager().calibrateAll();
+        Global.getAngularManager().calibrateAll(); // assume they were stabilized before !!!
         Toast.makeText(this, R.string.txt_done, Toast.LENGTH_LONG).show();
         mMode = 0;
     }
