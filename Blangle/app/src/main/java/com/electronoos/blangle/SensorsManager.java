@@ -468,12 +468,12 @@ public class SensorsManager {
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
                     // this will get called anytime you perform a read or write characteristic operation
-                    Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
-                    Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
+                    //Log.v("DBG", "SensorManager: onCharacteristicChanged - dev: " + gatt.getDevice().getAddress() + ", time: " + String.format("%.02f", System.currentTimeMillis()/1000.) );
+                    //Log.v("DBG", "SensorManager: characteristic ID: " + characteristic.getUuid().toString());
                     //read the characteristic data
                     byte[] data = characteristic.getValue();
                     //Log.v("DBG", "SensorManager: onCharacteristicChanged: " + data );
-                    logGattData(data);
+                    //logGattData(data);
                     if( characteristic.getUuid().toString().equals(mstrC_HR) ) //UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid()))
                     {
                         int flag = characteristic.getProperties();
@@ -898,7 +898,7 @@ public class SensorsManager {
 
 
                                 characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination to enable the desired features. Writing 0x0000 powers the unit off.
-                                characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00});
+                                characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00}); // ici, on pourrait avoir une meilleur def, mais il semblerait que c'est bloqué dans le firmware
                                 addWaitingWrite(gatt, characteristic);
 
                                 if( true )
