@@ -324,7 +324,7 @@ public class SensorsManager {
             public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                 // your implementation here
                 Log.v("DBG", "Found: Device name:" + device.getName() + ", address: " + device.getAddress() );
-                if( device.getName() != null && ( device.getName().indexOf("Sens") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1 )  )
+                if( device.getName() != null && ( device.getName().indexOf("SensorTag") != -1 || device.getName().indexOf("Geonaute Dual HR") != -1 )  )
                 {
                     if( isAlreadyFound( device ) )
                     {
@@ -746,7 +746,7 @@ public class SensorsManager {
 
                     updateWaitingCalls();
 
-                    if( true ) {
+                    if( false ) {
                         exploreGattServices( gatt );
                     }
 
@@ -897,7 +897,7 @@ public class SensorsManager {
                                 Log.v("DBG", "SensorManager: onServicesDiscovered 2: " + gatt.getDevice().getAddress() );
 
 
-                                characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination top enable the desired features. Writing 0x0000 powers the unit off.
+                                characteristic = service.getCharacteristic(UUID.fromString("f000aa82-0451-4000-b000-000000000000")); // One bit for each gyro and accelerometer axis (6), magnetometer (1), wake-on-motion enable (1), accelerometer range (2). Write any bit combination to enable the desired features. Writing 0x0000 powers the unit off.
                                 characteristic.setValue(new byte[]{(byte) 0x7F,(byte) 0x00});
                                 addWaitingWrite(gatt, characteristic);
 
