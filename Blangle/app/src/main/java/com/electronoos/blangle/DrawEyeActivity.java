@@ -205,7 +205,7 @@ public class DrawEyeActivity extends Activity {
             }
             else
             {
-                view_.rDstInterest_ = view_.rInterest_ + ((float) Math.random() - 0.5f)/5;
+                view_.rDstInterest_ = view_.rInterest_ + ((float) Math.random() - 0.5f)/4;
             }
         }
 
@@ -291,7 +291,7 @@ public class DrawEyeActivity extends Activity {
             canvas.drawCircle(nEyeCenterX, nEyeCenterY, radius * rInterest_, paint);
             for (int i = 0; i < nNbrSparkle_; ++i)
             {
-                sparkle_[i].render(canvas, paint, nEyeCenterX, nEyeCenterY);
+                sparkle_[i].render(canvas, paint, nEyeCenterX, nEyeCenterY, rInterest_);
             }
         }
     }
@@ -339,7 +339,7 @@ public class DrawEyeActivity extends Activity {
             nAge_ += 20;
         }
 
-        public void render( Canvas canvas, Paint paint, int nEyeCenterX, int nEyeCenterY )
+        public void render( Canvas canvas, Paint paint, int nEyeCenterX, int nEyeCenterY, float rInterest )
         {
             int nAdultAgeLimit = 100;
             int nDisappearAgeLimit = 900;
@@ -365,7 +365,7 @@ public class DrawEyeActivity extends Activity {
                 nColor = Color.argb(nAlpha, 0xC0, 0xC0, 0xC0);
             }
             paint.setColor(nColor);
-            canvas.drawCircle( nEyeCenterX+nPosX_, nEyeCenterY + nPosY_, nSize, paint);
+            canvas.drawCircle( (int)(nEyeCenterX+nPosX_*(rInterest+0.3)), (int)(nEyeCenterY + nPosY_*(rInterest+0.3)), nSize, paint);
 
             if( nAlpha <= 0 )
             {
