@@ -175,11 +175,13 @@ public class DrawEyeActivity extends Activity {
     //@Override
     private void animateEye() {
 
+        /*
         view_.rInterest_ *=1.001;
         if ( view_.rInterest_ > 0.9 )
         {
             view_.rInterest_ = 0.7f;
         }
+        */
 
         if( Math.random() > 0.9 )
         {
@@ -195,9 +197,23 @@ public class DrawEyeActivity extends Activity {
             }
         }
 
+        if( Math.random() > 0.9 )
+        {
+            if( Math.random() > 0.7 ) {
+                // raz
+                view_.rDstInterest_ = 0.8f;
+            }
+            else
+            {
+                view_.rDstInterest_ = view_.rInterest_ + ((float) Math.random() - 0.5f)/5;
+            }
+        }
+
         float rCoef = 0.9f;
         view_.rPosX_ = view_.rPosX_ * rCoef +  view_.rDstPosX_ * (1.f-rCoef);
         view_.rPosY_ = view_.rPosY_ * rCoef +  view_.rDstPosY_ * (1.f-rCoef);
+
+        view_.rInterest_ = view_.rInterest_ * rCoef +  view_.rDstInterest_ * (1.f-rCoef);
 
         view_.invalidate();
         postAnimateEye(50);
@@ -220,6 +236,7 @@ public class DrawEyeActivity extends Activity {
     {
         Paint paint = null;
         float rInterest_;
+        float rDstInterest_;
         int nColor_;
         float rPosX_;
         float rPosY_;
