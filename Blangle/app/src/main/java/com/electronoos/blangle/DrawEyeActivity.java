@@ -295,30 +295,39 @@ public class DrawEyeActivity extends Activity {
 
         private void reset()
         {
-            nPosX_ = (int)( nEyeRadius_ * 0.8 * 2 * (Math.random() - 0.5) );
-            nPosY_ = (int)( nEyeRadius_ * 0.8 * 2 * (Math.random() - 0.5) );
+            nPosX_ = (int)( nEyeRadius_ * 0.7 * 2 * (Math.random() - 0.5) );
+
+            nPosY_ = (int)( nEyeRadius_ * 0.7 * 2 * (Math.random() - 0.5) );
             nSize_ = (int)( (nEyeRadius_/3) *  Math.random() + 10 );
-            nAge_ = (int)(0+Math.random()*30);
+            nAge_ = (int)(-Math.random()*1000);
         }
 
         private void update()
         {
-            nAge_ += 10;
+            nAge_ += 20;
         }
 
         public void render( Canvas canvas, Paint paint, int nEyeCenterX, int nEyeCenterY )
         {
             int nAdultAgeLimit = 100;
             update();
+            if( nAge_ < 0 )
+            {
+                return;
+            }
             int nSize = (int)( nSize_ * (nAge_/(float)nAdultAgeLimit) );
             int nAlpha = 255;
             int nColor = Color.parseColor("#A0A0A0");
-            if( nSize > nSize_ )
+            if( nSize >= nSize_ )
             {
                 // adult
                 nSize = nSize_;
-                nAlpha = 255 -(nAge_ - nAdultAgeLimit)*5;
-                nColor = Color.argb(nAlpha, 0xA0, 0xA0, 0xA0);
+                nAlpha = 255 -(nAge_ - nAdultAgeLimit)*7;
+                if( nAlpha <= 0 )
+                {
+                    nAlpha = 0; // crap: should skip drawing!
+                }
+                nColor = Color.argb(nAlpha, 0xC0, 0xC0, 0xC0);
             }
             paint.setColor(nColor);
             canvas.drawCircle( nEyeCenterX+nPosX_, nEyeCenterY + nPosY_, nSize, paint);
