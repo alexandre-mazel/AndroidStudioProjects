@@ -175,16 +175,24 @@ public class DrawEyeActivity extends Activity {
     //@Override
     private void animateEye() {
 
-        view_.rInterest_ *=1.01;
-        if ( view_.rInterest_ > 1. )
+        view_.rInterest_ *=1.001;
+        if ( view_.rInterest_ > 0.9 )
         {
             view_.rInterest_ = 0.7f;
         }
 
         if( Math.random() > 0.9 )
         {
-            view_.rDstPosX_ = view_.rPosX_ + ((float)Math.random()-0.5f)*50;
-            view_.rDstPosY_ = view_.rPosY_ + ((float)Math.random()-0.5f)*50;
+            if( Math.random() > 0.8 ) {
+                // raz
+                view_.rDstPosX_ = 0.f;
+                view_.rDstPosY_ = 0.f;
+            }
+            else
+            {
+                view_.rDstPosX_ = view_.rPosX_ + ((float) Math.random() - 0.5f) * 100;
+                view_.rDstPosY_ = view_.rPosY_ + ((float) Math.random() - 0.5f) * 100;
+            }
         }
 
         float rCoef = 0.9f;
@@ -192,7 +200,7 @@ public class DrawEyeActivity extends Activity {
         view_.rPosY_ = view_.rPosY_ * rCoef +  view_.rDstPosY_ * (1.f-rCoef);
 
         view_.invalidate();
-        postAnimateEye(100);
+        postAnimateEye(50);
 
     }
 
@@ -217,14 +225,24 @@ public class DrawEyeActivity extends Activity {
         float rPosY_;
         float rDstPosX_;
         float rDstPosY_;
+        Sparkle[]  sparkle_;
+        int nNbrSparkle_;
+        int nRadius_;
         public MyView(Context context)
         {
             super(context);
+            nRadius_ = 200;
             paint = new Paint();
             rInterest_ = 0.5f;
             nColor_ = Color.parseColor("#5CCD5C");
             rPosX_ = 0f;
             rPosY_ = 0f;
+            nNbrSparkle_ = 5;
+            sparkle_ = new Sparkle[nNbrSparkle_];
+            for (int i = 0; i < nNbrSparkle_; ++i)
+            {
+                sparkle_[i] = new Sparkle( nRadius_ );
+            }
         }
         public void setEye( float rInterest, int nColor, float rPosX, float rPosY )
         {
@@ -236,31 +254,80 @@ public class DrawEyeActivity extends Activity {
         }
 
         @Override
-        protected void onDraw(Canvas canvas)
-        {
+        protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
             int x = getWidth();
             int y = getHeight();
             int radius;
-            radius = 100;
+            radius = nRadius_;
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(Color.WHITE);
             canvas.drawPaint(paint);
-            // Use Color.parseColor to define HTML colors
+
+            int nEyeCenterX = (int) (x / 2 + rPosX_);
+            int nEyeCenterY = (int) (y / 2 + rPosY_);
+
             paint.setColor(nColor_);
-            canvas.drawCircle(x / 2 + rPosX_, y / 2 + rPosY_, radius, paint);
+            canvas.drawCircle(nEyeCenterX, nEyeCenterY, radius, paint);
 
             paint.setColor(Color.parseColor("#000000"));
-            canvas.drawCircle(x / 2 + rPosX_, y / 2 + rPosY_, radius*rInterest_, paint);
+            canvas.drawCircle(nEyeCenterX, nEyeCenterY, radius * rInterest_, paint);
+            for (int i = 0; i < nNbrSparkle_; ++i)
+            {
+                sparkle_[i].render(canvas, paint, nEyeCenterX, nEyeCenterY);
+            }
         }
     }
 
     public class Sparkle
     {
-        int rPosX_;
-        int rPosY_;
+        int nEyeRadius_;
+        int nPosX_; // 0..100
+        int nPosY_;
         int nSize_; // size when adult
-        int nAge_;  // adult at 50 // disappear at xx
+        int nAge_;  // adult at 100 // disappear at xx
+
+        public Sparkle( int nEyeRadius )
+        {
+            nEyeRadius_ = nEyeRadius;
+            reset();
+        }
+
+        private void reset()
+        {
+            nPosX_ = (int)( nEyeRadius_ * 0.8 * 2 * (Math.random() - 0.5) );
+            nPosY_ = (int)( nEyeRadius_ * 0.8 * 2 * (Math.random() - 0.5) );
+            nSize_ = (int)( (nEyeRadius_/3) *  Math.random() + 10 );
+            nAge_ = (int)(0+Math.random()*30);
+        }
+
+        private void update()
+        {
+            nAge_ += 10;
+        }
+
+        public void render( Canvas canvas, Paint paint, int nEyeCenterX, int nEyeCenterY )
+        {
+            int nAdultAgeLimit = 100;
+            update();
+            int nSize = (int)( nSize_ * (nAge_/(float)nAdultAgeLimit) );
+            int nAlpha = 255;
+            int nColor = Color.parseColor("#A0A0A0");
+            if( nSize > nSize_ )
+            {
+                // adult
+                nSize = nSize_;
+                nAlpha = 255 -(nAge_ - nAdultAgeLimit)*5;
+                nColor = Color.argb(nAlpha, 0xA0, 0xA0, 0xA0);
+            }
+            paint.setColor(nColor);
+            canvas.drawCircle( nEyeCenterX+nPosX_, nEyeCenterY + nPosY_, nSize, paint);
+
+            if( nAlpha <= 0 )
+            {
+                reset();
+            }
+        }
 
     }
 }
