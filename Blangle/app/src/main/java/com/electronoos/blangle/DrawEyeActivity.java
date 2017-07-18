@@ -183,7 +183,7 @@ public class DrawEyeActivity extends Activity {
 
         if( Math.random() > 0.9 )
         {
-            if( Math.random() > 0.8 ) {
+            if( Math.random() > 0.7 ) {
                 // raz
                 view_.rDstPosX_ = 0.f;
                 view_.rDstPosY_ = 0.f;
@@ -237,7 +237,7 @@ public class DrawEyeActivity extends Activity {
             nColor_ = Color.parseColor("#5CCD5C");
             rPosX_ = 0f;
             rPosY_ = 0f;
-            nNbrSparkle_ = 5;
+            nNbrSparkle_ = 4;
             sparkle_ = new Sparkle[nNbrSparkle_];
             for (int i = 0; i < nNbrSparkle_; ++i)
             {
@@ -279,6 +279,19 @@ public class DrawEyeActivity extends Activity {
         }
     }
 
+    int not_centered( int nVal, int nMin )
+    {
+        if( Math.abs(nVal) < nMin )
+        {
+            if( nVal < 0 )
+            {
+                return -nMin;
+            }
+            return nMin;
+        }
+        return nVal;
+    }
+
     public class Sparkle
     {
         int nEyeRadius_;
@@ -295,11 +308,13 @@ public class DrawEyeActivity extends Activity {
 
         private void reset()
         {
-            nPosX_ = (int)( nEyeRadius_ * 0.7 * 2 * (Math.random() - 0.5) );
+            nPosX_ = (int)( nEyeRadius_ * 0.6 * 2 * (Math.random() - 0.5) );
+            nPosY_ = (int)( nEyeRadius_ * 0.6 * 2 * (Math.random() - 0.5) );
+            nPosX_ = not_centered( nPosX_, (int)(nEyeRadius_*0.2) );
+            nPosY_ = not_centered( nPosY_, (int)(nEyeRadius_*0.2) );
 
-            nPosY_ = (int)( nEyeRadius_ * 0.7 * 2 * (Math.random() - 0.5) );
-            nSize_ = (int)( (nEyeRadius_/3) *  Math.random() + 10 );
-            nAge_ = (int)(-Math.random()*1000);
+            nSize_ = (int)( (nEyeRadius_/4) *  Math.random() + 10 );
+            nAge_ = (int)(-Math.random()*2000);
         }
 
         private void update()
@@ -310,6 +325,7 @@ public class DrawEyeActivity extends Activity {
         public void render( Canvas canvas, Paint paint, int nEyeCenterX, int nEyeCenterY )
         {
             int nAdultAgeLimit = 100;
+            int nDisappearAgeLimit = 900;
             update();
             if( nAge_ < 0 )
             {
@@ -317,15 +333,17 @@ public class DrawEyeActivity extends Activity {
             }
             int nSize = (int)( nSize_ * (nAge_/(float)nAdultAgeLimit) );
             int nAlpha = 255;
-            int nColor = Color.parseColor("#A0A0A0");
+            int nColor = Color.parseColor("#B0B0B0");
             if( nSize >= nSize_ )
             {
                 // adult
                 nSize = nSize_;
-                nAlpha = 255 -(nAge_ - nAdultAgeLimit)*7;
-                if( nAlpha <= 0 )
+                if( nAge_ >= nDisappearAgeLimit )
                 {
-                    nAlpha = 0; // crap: should skip drawing!
+                    nAlpha = 255 - (nAge_ - nDisappearAgeLimit) * 5;
+                    if (nAlpha <= 0) {
+                        nAlpha = 0; // crap: should skip drawing!
+                    }
                 }
                 nColor = Color.argb(nAlpha, 0xC0, 0xC0, 0xC0);
             }
