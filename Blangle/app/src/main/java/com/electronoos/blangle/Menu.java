@@ -308,6 +308,12 @@ public class Menu extends DisplaySensorActivity {
 //        startActivityForResult(intent, 1);
     }
 
+    public void onTestDraw(View view) {
+        Intent intent = new Intent(this, DrawEyeActivity.class);
+        startActivity(intent);
+    }
+
+
     public void onChoiceDef(View view) {
         Intent intent = new Intent(this, Definition.class);
         //EditText editText = (EditText) findViewById(R.id.edit_message);

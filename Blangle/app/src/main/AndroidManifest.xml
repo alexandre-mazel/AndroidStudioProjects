@@ -54,6 +54,12 @@
             android:label="@string/title_activity_password"
             android:theme="@style/FullscreenTheme" >
         </activity>
+        <activity
+            android:name=".DrawEyeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_draw_eye"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
         <!--<activity android:label="toto" android:name="DeviceScanActivity"/> -->
     </application>
     <uses-permission android:name="android.permission.BLUETOOTH"/>

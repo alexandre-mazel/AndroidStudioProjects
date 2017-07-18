@@ -118,6 +118,15 @@
                 android:textSize="40sp"
                 android:onClick="onChoiceSettings" />
 
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_gravity="center"
+                android:text="@string/menu_txt_test_draw"
+                android:background="@color/def"
+                android:textSize="20sp"
+                android:onClick="onTestDraw" />
+
             <!--
             <Space
                 android:layout_width="1dp"

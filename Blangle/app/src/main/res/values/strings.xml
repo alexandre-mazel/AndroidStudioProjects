@@ -12,6 +12,7 @@
     <string name="menu_txt_choice_def">Références</string>
     <string name="menu_txt_choice_calc">Détermination</string>
     <string name="menu_txt_choice_reconnect">Reconnect</string>
+    <string name="menu_txt_test_draw">test draw</string>
 
     <string name="menu_txt_device_status">(status)</string>
     <string name="menu_txt_bpm">(bpm)</string>
@@ -64,6 +65,8 @@
     <string name="bt_please_activate_bt">PLEASE: You must activate BT !!!</string>
     <string name="txt_done">fini !!!</string>
     <string name="txt_back">Retour</string>
+
+    <string name="title_activity_draw_eye">DrawEyeActivity</string>
 
 
 
